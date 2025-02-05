@@ -1,2 +1,2 @@
 # REACT-Meteo
-React project for course assessment of univr  
+React project to view forecast based on Open-Meteo API
