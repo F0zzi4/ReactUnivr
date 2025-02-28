@@ -1,2 +1,2 @@
 # ReactUnivr
-React project to view forecast based on Open-Meteo API
+React project to manage personal coaching for patients
