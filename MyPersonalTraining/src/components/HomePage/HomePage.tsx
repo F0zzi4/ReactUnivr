@@ -1,9 +1,10 @@
-
 export default function HomePage() {
-    return (
-      <>
-        <h1>Ciao</h1>
-      </>
-    );
+  const sessionData = sessionStorage.getItem('sessionData');
+  const parsedSessionData = sessionData ? JSON.parse(sessionData) : null;
+
+  return (
+    <div>
+      {parsedSessionData}
+    </div>
+  );
 }
-  
