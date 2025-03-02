@@ -6,7 +6,7 @@ import './index.css'
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
     <Routes>
-      <Route path="/signin" element={<SignIn disableCustomTheme={false} />} />
+      <Route path="/" element={<SignIn disableCustomTheme={false} />} />
     </Routes>
   </BrowserRouter>
 );
