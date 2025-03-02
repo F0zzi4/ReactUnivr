@@ -1,12 +1,41 @@
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from "react-router";
-import SignIn from './components/materialUI/login/SignIn'
-import './index.css'
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom"; // Import corretto
+import SignIn from "./components/materialUI/login/SignIn";
+import "./index.css";
+import SideBar from "./components/SideBar/SideBar";
+import HomePage from "./components/HomePage/HomePage";
 
-createRoot(document.getElementById('root')!).render(
+const drawerWidth = 240;
+
+// Wrapper per gestire la Sidebar condizionale
+const Layout = () => {
+  const location = useLocation(); // Ottieni la route corrente
+
+  // Se la route è "/", non renderizzare la Sidebar
+  const showSidebar = location.pathname !== "/";
+
+  return (
+    <>
+      {showSidebar && <SideBar />} {/* Mostra la Sidebar se non siamo sulla pagina di login */}
+      <main style={{ marginLeft: drawerWidth, padding: "16px" }}>
+        <Outlet /> {/* Rende il contenuto principale */}
+      </main>
+    </>
+  );
+};
+
+createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <Routes>
+      {/* SignIn è la pagina di login e non avrà la Sidebar */}
       <Route path="/" element={<SignIn disableCustomTheme={false} />} />
+
+      {/* Wrapper Layout per la Sidebar */}
+      <Route element={<Layout />}>
+        {/* HomePage sarà un child route, quindi viene renderizzato dentro il Layout */}
+        <Route path="/homepage" element={<HomePage />} />
+        {/* Aggiungi altre rotte qui se necessario */}
+      </Route>
     </Routes>
   </BrowserRouter>
 );

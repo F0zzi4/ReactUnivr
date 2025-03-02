@@ -9,11 +9,15 @@ React project to manage personal coaching for patients
 ```bash
 # React Router
 npm i react-router
+npm install react-router-dom
 
 
 # Material UI
 npm install @mui/material @mui/styled-engine-sc styled-components
 npm install @mui/icons-material
+npm install @emotion/styled
+npmm install @emotion/react
+
 
 # Firebase
 npm install firebase
