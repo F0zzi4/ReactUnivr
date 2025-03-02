@@ -17,7 +17,11 @@ import ForgotPassword from './subcomponents/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import AppIcon from '../../../assets/mypersonaltraining.webp';
-import './SignIn.css';
+import Auth from '../../firebase/authentication/firebase-appconfig';
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import './Login.css';
 
 const Card = styled(MuiCard)(({ theme }) => ({
   position: 'relative',
@@ -62,12 +66,15 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function SignIn(props: { disableCustomTheme?: boolean }) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [open, setOpen] = React.useState(false);
+export default function Login(props: { disableCustomTheme?: boolean }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [emailError, setEmailError] = React.useState(false);
+    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
+    const [passwordError, setPasswordError] = React.useState(false);
+    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+    const [open, setOpen] = React.useState(false);
+    const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -77,25 +84,24 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (emailError || passwordError) {
       event.preventDefault();
       return;
     }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    try{
+      await signInWithEmailAndPassword(Auth, email, password);
+      navigate('/homepage');
+    }catch(error){
+      navigate('/error');
+    }
   };
 
   const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-
     let isValid = true;
 
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage('Please enter a valid email address.');
       isValid = false;
@@ -104,7 +110,7 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
       setEmailErrorMessage('');
     }
 
-    if (!password.value || password.value.length < 6) {
+    if (!password || password.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage('Password must be at least 6 characters long.');
       isValid = false;
@@ -146,9 +152,10 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
               <TextField
                 error={emailError}
                 helperText={emailErrorMessage}
-                id="email"
                 type="email"
                 name="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
                 autoComplete="email"
                 autoFocus
@@ -164,9 +171,10 @@ export default function SignIn(props: { disableCustomTheme?: boolean }) {
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••"
                 type="password"
-                id="password"
                 autoComplete="current-password"
                 autoFocus
                 required
