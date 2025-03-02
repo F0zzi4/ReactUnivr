@@ -17,10 +17,11 @@ import ForgotPassword from './subcomponents/ForgotPassword';
 import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import AppIcon from '../../../assets/mypersonaltraining.webp';
-import Auth from '../../firebase/authentication/firebase-appconfig';
 import { signInWithEmailAndPassword } from "firebase/auth";
+import auth from "../../firebase/authentication/firebase-appconfig";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { FirebaseError } from 'firebase/app';
 import './Login.css';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -66,7 +67,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function Login(props: { disableCustomTheme?: boolean }) {
+export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [emailError, setEmailError] = React.useState(false);
@@ -85,16 +86,29 @@ export default function Login(props: { disableCustomTheme?: boolean }) {
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+    event.preventDefault();
 
-    try{
-      await signInWithEmailAndPassword(Auth, email, password);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // Setting session data
+      sessionStorage.setItem('sessionData', JSON.stringify(email));
+      // Go to homepage
       navigate('/homepage');
-    }catch(error){
-      navigate('/error');
+    } catch (error: unknown) {
+      if (error instanceof FirebaseError) {    
+        if (error.code === 'auth/user-not-found') {
+          setEmailError(true);
+          setEmailErrorMessage('User not found');
+        } else if (error.code === 'auth/wrong-password') {
+          setPasswordError(true);
+          setPasswordErrorMessage('Wrong password');
+        } else {
+          setEmailError(true);
+          setEmailErrorMessage('Error during login, try again');
+        }
+      } else {
+        console.error('Unknown error:', error);
+      }
     }
   };
 
@@ -123,7 +137,7 @@ export default function Login(props: { disableCustomTheme?: boolean }) {
   };
 
   return (
-    <AppTheme {...props}>
+    <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
         <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />

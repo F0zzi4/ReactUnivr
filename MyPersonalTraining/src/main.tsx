@@ -1,25 +1,25 @@
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom"; // Import corretto
-import Login from "./components/materialUI/login/Login";
-import "./index.css";
+import { BrowserRouter, Routes, Route, useLocation, Outlet } from "react-router-dom";
+import Login from "./components/material-ui/login/Login";
 import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
 import { StrictMode } from "react";
+import "./index.css";
 
 const drawerWidth = 240;
 
-// Wrapper per gestire la Sidebar condizionale
+// Wrapper to manage Conditional Sidebar
 const Layout = () => {
-  const location = useLocation(); // Ottieni la route corrente
+  const location = useLocation(); // Get current route
 
-  // Se la route è "/", non renderizzare la Sidebar
+  // If route is "/", do not show Sidebar
   const showSidebar = location.pathname !== "/";
 
   return (
     <>
-      {showSidebar && <SideBar />} {/* Mostra la Sidebar se non siamo sulla pagina di login */}
+      {showSidebar && <SideBar />}
       <main style={{ marginLeft: drawerWidth, padding: "16px" }}>
-        <Outlet /> {/* Rende il contenuto principale */}
+        <Outlet />
       </main>
     </>
   );
@@ -29,15 +29,12 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
   <BrowserRouter>
     <Routes>
-      {/* SignIn è la pagina di login e non avrà la Sidebar */}
-      <Route path="/" element={<Login disableCustomTheme={false} />} />
-
-      {/* Wrapper Layout per la Sidebar */}
+      {/* Login does not have Sidebar */}
+      <Route path="/" element={<Login/>} />
+      
+      {/* Wrapper Layout for Sidebar */}
       <Route element={<Layout />}>
-        {/* HomePage sarà un child route, quindi viene renderizzato dentro il Layout */}
         <Route path="/homepage" element={<HomePage />} />
-        <Route path="/login" element={<Login disableCustomTheme={false}/>} />
-        {/* Aggiungi altre rotte qui se necessario */}
       </Route>
     </Routes>
   </BrowserRouter>
