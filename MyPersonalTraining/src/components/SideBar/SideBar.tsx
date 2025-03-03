@@ -11,12 +11,12 @@ import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InfoIcon from "@mui/icons-material/Info";
-import './SideBar.css';
+import "./SideBar.css";
 
 const drawerWidth = 240;
 
 export default function SideBar() {
-  const dataUser = sessionStorage.getItem('user');
+  const dataUser = sessionStorage.getItem("user");
   const user = dataUser ? JSON.parse(dataUser) : null;
 
   return (
@@ -27,10 +27,12 @@ export default function SideBar() {
         variant="permanent"
         sx={{
           width: drawerWidth,
+          color: "red",
           flexShrink: 0,
           [`& .MuiDrawer-paper`]: {
             width: drawerWidth,
             boxSizing: "border-box",
+            backgroundColor: "#198E00",
           },
         }}
       >
@@ -38,7 +40,9 @@ export default function SideBar() {
 
         {/* Navigation */}
         <List>
-          <div className="sidebar-header">{user.Name} {user.Surname}<br></br>
+          <div className="sidebar-header">
+            {user.Name} {user.Surname}
+            <br></br>
             <div className="sidebar-subheader">{user.UserType}</div>
           </div>
           <Button

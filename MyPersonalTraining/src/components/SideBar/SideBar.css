@@ -1,29 +1,41 @@
+/* Stile minimal per la Sidebar */
 .sidebar-header {
     text-align: center;
-    position: sticky; /* Fissa il testo in alto */
-    font-weight: bold; /* Aggiunge il grassetto */
-    top: 0;
-    z-index: 1; /* Assicura che il testo sia sopra altri elementi */
-    font-family: 'Arial', sans-serif; /* Puoi sostituire 'Arial' con un altro font */
-    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    font-size: 20px;
     color: #333;
-    background-color: #f0f8ff; /* Colore di sfondo leggero */
-    padding: 10px 20px;
-    border-radius: 8px; /* Angoli arrotondati */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra per il testo */
-    text-align: center;
-    margin: 20px 0;
+    padding: 12px 0;
+    margin-bottom: 10px;
 }
 
-.sidebar-subheader{
-    font-family: 'Arial', sans-serif; /* Puoi sostituire 'Arial' con un altro font */
-    font-size: 18px;
+.sidebar-subheader {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
     font-style: italic;
-    color: #555; /* Un colore leggermente più chiaro rispetto al testo principale */
-    background-color: #f0f8ff; /* Colore di sfondo leggero per mantenere la coerenza */
-    padding: 8px 16px;
-    border-radius: 6px; /* Angoli arrotondati */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra più leggera rispetto al testo principale */
+    color: #666;
     text-align: center;
-    margin: 10px 0;
+    margin-bottom: 15px;
+}
+
+.MuiButton-root {
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+    text-transform: none;
+    justify-content: flex-start;
+    padding: 10px 15px;
+    margin: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.MuiButton-root:hover {
+    background-color: #f5f5f5;
+}
+
+.MuiSvgIcon-root {
+    color: #666;
+    margin-right: 10px;
+    font-size: 20px;
 }
