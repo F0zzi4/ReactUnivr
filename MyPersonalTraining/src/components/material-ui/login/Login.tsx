@@ -1,81 +1,81 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Divider from '@mui/material/Divider';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
-import { styled } from '@mui/material/styles';
-import ForgotPassword from './subcomponents/ForgotPassword';
-import AppTheme from '../shared-theme/AppTheme';
-import ColorModeSelect from '../shared-theme/ColorModeSelect';
-import AppIcon from '../../../assets/mypersonaltraining.webp';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Checkbox from "@mui/material/Checkbox";
+import CssBaseline from "@mui/material/CssBaseline";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Divider from "@mui/material/Divider";
+import FormLabel from "@mui/material/FormLabel";
+import FormControl from "@mui/material/FormControl";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import Stack from "@mui/material/Stack";
+import MuiCard from "@mui/material/Card";
+import { styled } from "@mui/material/styles";
+import ForgotPassword from "./subcomponents/ForgotPassword";
+import AppTheme from "../shared-theme/AppTheme";
+import ColorModeSelect from "../shared-theme/ColorModeSelect";
+import AppIcon from "../../../assets/mypersonaltraining.webp";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import auth from "../../firebase/authentication/firebase-appconfig";
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { FirebaseError } from 'firebase/app';
-import './Login.css';
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { FirebaseError } from "firebase/app";
+import "./Login.css";
 
 const Card = styled(MuiCard)(({ theme }) => ({
-  position: 'relative',
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  alignSelf: "center",
+  width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
-  margin: 'auto',
-  [theme.breakpoints.up('sm')]: {
-    maxWidth: '450px',
+  margin: "auto",
+  [theme.breakpoints.up("sm")]: {
+    maxWidth: "450px",
   },
   boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  ...theme.applyStyles('dark', {
+    "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
+  ...theme.applyStyles("dark", {
     boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
+      "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
   }),
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
+  height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
+  minHeight: "100%",
   padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
+  [theme.breakpoints.up("sm")]: {
     padding: theme.spacing(4),
   },
-  '&::before': {
+  "&::before": {
     content: '""',
-    display: 'block',
-    position: 'absolute',
+    display: "block",
+    position: "absolute",
     zIndex: -1,
     inset: 0,
     backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
+      "radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))",
+    backgroundRepeat: "no-repeat",
+    ...theme.applyStyles("dark", {
       backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
+        "radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))",
     }),
   },
 }));
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [emailError, setEmailError] = React.useState(false);
-    const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-    const [passwordError, setPasswordError] = React.useState(false);
-    const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [open, setOpen] = React.useState(false);
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = React.useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
+  const [passwordError, setPasswordError] = React.useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -91,23 +91,23 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       // Setting session data
-      sessionStorage.setItem('sessionData', JSON.stringify(email));
+      sessionStorage.setItem("sessionData", JSON.stringify(email));
       // Go to homepage
-      navigate('/homepage');
+      navigate("/homepage");
     } catch (error: unknown) {
-      if (error instanceof FirebaseError) {    
-        if (error.code === 'auth/user-not-found') {
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/user-not-found") {
           setEmailError(true);
-          setEmailErrorMessage('User not found');
-        } else if (error.code === 'auth/wrong-password') {
+          setEmailErrorMessage("User not found");
+        } else if (error.code === "auth/wrong-password") {
           setPasswordError(true);
-          setPasswordErrorMessage('Wrong password');
+          setPasswordErrorMessage("Wrong password");
         } else {
-          setEmailError(true);
-          setEmailErrorMessage('Error during login, try again');
+          setPasswordError(true);
+          setPasswordErrorMessage("Error during login, try again");
         }
       } else {
-        console.error('Unknown error:', error);
+        console.error("Unknown error:", error);
       }
     }
   };
@@ -117,20 +117,20 @@ export default function Login() {
 
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage("Please enter a valid email address.");
       isValid = false;
     } else {
       setEmailError(false);
-      setEmailErrorMessage('');
+      setEmailErrorMessage("");
     }
 
     if (!password || password.length < 6) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage("Password must be at least 6 characters long.");
       isValid = false;
     } else {
       setPasswordError(false);
-      setPasswordErrorMessage('');
+      setPasswordErrorMessage("");
     }
 
     return isValid;
@@ -140,24 +140,41 @@ export default function Login() {
     <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        <ColorModeSelect sx={{ position: 'fixed', top: '1rem', right: '1rem' }} />
         <Card variant="outlined">
-          <img src={AppIcon} alt="Err" className="card-image" />
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', paddingBottom:1 }}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+            }}
           >
-            Sign in
-          </Typography>
+            <img
+              src={AppIcon}
+              alt="App Logo"
+              style={{ width: "210px", height: "210px" }}
+            />
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{
+                fontSize: "clamp(2rem, 10vw, 2.15rem)",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              Sign in
+            </Typography>
+          </Box>
+
           <Box
             component="form"
             onSubmit={handleSubmit}
             noValidate
             sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '100%',
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
               gap: 2,
             }}
           >
@@ -176,7 +193,7 @@ export default function Login() {
                 required
                 fullWidth
                 variant="outlined"
-                color={emailError ? 'error' : 'primary'}
+                color={emailError ? "error" : "primary"}
               />
             </FormControl>
             <FormControl>
@@ -194,7 +211,7 @@ export default function Login() {
                 required
                 fullWidth
                 variant="outlined"
-                color={passwordError ? 'error' : 'primary'}
+                color={passwordError ? "error" : "primary"}
               />
             </FormControl>
             <FormControlLabel
@@ -215,17 +232,17 @@ export default function Login() {
               type="button"
               onClick={handleClickOpen}
               variant="body2"
-              sx={{ alignSelf: 'center' }}
+              sx={{ alignSelf: "center" }}
             >
               Forgot your password?
             </Link>
           </Box>
           <Divider>or</Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Typography sx={{ textAlign: 'center' }}>
-            Don&apos;t have an account?{' '}
-            send email via: fozzatodavide@gmail.com
-          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Typography sx={{ textAlign: "center" }}>
+              Don&apos;t have an account? send email via:
+              fozzatodavide@gmail.com
+            </Typography>
           </Box>
         </Card>
       </SignInContainer>
