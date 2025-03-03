@@ -1,0 +1,29 @@
+.sidebar-header {
+    text-align: center;
+    position: sticky; /* Fissa il testo in alto */
+    font-weight: bold; /* Aggiunge il grassetto */
+    top: 0;
+    z-index: 1; /* Assicura che il testo sia sopra altri elementi */
+    font-family: 'Arial', sans-serif; /* Puoi sostituire 'Arial' con un altro font */
+    font-size: 24px;
+    color: #333;
+    background-color: #f0f8ff; /* Colore di sfondo leggero */
+    padding: 10px 20px;
+    border-radius: 8px; /* Angoli arrotondati */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra per il testo */
+    text-align: center;
+    margin: 20px 0;
+}
+
+.sidebar-subheader{
+    font-family: 'Arial', sans-serif; /* Puoi sostituire 'Arial' con un altro font */
+    font-size: 18px;
+    font-style: italic;
+    color: #555; /* Un colore leggermente più chiaro rispetto al testo principale */
+    background-color: #f0f8ff; /* Colore di sfondo leggero per mantenere la coerenza */
+    padding: 8px 16px;
+    border-radius: 6px; /* Angoli arrotondati */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Ombra più leggera rispetto al testo principale */
+    text-align: center;
+    margin: 10px 0;
+}
