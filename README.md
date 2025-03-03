@@ -32,4 +32,10 @@ npm i --save-dev @types/js-cookie7
 
 # SideBar
 npm install react-pro-sidebar
+
+# Tailwind
+npm install -D tailwindcss postcss autoprefixer
+
+#Icon
+npm install react-icons
 ```
