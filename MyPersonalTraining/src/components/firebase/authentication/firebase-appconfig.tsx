@@ -19,4 +19,4 @@ const Auth = getAuth(FirebaseApp);
 // Initialize Firestore service
 const Firestore = getFirestore(FirebaseApp);
 
-export default Auth;
+export {Auth, Firestore};

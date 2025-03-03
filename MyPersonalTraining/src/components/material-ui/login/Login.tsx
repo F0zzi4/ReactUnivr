@@ -18,10 +18,12 @@ import AppTheme from '../shared-theme/AppTheme';
 import ColorModeSelect from '../shared-theme/ColorModeSelect';
 import AppIcon from '../../../assets/mypersonaltraining.webp';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import auth from "../../firebase/authentication/firebase-appconfig";
+import { Auth } from "../../firebase/authentication/firebase-appconfig";
+import FirestoreInterface from '../../firebase/firestore/firestore-interface';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { FirebaseError } from 'firebase/app';
+import FirebaseObject from '../../firebase/firestore/data-model/FirebaseObject';
 import './Login.css';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -89,23 +91,18 @@ export default function Login() {
     event.preventDefault();
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(Auth, email, password);
       // Setting session data
-      sessionStorage.setItem('sessionData', JSON.stringify(email));
+      const user : FirebaseObject | null = await FirestoreInterface.findUserByEmail(email);
+      if(user){
+        sessionStorage.setItem('user', JSON.stringify(user))
+      }
       // Go to homepage
       navigate('/homepage');
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {    
-        if (error.code === 'auth/user-not-found') {
-          setEmailError(true);
-          setEmailErrorMessage('User not found');
-        } else if (error.code === 'auth/wrong-password') {
           setPasswordError(true);
-          setPasswordErrorMessage('Wrong password');
-        } else {
-          setEmailError(true);
-          setEmailErrorMessage('Error during login, try again');
-        }
+          setPasswordErrorMessage('Error during login, try again');
       } else {
         console.error('Unknown error:', error);
       }

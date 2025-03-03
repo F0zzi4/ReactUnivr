@@ -1,67 +1,80 @@
 import {
   Drawer,
   List,
-  ListItem,
   ListItemText,
-  ListItemIcon,
   Divider,
   Toolbar,
-  CssBaseline
+  Button,
+  CssBaseline,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import InfoIcon from "@mui/icons-material/Info";
+import './SideBar.css';
 
 const drawerWidth = 240;
 
 export default function SideBar() {
+  const dataUser = sessionStorage.getItem('user');
+  const user = dataUser ? JSON.parse(dataUser) : null;
+
   return (
     <>
       <CssBaseline />
-      {/* Drawer Fisso */}
+      {/* Fixed Drawer */}
       <Drawer
         variant="permanent"
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: "border-box" },
+          [`& .MuiDrawer-paper`]: {
+            width: drawerWidth,
+            boxSizing: "border-box",
+          },
         }}
       >
         <Toolbar />
-        
-        {/* Sezione Navigazione Principale */}
+
+        {/* Navigation */}
         <List>
-          <ListItem button>
-            <ListItemIcon>
-              <HomeIcon />
-            </ListItemIcon>
+          <div className="sidebar-header">{user.Name} {user.Surname}<br></br>
+            <div className="sidebar-subheader">{user.UserType}</div>
+          </div>
+          <Button
+            fullWidth
+            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          >
+            <HomeIcon sx={{ marginRight: "8px" }} />
             <ListItemText primary="Home" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <AccountCircleIcon />
-            </ListItemIcon>
+          </Button>
+          <Button
+            fullWidth
+            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          >
+            <AccountCircleIcon sx={{ marginRight: "8px" }} />
             <ListItemText primary="Profilo" />
-          </ListItem>
+          </Button>
         </List>
 
         <Divider />
 
-        {/* Sezione Impostazioni */}
+        {/* Settings */}
         <List>
-          <ListItem button>
-            <ListItemIcon>
-              <SettingsIcon />
-            </ListItemIcon>
+          <Button
+            fullWidth
+            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          >
+            <SettingsIcon sx={{ marginRight: "8px" }} />
             <ListItemText primary="Impostazioni" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <InfoIcon />
-            </ListItemIcon>
+          </Button>
+          <Button
+            fullWidth
+            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          >
+            <InfoIcon sx={{ marginRight: "8px" }} />
             <ListItemText primary="Informazioni" />
-          </ListItem>
+          </Button>
         </List>
       </Drawer>
     </>
