@@ -23,7 +23,6 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
-import { v4 as uuidv4 } from "uuid";
 import "./Login.css";
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -80,8 +79,6 @@ export default function Login() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
-  const OneHourInMilliseconds = 60*60*1000;
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -95,13 +92,12 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(Auth, email, password);
+      const user: FirebaseObject | null = await FirestoreInterface.findUserByEmail(email);
+    
       // Setting session data
-      const user: FirebaseObject | null =
-        await FirestoreInterface.findUserByEmail(email);
       if (user) {
         user.timestamp = Date.now();
         sessionStorage.setItem("user", JSON.stringify(user));
-        console.log(user);
       }
       // Go to homepage
       navigate("/homepage");

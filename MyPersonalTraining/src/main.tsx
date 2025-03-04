@@ -5,31 +5,30 @@ import {
   Route,
   useLocation,
   Outlet,
-  useNavigate,
   Navigate,
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
 import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
-  const location = useLocation(); // Ottieni il percorso corrente
-  const [open, setOpen] = useState(true); // Stato per tracciare apertura/chiusura della sidebar
+  const location = useLocation();
+  const [open, setOpen] = useState(true);
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
-
-  // Se il percorso è "/", non mostrare la Sidebar
+  console.log(user);
+  // If path is "/", do not show the sidebar
   const showSidebar = location.pathname !== "/";
 
-  return user ? ( // check user logged
+  return user ? ( // Check if user is logged
     <div className="flex h-screen maincontent-backgroundcolor">
-      {/* Sidebar fissa */}
+      {/* Fixed sidebar */}
       {showSidebar && <SideBar open={open} setOpen={setOpen} />}
       <SessionManager />
-      {/* Contenuto principale */}
+      {/* Main content */}
       <main
         style={{ backgroundColor: "rgb(206, 197, 197)" }}
         className={`transition-all duration-300 ${
@@ -44,14 +43,34 @@ const Layout = () => {
   );
 };
 
-createRoot(document.getElementById("root")!).render(
+// Redirect logic inside login component
+const LoginWithRedirect = () => {
+  const location = useLocation();
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
+
+  useEffect(() => {
+    if (user && location.pathname === "/") {
+      window.location.replace("/homepage");
+    }
+  }, [user, location.pathname]);
+
+  return <Login />;
+};
+
+// Create the root only once
+const container = document.getElementById("root");
+const root = createRoot(container!);
+
+// Render the root
+root.render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Login non ha la Sidebar */}
-        <Route path="/" element={<Login />} />
+        {/* Login with redirect logic */}
+        <Route path="/" element={<LoginWithRedirect />} />
 
-        {/* Wrapper Layout per la Sidebar */}
+        {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
           <Route path="/homepage" element={<HomePage />} />
         </Route>
