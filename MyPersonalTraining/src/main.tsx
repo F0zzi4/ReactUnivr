@@ -20,7 +20,7 @@ const Layout = () => {
   const showSidebar = location.pathname !== "/";
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen maincontent-backgroundcolor">
       {/* Fixed Sidebar*/}
       {showSidebar && <SideBar open={open} setOpen={setOpen} />}
 
