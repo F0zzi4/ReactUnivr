@@ -15,7 +15,6 @@ import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import ForgotPassword from "./subcomponents/ForgotPassword";
 import AppTheme from "../shared-theme/AppTheme";
-import ColorModeSelect from "../shared-theme/ColorModeSelect";
 import AppIcon from "../../../assets/mypersonaltraining.webp";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
@@ -35,6 +34,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   gap: theme.spacing(2),
   margin: "auto",
+  backgroundColor : 'rgb(144, 238, 144)',
   [theme.breakpoints.up("sm")]: {
     maxWidth: "450px",
   },
@@ -43,7 +43,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   ...theme.applyStyles("dark", {
     boxShadow:
       "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
-  }),
+  })
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
