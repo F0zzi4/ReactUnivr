@@ -27,7 +27,8 @@ const Layout = () => {
 
       {/* Main content */}
       <main
-        className={`main-backgroundcolor transition-all duration-300 ${
+        style={{ backgroundColor: "rgb(206, 197, 197)" }} // Grigio chiaro
+        className={`transition-all duration-300 ${
           showSidebar ? (open ? "ml-60" : "ml-16") : "ml-0"
         } p-4 flex-1 overflow-auto`}
       >

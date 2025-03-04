@@ -1,45 +1,50 @@
-/* Stile minimal per la Sidebar */
-.sidebar-header {
-    text-align: center;
-    font-weight: bold;
-    font-family: 'Arial', sans-serif;
-    font-size: 20px;
-    color: #333;
-    padding: 12px 0;
-    margin-bottom: 10px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.App {
+  text-align: center;
 }
 
-.sidebar-subheader {
-    font-family: 'Arial', sans-serif;
-    font-size: 14px;
-    font-style: italic;
-    color: #666;
-    text-align: center;
-    margin-bottom: 15px;
+.maincontent-backgroundcolor{
+  background-color: rgb(84, 196, 84);
 }
 
-.MuiButton-root {
-    color: #333;
-    font-weight: 500;
-    font-size: 14px;
-    text-transform: none;
-    justify-content: flex-start;
-    padding: 10px 15px;
-    margin: 5px 10px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
 }
 
-.MuiButton-root:hover {
-    background-color: #f5f5f5;
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
 }
 
-.MuiSvgIcon-root {
-    color: #666;
-    margin-right: 10px;
-    font-size: 20px;
+.button-style{
+  min-width: 100px;
 }
 
-.sidebar-background{
-    background-color: rgb(87, 209, 87);
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
