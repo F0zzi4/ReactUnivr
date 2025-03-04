@@ -7,7 +7,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
-import SideBar3 from "./components/sidebar/SideBar3";
+import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
 import { StrictMode, useState } from "react";
 import "./index.css";
@@ -21,13 +21,13 @@ const Layout = () => {
   const showSidebar = location.pathname !== "/";
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar fissa */}
-      {showSidebar && <SideBar3 open={open} setOpen={setOpen} />}
+    <div className="flex h-screen maincontent-backgroundcolor">
+      {/* Fixed Sidebar*/}
+      {showSidebar && <SideBar open={open} setOpen={setOpen} />}
 
-      {/* Contenuto principale */}
+      {/* Main content */}
       <main
-        className={`transition-all duration-300 ${
+        className={`main-backgroundcolor transition-all duration-300 ${
           showSidebar ? (open ? "ml-60" : "ml-16") : "ml-0"
         } p-4 flex-1 overflow-auto`}
       >
