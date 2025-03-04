@@ -18,12 +18,13 @@ import AppTheme from "../shared-theme/AppTheme";
 import AppIcon from "../../../assets/mypersonaltraining.webp";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
-import FirestoreInterface from '../../firebase/firestore/firestore-interface';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { FirebaseError } from 'firebase/app';
-import FirebaseObject from '../../firebase/firestore/data-model/FirebaseObject';
-import './Login.css';
+import FirestoreInterface from "../../firebase/firestore/firestore-interface";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { FirebaseError } from "firebase/app";
+import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
+import { v4 as uuidv4 } from "uuid";
+import "./Login.css";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   position: "relative",
@@ -34,7 +35,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   padding: theme.spacing(4),
   gap: theme.spacing(2),
   margin: "auto",
-  backgroundColor : 'rgb(144, 238, 144)',
+  backgroundColor: "rgb(144, 238, 144)",
   [theme.breakpoints.up("sm")]: {
     maxWidth: "450px",
   },
@@ -43,7 +44,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   ...theme.applyStyles("dark", {
     boxShadow:
       "hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px",
-  })
+  }),
 }));
 
 const SignInContainer = styled(Stack)(({ theme }) => ({
@@ -87,24 +88,27 @@ export default function Login() {
     setOpen(false);
   };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
       await signInWithEmailAndPassword(Auth, email, password);
       // Setting session data
-      const user : FirebaseObject | null = await FirestoreInterface.findUserByEmail(email);
-      if(user){
-        sessionStorage.setItem('user', JSON.stringify(user))
+      const user: FirebaseObject | null =
+        await FirestoreInterface.findUserByEmail(email);
+      if (user) {
+        user.timestamp = Date.now();
+        sessionStorage.setItem("user", JSON.stringify(user));
+        console.log(user);
       }
       // Go to homepage
-      navigate('/homepage');
+      navigate("/homepage");
     } catch (error: unknown) {
-      if (error instanceof FirebaseError) {    
-          setPasswordError(true);
-          setPasswordErrorMessage('Error during login, try again');
+      if (error instanceof FirebaseError) {
+        setPasswordError(true);
+        setPasswordErrorMessage("Error during login, try again");
       } else {
-        console.error('Unknown error:', error);
+        console.error("Unknown error:", error);
       }
     }
   };

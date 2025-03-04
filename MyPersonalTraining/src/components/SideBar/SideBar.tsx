@@ -1,13 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/logo/logo192x192.png";
 import { MdMenuOpen, MdOutlineDashboard } from "react-icons/md";
-import { IoHomeOutline, IoLogoBuffer } from "react-icons/io5";
-import { FaProductHunt, FaUserCircle, FaUsers } from "react-icons/fa";
+import { FaUserCircle, FaUsers } from "react-icons/fa";
 import { AiOutlineFileText } from "react-icons/ai";
 import { GoGoal } from "react-icons/go";
-import { TbReportSearch } from "react-icons/tb";
-import { CiSettings } from "react-icons/ci";
 import { MdOutlineInbox, MdSend } from "react-icons/md";
 import "./SideBar.css";
 

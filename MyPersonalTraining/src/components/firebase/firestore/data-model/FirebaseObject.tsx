@@ -1,4 +1,5 @@
 export default interface FirebaseObject {
-    id: string;
-    [key: string]: any;
-  }
+  id: string;
+  [key: string]: any;
+  timestamp: number;
+}

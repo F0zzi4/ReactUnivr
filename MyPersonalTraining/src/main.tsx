@@ -5,27 +5,32 @@ import {
   Route,
   useLocation,
   Outlet,
+  useNavigate,
+  Navigate,
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
 import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
-import { StrictMode, useState } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import "./index.css";
+import SessionManager from "./components/session/SessionManager";
 
-// Wrapper to manage Conditional Sidebar
+// Wrapper per la gestione della Sidebar
 const Layout = () => {
-  const location = useLocation(); // Get current route
-  const [open, setOpen] = useState(true); // State to track sidebar open/close
+  const location = useLocation(); // Ottieni il percorso corrente
+  const [open, setOpen] = useState(true); // Stato per tracciare apertura/chiusura della sidebar
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
 
-  // If route is "/", do not show Sidebar
+  // Se il percorso è "/", non mostrare la Sidebar
   const showSidebar = location.pathname !== "/";
 
-  return (
+  return user ? ( // check user logged
     <div className="flex h-screen maincontent-backgroundcolor">
-      {/* Fixed Sidebar*/}
+      {/* Sidebar fissa */}
       {showSidebar && <SideBar open={open} setOpen={setOpen} />}
-
-      {/* Main content */}
+      <SessionManager />
+      {/* Contenuto principale */}
       <main
         style={{ backgroundColor: "rgb(206, 197, 197)" }} // Grigio chiaro
         className={`transition-all duration-300 ${
@@ -35,6 +40,8 @@ const Layout = () => {
         <Outlet />
       </main>
     </div>
+  ) : (
+    <Navigate to={"/"} />
   );
 };
 
@@ -42,10 +49,10 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        {/* Login does not have Sidebar */}
+        {/* Login non ha la Sidebar */}
         <Route path="/" element={<Login />} />
 
-        {/* Wrapper Layout for Sidebar */}
+        {/* Wrapper Layout per la Sidebar */}
         <Route element={<Layout />}>
           <Route path="/homepage" element={<HomePage />} />
         </Route>

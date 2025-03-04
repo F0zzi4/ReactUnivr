@@ -1,10 +1,10 @@
 export default function HomePage() {
-  const dataUser = sessionStorage.getItem('user');
+  const dataUser = sessionStorage.getItem("user");
   const user = dataUser ? JSON.parse(dataUser) : null;
 
-  return  (
+  return (
     <div>
-        Benvenuto {user.Name} {user.Surname}!
+      Benvenuto {user.Name} {user.Surname}!
     </div>
   );
 }
