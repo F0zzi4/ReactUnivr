@@ -1,13 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/logo/logo192x192.png";
 import { MdMenuOpen, MdOutlineDashboard } from "react-icons/md";
-import { IoHomeOutline, IoLogoBuffer } from "react-icons/io5";
-import { FaProductHunt, FaUserCircle, FaUsers } from "react-icons/fa";
+import { FaUserCircle, FaUsers } from "react-icons/fa";
 import { AiOutlineFileText } from "react-icons/ai";
 import { GoGoal } from "react-icons/go";
-import { TbReportSearch } from "react-icons/tb";
-import { CiSettings } from "react-icons/ci";
 import { MdOutlineInbox, MdSend } from "react-icons/md";
 import "./SideBar.css";
 
@@ -18,8 +14,8 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ open, setOpen }: SidebarProps) {
-  const dataUser = sessionStorage.getItem("user");
-  const user = dataUser ? JSON.parse(dataUser) : null;
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
 
   const menuItems = [
     {
@@ -34,7 +30,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     },
   ];
 
-  // Definizione dinamica di menuItems in base al tipo di utente
+  // Dynamic management of list of buttons based on UserType logged in
   const menuItemsCostum =
     user?.UserType === "Personal Trainer"
       ? [
@@ -83,12 +79,12 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             className={`transition-all duration-300 ${
               !open ? "w-0 opacity-0 overflow-hidden" : "w-auto"
             }`}
-            style={{ display: "flex", alignItems: "center" }} // Assicura che l'icona e il testo siano allineati
+            style={{ display: "flex", alignItems: "center" }}
           >
             <FaUserCircle size={30} className="w-8 h-8 flex-shrink-0" />
           </div>
 
-          {/* Dettagli utente */}
+          {/* User details */}
           <div
             className={`transition-all duration-300 ${
               !open ? "w-0 opacity-0 overflow-hidden" : "w-auto"
@@ -97,17 +93,17 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
-            }} // Allinea verticalmente
+            }}
           >
             <p>{user ? `${user.Name} ${user.Surname}` : "User"}</p>
             <span className="text-xs">{user ? user.UserType : "Guest"}</span>
           </div>
 
-          {/* Pulsante per aprire/chiudere il menu */}
+          {/* Open/Close Sidebar button */}
           <MdMenuOpen
             size={30}
             className="cursor-pointer hover:text-gray-300"
-            onClick={() => setOpen(!open)} // Toggle sidebar state
+            onClick={() => setOpen(!open)}
           />
         </div>
 
@@ -141,7 +137,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             ))}
           </ul>
 
-          {/* Linea divisoria tra i due gruppi di menu */}
+          {/* Divider line */}
           <div className="border-t border-white"></div>
 
           {/* Costum sidebar items based on UserType */}
@@ -155,11 +151,11 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
-                  {/* Mantieni una dimensione fissa per l'icona */}
+                  {/* Keep a fixed icon dimension */}
                   <div className="w-8 h-8 flex items-center justify-center">
                     {item.icon}
                   </div>
-                  {/* Nascondi il testo senza ridimensionare l'icona */}
+                  {/* Hide the text without resize the icon */}
                   <p
                     className={`transition-all duration-300 ${
                       !open ? "hidden" : "block"

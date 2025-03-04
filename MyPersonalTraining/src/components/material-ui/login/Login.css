@@ -5,3 +5,23 @@
     width: 75px;
     height: 75px;
   }
+
+.login-background{
+  background-color: rgb(84, 196, 84);
+}
+
+@keyframes gradientBackground {
+  0% {
+    background-color: rgb(88, 196, 88);
+  }
+  50% {
+    background-color: rgb(37, 160, 37);
+  }
+  100% {
+    background-color: rgb(88, 192, 88);
+  }
+}
+
+.login-background{
+  animation: gradientBackground 5s infinite;
+}

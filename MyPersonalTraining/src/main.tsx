@@ -10,9 +10,8 @@ import Login from "./components/material-ui/login/Login";
 import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
 import { StrictMode, useState } from "react";
-import "./index.css";
 
-// Wrapper to manage Conditional Sidebar
+// Wrapper to manage conditional Sidebar
 const Layout = () => {
   const location = useLocation(); // Get current route
   const [open, setOpen] = useState(true); // State to track sidebar open/close
@@ -21,13 +20,13 @@ const Layout = () => {
   const showSidebar = location.pathname !== "/";
 
   return (
-    <div className="flex h-screen maincontent-backgroundcolor">
+    <div className="flex h-screen">
       {/* Fixed Sidebar*/}
       {showSidebar && <SideBar open={open} setOpen={setOpen} />}
 
       {/* Main content */}
       <main
-        style={{ backgroundColor: "rgb(206, 197, 197)" }} // Grigio chiaro
+        style={{ backgroundColor: "rgb(206, 197, 197)" }}
         className={`transition-all duration-300 ${
           showSidebar ? (open ? "ml-60" : "ml-16") : "ml-0"
         } p-4 flex-1 overflow-auto`}
