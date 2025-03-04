@@ -38,4 +38,8 @@ npm install -D tailwindcss postcss autoprefixer
 
 #Icon
 npm install react-icons
+
+# UUid
+npm install uuid
+
 ```
