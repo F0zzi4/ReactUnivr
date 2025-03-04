@@ -80,6 +80,8 @@ export default function Login() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
+  const OneHourInMilliseconds = 60*60*1000;
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -138,6 +140,7 @@ export default function Login() {
   };
 
   return (
+    <div className="login-background">
     <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
@@ -248,5 +251,6 @@ export default function Login() {
         </Card>
       </SignInContainer>
     </AppTheme>
+    </div>
   );
 }
