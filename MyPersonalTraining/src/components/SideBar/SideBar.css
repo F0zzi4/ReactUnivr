@@ -2,12 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+.sidebar-background {
+  background-color: #1a202c; /* Dark background for a sleek look */
+}
+
 .App {
   text-align: center;
 }
 
-.maincontent-backgroundcolor{
-  background-color: rgb(84, 196, 84);
+.maincontent-backgroundcolor {
+  background-color: rgb(78, 179, 78);
 }
 
 .App-logo {
@@ -21,7 +25,7 @@
   }
 }
 
-.button-style{
+.button-style {
   min-width: 100px;
 }
 
@@ -47,4 +51,30 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Custom Styles for Sidebar */
+.sidebar-background {
+  background-color: rgb(78, 184, 78); /* Deep grayish color */
+}
+
+.sidebar-background:hover {
+  background-color: rgb(66, 163, 66); /* Darker shade on hover */
+}
+
+.sidebar-background .group:hover .text-white {
+  color: #e2e8f0; /* Lighter text color on hover */
+}
+
+ul li:hover {
+  background-color: #4a5568; /* Slight hover effect for items */
+}
+
+.border-t {
+  border-top-width: 1px;
+  border-top-color: #e2e8f0; /* Lighter line for separation */
+}
+
+button:hover {
+  background-color: #f56565; /* Red color for hover effect */
 }

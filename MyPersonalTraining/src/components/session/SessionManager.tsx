@@ -12,6 +12,10 @@ const SessionManager = () => {
       const userData = sessionStorage.getItem("user");
       const user = userData ? JSON.parse(userData) : null;
 
+      if (user === null) {
+        navigate("/", { replace: true });
+      }
+
       // If user is not set or timestamp
       if (!user || !user.timestamp || !user.lastActive) {
         return;

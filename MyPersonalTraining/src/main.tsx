@@ -12,6 +12,12 @@ import SideBar from "./components/sidebar/SideBar";
 import HomePage from "./components/homepage/HomePage";
 import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
+import Me from "./components/costumer/me/Me";
+import Goals from "./components/costumer/goals/Goals";
+import TrainingPlan from "./components/costumer/trainingplan/TrainingPlan";
+import PlanManagement from "./components/personaltrainer/planmanagement/PlanManagement";
+import Customers from "./components/personaltrainer/customers/Customers";
+import Exercises from "./components/personaltrainer/exercises/Exercises";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -30,10 +36,9 @@ const Layout = () => {
       <SessionManager />
       {/* Main content */}
       <main
-        style={{ backgroundColor: "rgb(206, 197, 197)" }}
         className={`transition-all duration-300 ${
-          showSidebar ? (open ? "ml-60" : "ml-16") : "ml-0"
-        } p-4 flex-1 overflow-auto`}
+          showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
+        } flex-1 overflow-auto`}
       >
         <Outlet />
       </main>
@@ -73,6 +78,19 @@ root.render(
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
           <Route path="/homepage" element={<HomePage />} />
+
+          {/* Customers Routes */}
+          <Route path="/customer/me" element={<Me />} />
+          <Route path="/customer/goals" element={<Goals />} />
+          <Route path="/customer/trainingPlan" element={<TrainingPlan />} />
+
+          {/* PersonalTrainers Routes */}
+          <Route
+            path="/personalTrainer/planManagement"
+            element={<PlanManagement />}
+          />
+          <Route path="/personalTrainer/customers" element={<Customers />} />
+          <Route path="/personalTrainer/exercises" element={<Exercises />} />
         </Route>
       </Routes>
     </BrowserRouter>
