@@ -8,17 +8,16 @@ const SessionManager = () => {
 
   useEffect(() => {
     const checkSession = () => {
-      console.log("🔍 Checking session...");
       const userData = sessionStorage.getItem("user");
       const user = userData ? JSON.parse(userData) : null;
 
       // Se non ci sono dati dell'utente o i campi non sono validi, esci
-      if (!user || !user.timestamp || !user.lastActive) {
-        return;
+      if (user === null) {
+        navigate("/", { replace: true });
       }
 
       const currentTime = Date.now();
-
+      console.log("⏲️ Checking session - ", currentTime - user.timestamp);
       // Verifica se la sessione è scaduta (1 ora)
       if (currentTime - user.timestamp > SESSION_TIMEOUT) {
         console.log("⏳ Session expired. Logging out automatically.");

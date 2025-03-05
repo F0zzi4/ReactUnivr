@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { MdMenuOpen, MdOutlineDashboard } from "react-icons/md";
+import { MdMenuOpen, MdOutlineDashboard, MdLogout } from "react-icons/md";
 import { FaUserCircle, FaUsers } from "react-icons/fa";
 import { AiOutlineFileText } from "react-icons/ai";
 import { GoGoal } from "react-icons/go";
@@ -19,48 +19,52 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
 
   const menuItems = [
     {
-      icon: <MdOutlineInbox size={24} />,
+      icon: <MdOutlineInbox size={30} />,
       label: "Inbox",
       path: "/inbox",
     },
     {
-      icon: <MdSend size={24} />,
+      icon: <MdSend size={30} />,
       label: "Outbox",
       path: "/outbox",
     },
   ];
 
-  // Dynamic management of list of buttons based on UserType logged in
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    window.location.reload();
+  };
+
   const menuItemsCostum =
     user?.UserType === "Personal Trainer"
       ? [
           {
-            icon: <AiOutlineFileText size={24} />,
+            icon: <AiOutlineFileText size={30} />,
             label: "Plan Management",
-            path: "/planManagement",
+            path: "/personalTrainer/planManagement",
           },
           {
-            icon: <FaUsers size={24} />,
+            icon: <FaUsers size={30} />,
             label: "Customers",
-            path: "/customers",
+            path: "/personalTrainer/customers",
           },
           {
-            icon: <MdOutlineDashboard size={24} />,
+            icon: <MdOutlineDashboard size={30} />,
             label: "Exercises",
-            path: "/exercises",
+            path: "/personalTrainer/exercises",
           },
         ]
       : [
-          { icon: <FaUsers size={24} />, label: "Me", path: "/me" },
+          { icon: <FaUsers size={30} />, label: "Me", path: "/customer/me" },
           {
-            icon: <AiOutlineFileText size={24} />,
+            icon: <AiOutlineFileText size={30} />,
             label: "Training Plan",
-            path: "/trainingPlan",
+            path: "/customer/trainingPlan",
           },
           {
-            icon: <GoGoal size={24} />,
+            icon: <GoGoal size={30} />,
             label: "Goals",
-            path: "/goals",
+            path: "/customer/goals",
           },
         ];
 
@@ -68,66 +72,59 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     <div className="flex">
       {/* Sidebar */}
       <nav
-        className={`fixed top-0 left-0 h-screen sidebar-background text-white shadow-lg transition-all duration-300 ${
-          open ? "w-60" : "w-16"
-        } flex flex-col`}
+        className={`fixed top-0 left-0 h-screen sidebar-background text-white shadow-xl transition-all duration-300 ${
+          open ? "w-64" : "w-20"
+        } flex flex-col overflow-hidden`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-3 py-4 border-b border-white">
-          {/* Icona del profilo utente */}
+        <div
+          className={`flex items-center border-b border-white ${
+            open ? "justify-between px-3 py-4" : "justify-center"
+          }`}
+        >
           <div
             className={`transition-all duration-300 ${
-              !open ? "w-0 opacity-0 overflow-hidden" : "w-auto"
+              !open ? "w-0 opacity-0" : "flex items-center"
             }`}
-            style={{ display: "flex", alignItems: "center" }}
           >
-            <FaUserCircle size={30} className="w-8 h-8 flex-shrink-0" />
+            <FaUserCircle size={40} className="w-8 h-8" />
           </div>
-
-          {/* User details */}
           <div
             className={`transition-all duration-300 ${
-              !open ? "w-0 opacity-0 overflow-hidden" : "w-auto"
+              !open ? "w-0 opacity-0" : "flex flex-col items-start"
             }`}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-            }}
           >
-            <p>{user ? `${user.Name} ${user.Surname}` : "User"}</p>
-            <span className="text-xs">{user ? user.UserType : "Guest"}</span>
+            <p className="text-xl font-semibold">
+              {user ? `${user.Name} ${user.Surname}` : "User"}
+            </p>
+            <span className="text-xs">{user?.UserType}</span>
           </div>
-
-          {/* Open/Close Sidebar button */}
-          <MdMenuOpen
-            size={30}
-            className="cursor-pointer hover:text-gray-300"
+          {/* Always visible and clickable menu button */}
+          <div
+            className="flex items-center justify-center cursor-pointer hover:text-gray-300 hover:scale-110 transition-all z-50"
             onClick={() => setOpen(!open)}
-          />
+          >
+            <MdMenuOpen size={35} />
+          </div>
         </div>
 
         {/* Menu items */}
-        <div className="flex-1">
-          {/* Static sidebar items */}
-          {/* Menu items */}
+        <div className="flex-1 overflow-auto">
           <ul className="p-3">
             {menuItems.map((item, index) => (
               <li key={index} className="p-0">
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-blue-800 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-blue-600 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
-                  {/* Mantieni una dimensione fissa per l'icona */}
                   <div className="w-8 h-8 flex items-center justify-center">
                     {item.icon}
                   </div>
-                  {/* Nascondi il testo senza ridimensionare l'icona */}
                   <p
                     className={`transition-all duration-300 ${
-                      !open ? "hidden" : "block"
+                      !open ? "hidden" : "block text-lg"
                     }`}
                   >
                     {item.label}
@@ -137,28 +134,23 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             ))}
           </ul>
 
-          {/* Divider line */}
-          <div className="border-t border-white"></div>
+          <div className="border-t border-white my-2"></div>
 
-          {/* Costum sidebar items based on UserType */}
-          {/* Menu items */}
           <ul className="p-3">
             {menuItemsCostum.map((item, index) => (
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-3 p-3 rounded-md cursor-pointer hover:bg-blue-800 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-blue-600 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
-                  {/* Keep a fixed icon dimension */}
                   <div className="w-8 h-8 flex items-center justify-center">
                     {item.icon}
                   </div>
-                  {/* Hide the text without resize the icon */}
                   <p
                     className={`transition-all duration-300 ${
-                      !open ? "hidden" : "block"
+                      !open ? "hidden" : "block text-lg"
                     }`}
                   >
                     {item.label}
@@ -169,17 +161,28 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           </ul>
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-white p-3 flex items-center gap-3">
-          <FaUserCircle size={30} className="w-8 h-8 flex-shrink-0" />
-          <div
-            className={`transition-all duration-300 ${
-              !open ? "w-0 opacity-0 overflow-hidden" : "w-auto"
+        {/* Logout Button */}
+        <div className="p-3 mt-4">
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-gradient-to-r from-red-600 to-red-800 hover:scale-105 transition-all text-white text-left ${
+              !open ? "justify-center" : "p-3"
             }`}
           >
-            <p>{user ? `${user.Name} ${user.Surname}` : "User"}</p>
-            <span className="text-xs">{user ? user.UserType : "Guest"}</span>
-          </div>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <MdLogout
+                size={30}
+                className="w-8 h-8 flex items-center justify-center"
+              />
+            </div>
+            <p
+              className={`transition-all duration-300 ${
+                !open ? "hidden" : "block text-lg"
+              }`}
+            >
+              Logout
+            </p>
+          </button>
         </div>
       </nav>
     </div>
