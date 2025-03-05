@@ -1,49 +1,53 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 ora in millisecondi
+const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
 
 const SessionManager = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const checkSession = () => {
       const userData = sessionStorage.getItem("user");
       const user = userData ? JSON.parse(userData) : null;
 
-      // Se non ci sono dati dell'utente o i campi non sono validi, esci
       if (user === null) {
         navigate("/", { replace: true });
       }
 
+      // If user is not set or timestamp
+      if (!user || !user.timestamp || !user.lastActive) {
+        return;
+      }
+
       const currentTime = Date.now();
-      console.log("⏲️ Checking session - ", currentTime - user.timestamp);
-      // Verifica se la sessione è scaduta (1 ora)
+
+      // Verify if the session is expired
       if (currentTime - user.timestamp > SESSION_TIMEOUT) {
-        console.log("⏳ Session expired. Logging out automatically.");
         sessionStorage.removeItem("user");
         navigate("/", { replace: true });
         return;
       }
 
-      // Aggiorna il timestamp di ultima attività
+      // Update the timestamp with the current one
       user.lastActive = currentTime;
       sessionStorage.setItem("user", JSON.stringify(user));
     };
 
-    // Esegui il controllo della sessione subito al montaggio
+    // Does the check just on startup
     checkSession();
 
-    // Imposta un intervallo per controllare la sessione ogni 15 secondi
+    // Check the session every 15 seconds
     const intervalId = setInterval(checkSession, 15000);
 
-    // Pulizia dell'intervallo quando il componente viene smontato
+    // Clear the interval
     return () => {
       clearInterval(intervalId);
     };
-  }, [navigate]);
+  }, [navigate, location.pathname]);
 
-  return null; // Questo componente non deve renderizzare nulla
+  return null; // this component does not have to render anything
 };
 
 export default SessionManager;
