@@ -16,10 +16,10 @@ const SessionManager = () => {
         navigate("/", { replace: true });
       }
 
-      // If user is not set or timestamp
+      /* If user is not set or timestamp
       if (!user || !user.timestamp || !user.lastActive) {
-        return;
-      }
+        return;   // RIMOZIONE PERCHè BLOCCA TUTTO IL PROCESSO, NON FUNZIONA!!
+      }*/
 
       const currentTime = Date.now();
 

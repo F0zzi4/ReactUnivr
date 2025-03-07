@@ -91,7 +91,9 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           </div>
           <div
             className={`transition-all duration-300 ${
-              !open ? "w-0 opacity-0" : "flex flex-col items-start"
+              !open
+                ? "w-0 opacity-0 items-center justify-center"
+                : "flex flex-col items-start"
             }`}
           >
             <p className="text-xl font-semibold">
