@@ -15,7 +15,7 @@ import SessionManager from "./components/session/SessionManager";
 import Me from "./components/costumer/me/Me";
 import Goals from "./components/costumer/goals/Goals";
 import TrainingPlan from "./components/costumer/trainingplan/TrainingPlan";
-import PlanManagement from "./components/personaltrainer/planmanagement/PlanManagement";
+import PlanManagement from "./components/personaltrainer/plan-management/PlanManagement";
 import Customers from "./components/personaltrainer/customers/Customers";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
 
@@ -79,12 +79,12 @@ root.render(
         <Route element={<Layout />}>
           <Route path="/homepage" element={<HomePage />} />
 
-          {/* Customers Routes */}
+          {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
           <Route path="/customer/trainingPlan" element={<TrainingPlan />} />
 
-          {/* PersonalTrainers Routes */}
+          {/* PersonalTrainer Routes */}
           <Route
             path="/personalTrainer/planManagement"
             element={<PlanManagement />}

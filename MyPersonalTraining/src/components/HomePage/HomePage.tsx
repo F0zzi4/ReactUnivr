@@ -3,8 +3,8 @@ export default function HomePage() {
   const user = dataUser ? JSON.parse(dataUser) : null;
 
   return (
-    <div>
-      Benvenuto {user.Name} {user.Surname}!
+    <div className="text-center">
+      <b>Benvenuto {user.Name} {user.Surname}!</b>
     </div>
   );
 }

@@ -72,13 +72,13 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     <div className="flex">
       {/* Sidebar */}
       <nav
-        className={`fixed top-0 left-0 h-screen sidebar-background text-white shadow-xl transition-all duration-300 ${
+        className={`fixed top-0 left-0 h-screen sidebar-background sidebar-borders text-white shadow-xl transition-all duration-300 ${
           open ? "w-64" : "w-20"
         } flex flex-col overflow-hidden`}
       >
         {/* Header */}
         <div
-          className={`flex items-center border-b border-white ${
+          className={`flex items-center border-b border-white header-background ${
             open ? "justify-between px-3 py-4" : "justify-center"
           }`}
         >
@@ -115,7 +115,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index} className="p-0">
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-blue-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
@@ -141,7 +141,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-blue-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
@@ -165,7 +165,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         <div className="p-3 mt-4">
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-gradient-to-r from-red-600 to-red-800 hover:scale-105 transition-all text-white text-left ${
+            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-gradient-to-r from-red-500 to-red-700 hover:scale-105 transition-all text-white text-left ${
               !open ? "justify-center" : "p-3"
             }`}
           >
