@@ -1,82 +1,192 @@
-import {
-  Drawer,
-  List,
-  ListItemText,
-  Divider,
-  Toolbar,
-  Button,
-  CssBaseline,
-} from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SettingsIcon from "@mui/icons-material/Settings";
-import InfoIcon from "@mui/icons-material/Info";
-import './SideBar.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import { MdMenuOpen, MdOutlineDashboard, MdLogout } from "react-icons/md";
+import { FaUserCircle, FaUsers } from "react-icons/fa";
+import { AiOutlineFileText } from "react-icons/ai";
+import { GoGoal } from "react-icons/go";
+import { MdOutlineInbox, MdSend } from "react-icons/md";
+import "./SideBar.css";
 
-const drawerWidth = 240;
+// Sidebar Properties
+interface SidebarProps {
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-export default function SideBar() {
-  const dataUser = sessionStorage.getItem('user');
-  const user = dataUser ? JSON.parse(dataUser) : null;
+export default function Sidebar({ open, setOpen }: SidebarProps) {
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
+
+  const menuItems = [
+    {
+      icon: <MdOutlineInbox size={30} />,
+      label: "Inbox",
+      path: "/inbox",
+    },
+    {
+      icon: <MdSend size={30} />,
+      label: "Outbox",
+      path: "/outbox",
+    },
+  ];
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("user");
+    window.location.reload();
+  };
+
+  const menuItemsCostum =
+    user?.UserType === "Personal Trainer"
+      ? [
+          {
+            icon: <AiOutlineFileText size={30} />,
+            label: "Plan Management",
+            path: "/personalTrainer/planManagement",
+          },
+          {
+            icon: <FaUsers size={30} />,
+            label: "Customers",
+            path: "/personalTrainer/customers",
+          },
+          {
+            icon: <MdOutlineDashboard size={30} />,
+            label: "Exercises",
+            path: "/personalTrainer/exercises",
+          },
+        ]
+      : [
+          { icon: <FaUsers size={30} />, label: "Me", path: "/customer/me" },
+          {
+            icon: <AiOutlineFileText size={30} />,
+            label: "Training Plan",
+            path: "/customer/trainingPlan",
+          },
+          {
+            icon: <GoGoal size={30} />,
+            label: "Goals",
+            path: "/customer/goals",
+          },
+        ];
 
   return (
-    <>
-      <CssBaseline />
-      {/* Fixed Drawer */}
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: "border-box",
-          },
-        }}
+    <div className="flex">
+      {/* Sidebar */}
+      <nav
+        className={`fixed top-0 left-0 h-screen sidebar-background sidebar-borders text-white shadow-xl transition-all duration-300 ${
+          open ? "w-64" : "w-20"
+        } flex flex-col overflow-hidden`}
       >
-        <Toolbar />
-
-        {/* Navigation */}
-        <List>
-          <div className="sidebar-header">{user.Name} {user.Surname}<br></br>
-            <div className="sidebar-subheader">{user.UserType}</div>
+        {/* Header */}
+        <div
+          className={`flex items-center border-b border-white header-background ${
+            open ? "justify-between px-3 py-4" : "justify-center"
+          }`}
+        >
+          <div
+            className={`transition-all duration-300 ${
+              !open ? "w-0 opacity-0" : "flex items-center"
+            }`}
+          >
+            <FaUserCircle size={40} className="w-8 h-8" />
           </div>
-          <Button
-            fullWidth
-            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          <div
+            className={`transition-all duration-300 ${
+              !open
+                ? "w-0 opacity-0 items-center justify-center"
+                : "flex flex-col items-start"
+            }`}
           >
-            <HomeIcon sx={{ marginRight: "8px" }} />
-            <ListItemText primary="Home" />
-          </Button>
-          <Button
-            fullWidth
-            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+            <p className="text-xl font-semibold">
+              {user ? `${user.Name} ${user.Surname}` : "User"}
+            </p>
+            <span className="text-xs">{user?.UserType}</span>
+          </div>
+          {/* Always visible and clickable menu button */}
+          <div
+            className="flex items-center justify-center cursor-pointer hover:text-gray-300 hover:scale-110 transition-all z-50"
+            onClick={() => setOpen(!open)}
           >
-            <AccountCircleIcon sx={{ marginRight: "8px" }} />
-            <ListItemText primary="Profilo" />
-          </Button>
-        </List>
+            <MdMenuOpen size={35} />
+          </div>
+        </div>
 
-        <Divider />
+        {/* Menu items */}
+        <div className="flex-1 overflow-auto">
+          <ul className="p-3">
+            {menuItems.map((item, index) => (
+              <li key={index} className="p-0">
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                    !open ? "justify-center" : "p-3"
+                  }`}
+                >
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    {item.icon}
+                  </div>
+                  <p
+                    className={`transition-all duration-300 ${
+                      !open ? "hidden" : "block text-lg"
+                    }`}
+                  >
+                    {item.label}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
 
-        {/* Settings */}
-        <List>
-          <Button
-            fullWidth
-            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
+          <div className="border-t border-white my-2"></div>
+
+          <ul className="p-3">
+            {menuItemsCostum.map((item, index) => (
+              <li key={index}>
+                <Link
+                  to={item.path}
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                    !open ? "justify-center" : "p-3"
+                  }`}
+                >
+                  <div className="w-8 h-8 flex items-center justify-center">
+                    {item.icon}
+                  </div>
+                  <p
+                    className={`transition-all duration-300 ${
+                      !open ? "hidden" : "block text-lg"
+                    }`}
+                  >
+                    {item.label}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Logout Button */}
+        <div className="p-3 mt-4">
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-gradient-to-r from-red-500 to-red-700 hover:scale-105 transition-all text-white text-left ${
+              !open ? "justify-center" : "p-3"
+            }`}
           >
-            <SettingsIcon sx={{ marginRight: "8px" }} />
-            <ListItemText primary="Impostazioni" />
-          </Button>
-          <Button
-            fullWidth
-            sx={{ display: "flex", alignItems: "center", padding: "8px 16px" }}
-          >
-            <InfoIcon sx={{ marginRight: "8px" }} />
-            <ListItemText primary="Informazioni" />
-          </Button>
-        </List>
-      </Drawer>
-    </>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <MdLogout
+                size={30}
+                className="w-8 h-8 flex items-center justify-center"
+              />
+            </div>
+            <p
+              className={`transition-all duration-300 ${
+                !open ? "hidden" : "block text-lg"
+              }`}
+            >
+              Logout
+            </p>
+          </button>
+        </div>
+      </nav>
+    </div>
   );
 }

@@ -1,11 +1,15 @@
 =======
+
 # My Personal Training
+
 React project to manage personal coaching for patients
 
 # Version
+
 - **node**: ^22.12.0
 
 # Depencences
+
 ```bash
 # React Router
 npm i react-router
@@ -22,4 +26,20 @@ npmm install @emotion/react
 # Firebase
 npm install firebase
 npm install -g firebase-tools #firebase hosting
+
+# Cookie
+npm i --save-dev @types/js-cookie7
+
+# SideBar
+npm install react-pro-sidebar
+
+# Tailwind
+npm install -D tailwindcss postcss autoprefixer
+
+#Icon
+npm install react-icons
+
+# UUid
+npm install uuid
+
 ```
