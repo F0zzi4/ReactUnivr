@@ -1,23 +1,33 @@
 import { useState } from "react";
+import FirestoreInterface from "../../firebase/firestore/firestore-interface";
+
+interface FormData {
+  Name: string;
+  Surname: string;
+  DateOfBirth: string;
+  Height: number;
+  Weight: number;
+}
 
 export default function Me() {
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     Name: user?.Name || "",
     Surname: user?.Surname || "",
     DateOfBirth: user?.DateOfBirth || "",
-    Height: user?.Height || "",
-    Weight: user?.Weight || "",
+    Height: user?.Height || 0,
+    Weight: user?.Weight || 0,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log();
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "Height" || name === "Weight" ? Number(value) : value,
     }));
   };
 
@@ -25,6 +35,7 @@ export default function Me() {
     if (user) {
       const updatedUser = { ...user, ...formData };
       sessionStorage.setItem("user", JSON.stringify(updatedUser));
+      FirestoreInterface.updateUser(updatedUser);
     }
     setIsEditing(false);
   };
