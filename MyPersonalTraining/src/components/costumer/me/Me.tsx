@@ -1,16 +1,16 @@
 import { useState } from "react";
 
 export default function Me() {
+  const [isEditing, setIsEditing] = useState(false);
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    Name: user?.Name || "",
-    Surname: user?.Surname || "",
-    DateOfBirth: user?.DateOfBirth || "",
-    Height: user?.Height || "",
-    Weight: user?.Weight || "",
+    Name: user?.Name,
+    Surname: user?.Surname,
+    DateOfBirth: user?.DateOfBirth,
+    Height: user?.Height,
+    Weight: user?.Weight,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,14 +23,13 @@ export default function Me() {
 
   const saveChanges = () => {
     if (user) {
-      const updatedUser = { ...user, ...formData };
-      sessionStorage.setItem("user", JSON.stringify(updatedUser));
+      //const updatedUser = { ...formData };
     }
     setIsEditing(false);
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gray-100">
+    <div className="h-screen w-full flex items-center justify-center">
       <form className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
         <h2 className="text-3xl font-bold mb-8 text-center">Personal Info</h2>
 

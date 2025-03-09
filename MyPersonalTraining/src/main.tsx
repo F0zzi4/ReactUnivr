@@ -25,7 +25,7 @@ const Layout = () => {
   const [open, setOpen] = useState(true);
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
-  console.log(user);
+
   // If path is "/", do not show the sidebar
   const showSidebar = location.pathname !== "/";
 
