@@ -5,6 +5,8 @@ import { FaUserCircle, FaUsers } from "react-icons/fa";
 import { AiOutlineFileText } from "react-icons/ai";
 import { GoGoal } from "react-icons/go";
 import { MdOutlineInbox, MdSend } from "react-icons/md";
+import { signOut } from "firebase/auth";
+import { Auth } from "../firebase/authentication/firebase-appconfig";
 import "./SideBar.css";
 
 // Sidebar Properties
@@ -17,7 +19,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
-  const menuItems = [
+  const menuItemsCommon = [
     {
       icon: <MdOutlineInbox size={30} />,
       label: "Inbox",
@@ -30,7 +32,10 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
     },
   ];
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // firebase logout
+    await signOut(Auth);
+    // session quit
     sessionStorage.removeItem("user");
     window.location.reload();
   };
@@ -59,7 +64,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           {
             icon: <AiOutlineFileText size={30} />,
             label: "Training Plan",
-            path: "/customer/trainingPlan",
+            path: "/customer/trainingPlan"
           },
           {
             icon: <GoGoal size={30} />,
@@ -113,7 +118,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         {/* Menu items */}
         <div className="flex-1 overflow-auto">
           <ul className="p-3">
-            {menuItems.map((item, index) => (
+            {menuItemsCommon.map((item, index) => (
               <li key={index} className="p-0">
                 <Link
                   to={item.path}

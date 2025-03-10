@@ -1,14 +1,5 @@
-// FirestoreInterface.ts
-import { Firestore } from "../authentication/firebase-appconfig"; // Verifica che sia corretto il percorso
-import {
-  collection,
-  query,
-  where,
-  getDocs,
-  getDoc,
-  updateDoc,
-  doc,
-} from "firebase/firestore";
+import { Firestore } from "../authentication/firebase-appconfig";
+import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
 import FirebaseObject from "./data-model/FirebaseObject";
 
 const FirestoreInterface = {
@@ -37,23 +28,38 @@ const FirestoreInterface = {
     }
   },
 
-  getAllCostumers: async (): Promise<FirebaseObject[]> => {
+  findUserById: async (id: string): Promise<FirebaseObject | null> => {
     try {
-      const q = query(
-        collection(Firestore, "users"),
-        where("UserType", "==", "Customer")
-      );
-      const querySnapshot = await getDocs(q);
-
-      const costumers: FirebaseObject[] = [];
-      querySnapshot.forEach((doc) => {
-        costumers.push({ id: doc.id, ...doc.data() });
-      });
-
-      return costumers;
+      const userDocRef = doc(Firestore, "users", id);
+      const userDoc = await getDoc(userDocRef);
+  
+      if (userDoc.exists()) {
+        const user: FirebaseObject = { id: userDoc.id, ...userDoc.data() };
+        return user;
+      } else {
+        console.log("Nessun utente trovato con questo ID.");
+        return null;
+      }
     } catch (error) {
-      console.error("Errore nel recupero dei clienti:", error);
-      return [];
+      console.error("Errore nella ricerca:", error);
+      return null;
+    }
+  },
+
+  getAllCustomersByPersonalTrainer: async (PersonalTrainerId: string): Promise<FirebaseObject[]> => { 
+    try {
+        const customersRef = collection(Firestore, `users/${PersonalTrainerId}/Customers`);
+        const querySnapshot = await getDocs(customersRef);
+
+        const customers: FirebaseObject[] = [];
+        querySnapshot.forEach((doc) => {
+            customers.push({ id: doc.id, ...doc.data() });
+        });
+
+        return customers;
+    } catch (error) {
+        console.error("Errore nel recupero dei clienti:", error);
+        return [];
     }
   },
 

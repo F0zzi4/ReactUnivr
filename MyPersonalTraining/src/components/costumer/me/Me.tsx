@@ -10,6 +10,7 @@ interface FormData {
 }
 
 export default function Me() {
+  const [isEditing, setIsEditing] = useState(false);
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
@@ -41,7 +42,7 @@ export default function Me() {
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gray-100">
+    <div className="h-screen w-full flex items-center justify-center">
       <form className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
         <h2 className="text-3xl font-bold mb-8 text-center">Personal Info</h2>
 

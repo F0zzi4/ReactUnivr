@@ -19,77 +19,94 @@ import { useNavigate } from "react-router-dom";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 
-const CLIENTI_PER_PAGINA = 10;
+const CUSTOMERS_PER_PAGE = 10;
 
-function ClientList() {
-  const [pagina, setPagina] = useState<number>(0);
-  const [selezionati, setSelezionati] = useState<string[]>([]);
-  const [costumers, setCostumers] = useState<FirebaseObject[]>([]); // Cambiato da clienti a costumers
+function Customers() {
+  const [page, setPage] = useState<number>(0);
+  const [selectedElements, setSelectedElements] = useState<string[]>([]);
+  const [customers, setCustomers] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const navigate = useNavigate();
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
 
-  // Fetch dei clienti
+  // Fetch on customers
   useEffect(() => {
     const fetchData = async () => {
-      const users = await FirestoreInterface.getAllCostumers();
-      setCostumers(users); // Imposta lo stato con la lista di clienti
+      if (user?.id) {
+        const firebaseCustomers = await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
+        const customerPromises = firebaseCustomers.map(async (firebaseCustomer) => {
+          const customer = await FirestoreInterface.findUserById(firebaseCustomer.id);
+          return customer;
+        });
+  
+        // wait all the promises are solved
+        const customers = await Promise.all(customerPromises);
+  
+        // filter the result set where customers are not null
+        const validCustomers = customers.filter((customer) => customer !== null);
+  
+        setCustomers(validCustomers as FirebaseObject[]);
+        console.log(validCustomers);
+      }
     };
 
-    fetchData(); // Chiama la funzione asincrona all'interno di useEffect
-  }, []); // L'array vuoto significa che questo effetto viene eseguito solo una volta al montaggio del componente
+    fetchData(); // Update the customers
+  }, []);
 
-  // Filtra i clienti in base alla ricerca
-  const clientiFiltrati: FirebaseObject[] = costumers.filter(
-    (cliente: FirebaseObject) =>
-      `${cliente.Name} ${cliente.Surname}`
+  // Retrieve customers based on a filter criteria
+  const filteredCostumers: FirebaseObject[] = customers.filter(
+    (customer: FirebaseObject) =>
+      `${customer.Name} ${customer.Surname}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
   );
 
-  const startIndex: number = pagina * CLIENTI_PER_PAGINA;
-  const clientiVisualizzati: FirebaseObject[] = clientiFiltrati.slice(
+  const startIndex: number = page * CUSTOMERS_PER_PAGE;
+  const shownCustomers: FirebaseObject[] = filteredCostumers.slice(
     startIndex,
-    startIndex + CLIENTI_PER_PAGINA
+    startIndex + CUSTOMERS_PER_PAGE
   );
 
-  // Cambio pagina
+  // Change next page
   const handleNextPage = () => {
-    if ((pagina + 1) * CLIENTI_PER_PAGINA < clientiFiltrati.length) {
-      setPagina(pagina + 1);
+    if ((page + 1) * CUSTOMERS_PER_PAGE < filteredCostumers.length) {
+      setPage(page + 1);
     }
   };
 
+  // Change previous page
   const handlePrevPage = () => {
-    if (pagina > 0) setPagina(pagina - 1);
+    if (page > 0) setPage(page - 1);
   };
 
-  // Selezione/deselezione clienti
-  const handleToggle = (cliente: FirebaseObject) => {
-    setSelezionati((prev: string[]) =>
-      prev.includes(cliente.id)
-        ? prev.filter((c: string) => c !== cliente.id)
-        : [...prev, cliente.id]
+  // Select/Deselect customers
+  const handleToggle = (customer: FirebaseObject) => {
+    setSelectedElements((prev: string[]) =>
+      prev.includes(customer.id)
+        ? prev.filter((c: string) => c !== customer.id)
+        : [...prev, customer.id]
     );
   };
 
-  // Rimozione clienti selezionati
+  // Remove customers
   const handleRemoveSelected = () => {
-    setCostumers((prev: FirebaseObject[]) =>
+    setCustomers((prev: FirebaseObject[]) =>
       prev.filter(
-        (cliente: FirebaseObject) => !selezionati.includes(cliente.id)
+        (customer: FirebaseObject) => !selectedElements.includes(customer.id)
       )
     );
-    setSelezionati([]); // Reset selezione
+    setSelectedElements([]); // Reset of selected customers
   };
 
-  // Aggiunta di un nuovo cliente (questo va modificato per usare Firestore se vuoi aggiungere veri dati)
+  // Add a customer
   const handleAddClient = () => {
-    const nuovoCliente = {
-      id: `cliente_${costumers.length + 1}`,
-      Name: `Cliente ${costumers.length + 1}`,
+    const newCustomer = {
+      id: `cliente_${customers.length + 1}`,
+      Name: `Cliente ${customers.length + 1}`,
       Surname: "Nome",
     };
-    setCostumers((prev) => [...prev, nuovoCliente]);
+    setCustomers((prev) => [...prev, newCustomer]);
   };
 
   return (
@@ -107,7 +124,6 @@ function ClientList() {
           elevation={6}
           sx={{ p: 3, borderRadius: 5, bgcolor: "#fff", width: "100%" }}
         >
-          {/* Barra superiore con ricerca e pulsanti */}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -126,7 +142,13 @@ function ClientList() {
                 color="success"
                 startIcon={<Add />}
                 onClick={handleAddClient}
-                sx={{ fontSize: "1rem", mr: 1 }}
+                sx={{
+                  fontSize: "1rem",
+                  mr: 1,
+                  '&:hover': {
+                    backgroundColor: 'rgb(22, 170, 42)',
+                  },
+                }}
               >
                 Aggiungi
               </Button>
@@ -135,7 +157,7 @@ function ClientList() {
                 color="error"
                 startIcon={<Delete />}
                 onClick={handleRemoveSelected}
-                disabled={selezionati.length === 0}
+                disabled={selectedElements.length === 0}
                 sx={{ fontSize: "1rem" }}
               >
                 Rimuovi
@@ -143,7 +165,7 @@ function ClientList() {
             </Box>
           </Box>
 
-          {/* Barra di ricerca */}
+          {/* Search bar */}
           <TextField
             fullWidth
             label="Cerca cliente..."
@@ -153,7 +175,7 @@ function ClientList() {
             sx={{ mb: 3, bgcolor: "white", borderRadius: 2 }}
           />
 
-          {/* Lista clienti */}
+          {/* Customer list */}
           <Paper
             elevation={2}
             sx={{
@@ -164,15 +186,15 @@ function ClientList() {
             }}
           >
             <List>
-              {clientiVisualizzati.length > 0 ? (
-                clientiVisualizzati.map((cliente) => (
-                  <Fade in key={cliente.id} timeout={300}>
+              {shownCustomers.length > 0 ? (
+                shownCustomers.map((customer) => (
+                  <Fade in key={customer.id} timeout={300}>
                     <ListItem
                       secondaryAction={
                         <IconButton
                           edge="end"
                           onClick={() =>
-                            navigate(`/personalTrainer/customers/${cliente.id}`)
+                            navigate(`/personalTrainer/customers/${customer.id}`)
                           }
                         >
                           <ArrowForwardIos />
@@ -180,19 +202,19 @@ function ClientList() {
                       }
                       disablePadding
                       sx={{
-                        transition: "transform 0.3s ease, background 0.3s ease", // Transizione per effetto hover
+                        transition: "transform 0.3s ease, background 0.3s ease",
                         "&:hover": {
-                          transform: "scale(1.02)", // Ingrandisce leggermente l'elemento
-                          backgroundColor: "#f4f4f4", // Cambia colore di sfondo al passaggio del mouse
+                          transform: "scale(1.02)",
+                          backgroundColor: "#f4f4f4",
                         },
                         borderRadius: 2,
                         p: 1,
                       }}
                     >
-                      <ListItemButton onClick={() => handleToggle(cliente)}>
-                        <Checkbox checked={selezionati.includes(cliente.id)} />
+                      <ListItemButton onClick={() => handleToggle(customer)}>
+                        <Checkbox checked={selectedElements.includes(customer.id)} />
                         <ListItemText
-                          primary={`${cliente.Name} ${cliente.Surname}`} // Visualizza Nome e Cognome
+                          primary={`${customer.Name} ${customer.Surname}`}
                           sx={{ fontSize: "1.2rem", fontWeight: "bold" }}
                         />
                       </ListItemButton>
@@ -207,13 +229,13 @@ function ClientList() {
             </List>
           </Paper>
 
-          {/* Paginazione */}
+          {/* Pagination */}
           <Box display="flex" justifyContent="center" mt={3} gap={2}>
             <Button
               variant="contained"
               color="primary"
               onClick={handlePrevPage}
-              disabled={pagina === 0}
+              disabled={page === 0}
               sx={{ fontSize: "1rem", px: 3 }}
             >
               Indietro
@@ -223,7 +245,7 @@ function ClientList() {
               color="secondary"
               onClick={handleNextPage}
               disabled={
-                startIndex + CLIENTI_PER_PAGINA >= clientiFiltrati.length
+                startIndex + CUSTOMERS_PER_PAGE >= filteredCostumers.length
               }
               sx={{ fontSize: "1rem", px: 3 }}
             >
@@ -236,4 +258,4 @@ function ClientList() {
   );
 }
 
-export default ClientList;
+export default Customers;
