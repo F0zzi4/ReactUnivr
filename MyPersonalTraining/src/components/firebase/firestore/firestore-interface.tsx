@@ -62,6 +62,31 @@ const FirestoreInterface = {
         return [];
     }
   },
+
+  updateUser: async (user: FirebaseObject): Promise<void> => {
+    try {
+      const userRef = doc(Firestore, "users", user.id); // Create a reference to the specific user document
+
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        // Update the user with the new data
+        await updateDoc(userRef, {
+          ...userData, // Keep existing data
+          Weight: user.Weight,
+          Name: user.Name,
+          Surname: user.Surname,
+          DateOfBirth: user.DateOfBirth,
+          Height: user.Height,
+        });
+        console.log("User data updated successfully!");
+      } else {
+        console.log("User document does not exist!");
+      }
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  },
 };
 
 export default FirestoreInterface;
