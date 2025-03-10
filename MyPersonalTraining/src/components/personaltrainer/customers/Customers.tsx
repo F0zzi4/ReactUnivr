@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Delete, ArrowForwardIos, Add } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 
@@ -34,18 +34,25 @@ function Customers() {
   useEffect(() => {
     const fetchData = async () => {
       if (user?.id) {
-        const firebaseCustomers = await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
-        const customerPromises = firebaseCustomers.map(async (firebaseCustomer) => {
-          const customer = await FirestoreInterface.findUserById(firebaseCustomer.id);
-          return customer;
-        });
-  
+        const firebaseCustomers =
+          await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
+        const customerPromises = firebaseCustomers.map(
+          async (firebaseCustomer) => {
+            const customer = await FirestoreInterface.findUserById(
+              firebaseCustomer.id
+            );
+            return customer;
+          }
+        );
+
         // wait all the promises are solved
         const customers = await Promise.all(customerPromises);
-  
+
         // filter the result set where customers are not null
-        const validCustomers = customers.filter((customer) => customer !== null);
-  
+        const validCustomers = customers.filter(
+          (customer) => customer !== null
+        );
+
         setCustomers(validCustomers as FirebaseObject[]);
         console.log(validCustomers);
       }
@@ -99,16 +106,6 @@ function Customers() {
     setSelectedElements([]); // Reset of selected customers
   };
 
-  // Add a customer
-  const handleAddClient = () => {
-    const newCustomer = {
-      id: `cliente_${customers.length + 1}`,
-      Name: `Cliente ${customers.length + 1}`,
-      Surname: "Nome",
-    };
-    setCustomers((prev) => [...prev, newCustomer]);
-  };
-
   return (
     <Box
       sx={{
@@ -137,21 +134,22 @@ function Customers() {
               Lista Clienti
             </Typography>
             <Box>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Add />}
-                onClick={handleAddClient}
-                sx={{
-                  fontSize: "1rem",
-                  mr: 1,
-                  '&:hover': {
-                    backgroundColor: 'rgb(22, 170, 42)',
-                  },
-                }}
-              >
-                Aggiungi
-              </Button>
+              <Link to="/personalTrainer/customers/addCustomer">
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<Add />}
+                  sx={{
+                    fontSize: "1rem",
+                    mr: 1,
+                    "&:hover": {
+                      backgroundColor: "rgb(22, 170, 42)",
+                    },
+                  }}
+                >
+                  Aggiungi
+                </Button>
+              </Link>
               <Button
                 variant="contained"
                 color="error"
@@ -194,7 +192,9 @@ function Customers() {
                         <IconButton
                           edge="end"
                           onClick={() =>
-                            navigate(`/personalTrainer/customers/${customer.id}`)
+                            navigate(
+                              `/personalTrainer/customers/${customer.id}`
+                            )
                           }
                         >
                           <ArrowForwardIos />
@@ -212,7 +212,9 @@ function Customers() {
                       }}
                     >
                       <ListItemButton onClick={() => handleToggle(customer)}>
-                        <Checkbox checked={selectedElements.includes(customer.id)} />
+                        <Checkbox
+                          checked={selectedElements.includes(customer.id)}
+                        />
                         <ListItemText
                           primary={`${customer.Name} ${customer.Surname}`}
                           sx={{ fontSize: "1.2rem", fontWeight: "bold" }}

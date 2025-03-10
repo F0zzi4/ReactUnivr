@@ -1,5 +1,15 @@
-import { Firestore } from "../authentication/firebase-appconfig";
-import { collection, query, where, getDocs, doc, getDoc } from "firebase/firestore";
+import { Firestore, Auth } from "../authentication/firebase-appconfig";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  updateDoc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
 
 const FirestoreInterface = {
@@ -32,7 +42,7 @@ const FirestoreInterface = {
     try {
       const userDocRef = doc(Firestore, "users", id);
       const userDoc = await getDoc(userDocRef);
-  
+
       if (userDoc.exists()) {
         const user: FirebaseObject = { id: userDoc.id, ...userDoc.data() };
         return user;
@@ -46,20 +56,25 @@ const FirestoreInterface = {
     }
   },
 
-  getAllCustomersByPersonalTrainer: async (PersonalTrainerId: string): Promise<FirebaseObject[]> => { 
+  getAllCustomersByPersonalTrainer: async (
+    PersonalTrainerId: string
+  ): Promise<FirebaseObject[]> => {
     try {
-        const customersRef = collection(Firestore, `users/${PersonalTrainerId}/Customers`);
-        const querySnapshot = await getDocs(customersRef);
+      const customersRef = collection(
+        Firestore,
+        `users/${PersonalTrainerId}/Customers`
+      );
+      const querySnapshot = await getDocs(customersRef);
 
-        const customers: FirebaseObject[] = [];
-        querySnapshot.forEach((doc) => {
-            customers.push({ id: doc.id, ...doc.data() });
-        });
+      const customers: FirebaseObject[] = [];
+      querySnapshot.forEach((doc) => {
+        customers.push({ id: doc.id, ...doc.data() });
+      });
 
-        return customers;
+      return customers;
     } catch (error) {
-        console.error("Errore nel recupero dei clienti:", error);
-        return [];
+      console.error("Errore nel recupero dei clienti:", error);
+      return [];
     }
   },
 
@@ -85,6 +100,57 @@ const FirestoreInterface = {
       }
     } catch (error) {
       console.error("Error updating user data:", error);
+    }
+  },
+
+  createCustomer: async (
+    customer: FirebaseObject,
+    password: string
+  ): Promise<void> => {
+    try {
+      // Check if a user with the same email already exists in Firestore
+      const existingUser = await FirestoreInterface.findUserByEmail(
+        customer.Email
+      );
+
+      // Log the existing user (for debugging)
+      console.log("Existing user:", existingUser);
+
+      //If a user with this email already exists, throw an error
+      if (existingUser != null) {
+        console.log("A user with this email already exists:", customer.Email);
+        throw new Error("A user with this email already exists.");
+      }
+
+      // Create the user in Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(
+        Auth,
+        customer.Email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Log the created user (for debugging)
+      console.log("User created:", user);
+      console.log("User ID:", user.uid);
+
+      // Get a reference to the Firestore "users" collection
+      const usersCollectionRef = collection(Firestore, "users");
+      // Create a document reference using the customer's ID.  Ensure customer.id is a unique identifier!
+      const userRef = doc(usersCollectionRef, customer.id);
+
+      // Add the user details to Firestore
+      await setDoc(userRef, {
+        ...customer, // Include all customer data
+      });
+
+      // Log success message
+      console.log("Customer added to Firestore!");
+    } catch (error: any) {
+      // Handle errors
+      console.error("Error creating customer:", error);
+      // Re-throw the error to be handled by calling function.  Consider more specific error handling here.
+      throw new Error(error.message);
     }
   },
 };
