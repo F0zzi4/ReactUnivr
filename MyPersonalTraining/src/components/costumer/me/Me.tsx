@@ -14,7 +14,6 @@ export default function Me() {
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
-  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     Name: user?.Name || "",
     Surname: user?.Surname || "",

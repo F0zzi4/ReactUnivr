@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 // This web app Firebase configuration
@@ -9,7 +9,7 @@ const firebaseConfig = {
   projectId: "mypersonaltraining-4e13c",
   storageBucket: "mypersonaltraining-4e13c.firebasestorage.app",
   messagingSenderId: "506702528063",
-  appId: "1:506702528063:web:d351d52bc42b2e8ae3428a"
+  appId: "1:506702528063:web:d351d52bc42b2e8ae3428a",
 };
 
 // Initialize Firebase App
@@ -19,4 +19,4 @@ const Auth = getAuth(FirebaseApp);
 // Initialize Firestore service
 const Firestore = getFirestore(FirebaseApp);
 
-export {Auth, Firestore};
+export { Auth, Firestore };
