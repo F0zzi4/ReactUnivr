@@ -15,9 +15,10 @@ import {
   TextField,
 } from "@mui/material";
 import { Delete, ArrowForwardIos, Add } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
+import AddCustomer from "../addcustomer/AddCustomer";
 
 const CUSTOMERS_PER_PAGE = 10;
 
@@ -26,7 +27,9 @@ function Customers() {
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [customers, setCustomers] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
@@ -116,7 +119,20 @@ function Customers() {
         p: 2,
       }}
     >
-      <Container maxWidth="md">
+      {isModalOpen && (
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0, 0, 0, 0.5)", // background darker to hide the background content when open the modal form (AddCustomer)
+            zIndex: 10, // it has a z index lower than the box overlayed
+          }}
+        />
+      )}
+      <Container maxWidth="md" className="relative">
         <Paper
           elevation={6}
           sx={{ p: 3, borderRadius: 5, bgcolor: "#fff", width: "100%" }}
@@ -131,34 +147,34 @@ function Customers() {
               variant="h3"
               sx={{ fontWeight: "bold", fontSize: "2rem" }}
             >
-              Lista Clienti
+              Customer List
             </Typography>
             <Box>
-              <Link to="/personalTrainer/customers/addCustomer">
-                <Button
-                  variant="contained"
-                  color="success"
-                  startIcon={<Add />}
-                  sx={{
-                    fontSize: "1rem",
-                    mr: 1,
-                    "&:hover": {
-                      backgroundColor: "rgb(22, 170, 42)",
-                    },
-                  }}
-                >
-                  Aggiungi
-                </Button>
-              </Link>
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<Add />}
+                onClick={() => setIsModalOpen(true)}
+                sx={{
+                  fontSize: "1rem",
+                  mr: 1,
+                  "&:hover": {
+                    backgroundColor: "rgb(22, 170, 42)",
+                  },
+                  textTransform: "none"
+                }}
+              >
+                Add
+              </Button>
               <Button
                 variant="contained"
                 color="error"
                 startIcon={<Delete />}
                 onClick={handleRemoveSelected}
                 disabled={selectedElements.length === 0}
-                sx={{ fontSize: "1rem" }}
+                sx={{ fontSize: "1rem", textTransform: "none" }}
               >
-                Rimuovi
+                Remove
               </Button>
             </Box>
           </Box>
@@ -166,7 +182,7 @@ function Customers() {
           {/* Search bar */}
           <TextField
             fullWidth
-            label="Cerca cliente..."
+            label="Search customer..."
             variant="outlined"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -225,22 +241,21 @@ function Customers() {
                 ))
               ) : (
                 <Typography align="center" sx={{ py: 2, fontSize: "1.2rem" }}>
-                  Nessun cliente trovato
+                  No customer found
                 </Typography>
               )}
             </List>
           </Paper>
 
-          {/* Pagination */}
           <Box display="flex" justifyContent="center" mt={3} gap={2}>
             <Button
               variant="contained"
               color="primary"
               onClick={handlePrevPage}
               disabled={page === 0}
-              sx={{ fontSize: "1rem", px: 3 }}
+              sx={{ fontSize: "1rem", px: 3, textTransform: "none" }}
             >
-              Indietro
+              Back
             </Button>
             <Button
               variant="contained"
@@ -249,12 +264,24 @@ function Customers() {
               disabled={
                 startIndex + CUSTOMERS_PER_PAGE >= filteredCostumers.length
               }
-              sx={{ fontSize: "1rem", px: 3 }}
+              sx={{ fontSize: "1rem", px: 3, textTransform: "none" }}
             >
-              Avanti
+              Next
             </Button>
           </Box>
         </Paper>
+        {isModalOpen && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              zIndex: 11, // it has a z index higher than the box that wrap all the content before
+            }}
+          >
+            <AddCustomer onClose={() => setIsModalOpen(false)} personalTrainerId={user.id} />
+          </Box>
+        )}
       </Container>
     </Box>
   );

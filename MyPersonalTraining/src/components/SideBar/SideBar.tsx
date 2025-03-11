@@ -46,7 +46,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           {
             icon: <AiOutlineFileText size={30} />,
             label: "Plan Management",
-            path: "/personalTrainer/planManagement",
+            path: "/personalTrainer/plan-management",
           },
           {
             icon: <FaUsers size={30} />,
@@ -172,7 +172,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         <div className="p-3 mt-4">
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-gradient-to-r from-red-500 to-red-700 hover:scale-105 transition-all text-white text-left ${
+            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-red-500 hover:scale-105 hover:bg-red-600 transition-all text-white text-left ${
               !open ? "justify-center" : "p-3"
             }`}
           >

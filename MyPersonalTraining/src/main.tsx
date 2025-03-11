@@ -17,7 +17,6 @@ import Goals from "./components/costumer/goals/Goals";
 import TrainingPlan from "./components/costumer/trainingplan/TrainingPlan";
 import PlanManagement from "./components/personaltrainer/plan-management/PlanManagement";
 import Customers from "./components/personaltrainer/customers/Customers";
-import AddCustomer from "./components/personaltrainer/addcustomer/AddCustomer";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
 
 // Wrapper to manage conditional Sidebar
@@ -87,14 +86,10 @@ root.render(
 
           {/* PersonalTrainer Routes */}
           <Route
-            path="/personalTrainer/planManagement"
+            path="/personalTrainer/plan-management"
             element={<PlanManagement />}
           />
           <Route path="/personalTrainer/customers" element={<Customers />} />
-          <Route
-            path="/personalTrainer/customers/addCustomer"
-            element={<AddCustomer />}
-          />
           <Route path="/personalTrainer/exercises" element={<Exercises />} />
         </Route>
       </Routes>

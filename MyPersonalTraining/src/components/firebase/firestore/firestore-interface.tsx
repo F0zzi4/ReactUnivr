@@ -62,7 +62,7 @@ const FirestoreInterface = {
     try {
       const customersRef = collection(
         Firestore,
-        `users/${PersonalTrainerId}/Customers`
+        `users/${PersonalTrainerId}/customers`
       );
       const querySnapshot = await getDocs(customersRef);
 
@@ -105,51 +105,31 @@ const FirestoreInterface = {
 
   createCustomer: async (
     customer: FirebaseObject,
-    password: string
+    password: string,
+    personalTrainerId: string
   ): Promise<void> => {
     try {
-      // Check if a user with the same email already exists in Firestore
-      const existingUser = await FirestoreInterface.findUserByEmail(
-        customer.Email
-      );
-
-      // Log the existing user (for debugging)
-      console.log("Existing user:", existingUser);
-
-      //If a user with this email already exists, throw an error
-      if (existingUser != null) {
-        console.log("A user with this email already exists:", customer.Email);
+      // Check if the user already exists
+      const existingUser = await FirestoreInterface.findUserByEmail(customer.Email);
+  
+      if (existingUser) {
+        console.error("A user with this email already exists:", customer.Email);
         throw new Error("A user with this email already exists.");
       }
-
-      // Create the user in Firebase Authentication
-      const userCredential = await createUserWithEmailAndPassword(
-        Auth,
-        customer.Email,
-        password
-      );
-      const user = userCredential.user;
-
-      // Log the created user (for debugging)
-      console.log("User created:", user);
-      console.log("User ID:", user.uid);
-
-      // Get a reference to the Firestore "users" collection
-      const usersCollectionRef = collection(Firestore, "users");
-      // Create a document reference using the customer's ID.  Ensure customer.id is a unique identifier!
-      const userRef = doc(usersCollectionRef, customer.id);
-
-      // Add the user details to Firestore
-      await setDoc(userRef, {
-        ...customer, // Include all customer data
-      });
-
-      // Log success message
-      console.log("Customer added to Firestore!");
+  
+      // Creation of the user in Firebase Authentication
+      await createUserWithEmailAndPassword(Auth, customer.Email, password);
+  
+      // Creation the doc in the main collection of users
+      const { id, ...customerWithoutId } = customer;
+      const userRef = doc(Firestore, `users/${customer.id}`);
+      await setDoc(userRef, { ...customerWithoutId});
+  
+      // Creation the doc in the struct "users/{personalTrainerId}/customers/{customerId}"
+      const customerRef = doc(Firestore, `users/${personalTrainerId}/customers/${customer.id}`);
+      await setDoc(customerRef, { });  // Set no fields in the doc reference 
     } catch (error: any) {
-      // Handle errors
-      console.error("Error creating customer:", error);
-      // Re-throw the error to be handled by calling function.  Consider more specific error handling here.
+      console.error("Error creating customer:", error.message);
       throw new Error(error.message);
     }
   },
