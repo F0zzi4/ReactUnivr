@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
-import { useNavigate } from "react-router";
+import { IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 interface dataForm {
   id: string;
@@ -10,10 +11,14 @@ interface dataForm {
   Height: number;
   Weight: number;
   Email: string;
-  NickName: string;
 }
 
-export default function CreateUser() {
+interface AddCustomerProps {
+  onClose: () => void;    // function used on closing window
+  personalTrainerId : string
+}
+
+export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerProps) {
   const [formData, setFormData] = useState<dataForm>({
     id: "",
     Name: "",
@@ -22,11 +27,9 @@ export default function CreateUser() {
     Height: 0,
     Weight: 0,
     Email: "",
-    NickName: "",
   });
 
   const [password, setPassword] = useState<string>("");
-  const navigate = useNavigate();
   const [error, setError] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +40,9 @@ export default function CreateUser() {
     }));
   };
 
-  const createUser = () => {
+  const createCustomer = () => {
     if (!formData.Name || !formData.Surname || !formData.Email || !password) {
-      setError("Please fill in all required fields.");
+      setError("Please fill all required fields.");
       return;
     }
     if (password.length < 6) {
@@ -52,144 +55,149 @@ export default function CreateUser() {
     }
 
     setError("");
-    FirestoreInterface.createCustomer(formData, password)
-      .then(() => alert("User created successfully!"))
+    FirestoreInterface.createCustomer(formData, password, personalTrainerId)
+      .then(() => window.location.reload())
       .catch((err) => setError("Error: " + err.message));
-
-    navigate("/personalTrainer/customers");
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <form className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
-        <h2 className="text-3xl font-bold mb-8 text-center">Create New User</h2>
-
-        {/* NickName */}
-        <div className="mb-5">
-          <label className="block text-gray-700 text-base font-bold mb-2">
-            Nick Name
-          </label>
-          <input
-            className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-            type="text"
-            name="id"
-            value={formData.id}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Email */}
-        <div className="mb-5">
-          <label className="block text-gray-700 text-base font-bold mb-2">
-            Email
-          </label>
-          <input
-            className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-            type="email"
-            name="Email"
-            value={formData.Email}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Password */}
-        <div className="mb-5">
-          <label className="block text-gray-700 text-base font-bold mb-2">
-            Password
-          </label>
-          <input
-            className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-            type="password"
-            name="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        {/* Nome e Cognome */}
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              First Name
-            </label>
-            <input
-              className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-              type="text"
-              name="Name"
-              value={formData.Name}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Last Name
-            </label>
-            <input
-              className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-              type="text"
-              name="Surname"
-              value={formData.Surname}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        {/* Data di nascita */}
-        <div className="mb-5">
-          <label className="block text-gray-700 text-base font-bold mb-2">
-            Date of Birth
-          </label>
-          <input
-            className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-            type="date"
-            name="DateOfBirth"
-            value={formData.DateOfBirth}
-            onChange={handleChange}
-          />
-        </div>
-
-        {/* Altezza e Peso */}
-        <div className="flex flex-wrap -mx-3 mb-6">
-          <div className="w-full md:w-1/2 px-3">
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Height (cm)
-            </label>
-            <input
-              className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-              type="number"
-              name="Height"
-              value={formData.Height}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="w-full md:w-1/2 px-3">
-            <label className="block text-gray-700 text-base font-bold mb-2">
-              Weight (kg)
-            </label>
-            <input
-              className="block w-full bg-gray-200 border border-gray-300 rounded py-4 px-5"
-              type="number"
-              name="Weight"
-              value={formData.Weight}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-
-        {/* Messaggio di errore */}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-        {/* Bottone Creazione */}
-        <div className="mt-8 flex justify-center">
-          <button
-            type="button"
-            onClick={createUser}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl text-lg"
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="relative w-full max-w-2xl bg-white p-6 rounded-lg shadow-xl overflow-y-auto max-h-[90vh]">
+        
+        {/* Title & close button */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-center flex-1 pl-10">Create Customer</h2>
+          <IconButton 
+            onClick={onClose} 
+            sx={{ 
+              color: "rgb(252, 252, 252)", 
+              backgroundColor: "rgb(153, 27, 27)", 
+              p: 0.5, // Resize the button outline
+              width: 32, 
+              height: 32,
+              "&:hover": {
+                backgroundColor: "rgb(200, 50, 50)",
+              }
+            }}
           >
-            Create Customer
-          </button>
+            <Close sx={{ fontSize: 18 }} /> {/* Resize icon */}
+          </IconButton>
         </div>
-      </form>
+
+        {/* Form */}
+        <form className="space-y-4">
+          
+          {/* Nickname */}
+          <div>
+            <label className="block font-semibold">Nickname (ID)</label>
+            <input
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              type="text"
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block font-semibold">Email</label>
+            <input
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              type="email"
+              name="Email"
+              value={formData.Email}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block font-semibold">Password</label>
+            <input
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              type="password"
+              name="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          {/* Name & Surname */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-semibold">First Name</label>
+              <input
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                type="text"
+                name="Name"
+                value={formData.Name}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Last Name</label>
+              <input
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                type="text"
+                name="Surname"
+                value={formData.Surname}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Date Of Birth */}
+          <div>
+            <label className="block font-semibold">Date of Birth</label>
+            <input
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              type="date"
+              name="DateOfBirth"
+              value={formData.DateOfBirth}
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Height & Weight */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-semibold">Height (cm)</label>
+              <input
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                type="number"
+                name="Height"
+                value={formData.Height}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label className="block font-semibold">Weight (kg)</label>
+              <input
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                type="number"
+                name="Weight"
+                value={formData.Weight}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          {/* Error message */}
+          {error && <p className="text-red-500 text-center">{error}</p>}
+
+          {/* Submit button */}
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={createCustomer}
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-md text-lg"
+            >
+              Create
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
