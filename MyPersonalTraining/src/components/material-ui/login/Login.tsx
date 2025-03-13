@@ -225,10 +225,7 @@ export default function Login() {
                 color={passwordError ? "error" : "primary"}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            <br></br>
             <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
@@ -252,7 +249,7 @@ export default function Login() {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography sx={{ textAlign: "center" }}>
               Don&apos;t have an account? send email via:
-              fozzatodavide@gmail.com
+              <i>fozzatodavide@gmail.com</i>
             </Typography>
           </Box>
         </Card>
