@@ -20,7 +20,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect,useState } from "react";
+import {  } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import "./Login.css";
@@ -79,8 +80,16 @@ export default function Login() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const inputElement = document.getElementById("EmailInput") as HTMLInputElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
+
   const handleClickOpen = () => {
     setOpen(true);
+
   };
 
   const handleClose = () => {
@@ -181,6 +190,7 @@ export default function Login() {
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
+                id="EmailInput"
                 error={emailError}
                 helperText={emailErrorMessage}
                 type="email"
@@ -199,6 +209,7 @@ export default function Login() {
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
               <TextField
+                id="PasswordInput"
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
