@@ -110,29 +110,92 @@ const FirestoreInterface = {
   ): Promise<void> => {
     try {
       // Check if the user already exists
-      const existingUser = await FirestoreInterface.findUserByEmail(customer.Email);
-  
+      const existingUser = await FirestoreInterface.findUserByEmail(
+        customer.Email
+      );
+
       if (existingUser) {
         console.error("A user with this email already exists:", customer.Email);
         throw new Error("A user with this email already exists.");
       }
-  
+
       // Creation of the user in Firebase Authentication
       await createUserWithEmailAndPassword(Auth, customer.Email, password);
-  
+
       // Creation the doc in the main collection of users
       const { id, ...customerWithoutId } = customer;
       const userRef = doc(Firestore, `users/${customer.id}`);
-      await setDoc(userRef, { ...customerWithoutId});
-  
+      await setDoc(userRef, { ...customerWithoutId });
+
       // Creation the doc in the struct "users/{personalTrainerId}/customers/{customerId}"
-      const customerRef = doc(Firestore, `users/${personalTrainerId}/customers/${customer.id}`);
-      await setDoc(customerRef, { });  // Set no fields in the doc reference 
+      const customerRef = doc(
+        Firestore,
+        `users/${personalTrainerId}/customers/${customer.id}`
+      );
+      await setDoc(customerRef, {}); // Set no fields in the doc reference
     } catch (error: any) {
       console.error("Error creating customer:", error.message);
-      throw new Error(error.message);
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("An unknown error occurred.");
+      }
     }
   },
+
+  // Return all exercises on Database
+  getAllExercises: async (): Promise<FirebaseObject[]> => {
+    try {
+      const exercisesRef = collection(Firestore, `exercises`);
+      const querySnapshot = await getDocs(exercisesRef);
+
+      const exercises: FirebaseObject[] = [];
+      querySnapshot.forEach((doc) => {
+        exercises.push({ id: doc.id, ...doc.data() });
+      });
+
+      return exercises;
+    } catch (error) {
+      console.error("Error retrieving exercises:", error);
+      return [];
+    }
+  },
+  createExercise: async (exercise: FirebaseObject): Promise<void> => {
+    try {
+      // Normalizza il nome dell'esercizio
+      const normalizedExerciseName = normalizeExerciseName(exercise.id);
+      exercise.id = normalizedExerciseName; // normliaze the exercise id
+      // Check if the exercise already exists
+      const exeDocRef = doc(Firestore, "users", exercise.id);
+      const exeDoc = await getDoc(exeDocRef);
+
+      // If the exercise already exists, throw an error
+      if (exeDoc.exists()) {
+        throw new Error("An exercise with this name already exists.");
+      }
+      const { id, ...exerciseWithoutId } = exercise;
+      const exerciseRef = doc(Firestore, `exercises/${exercise.id}`);
+
+      //Query add exercises
+      await setDoc(exerciseRef, {
+        ...exerciseWithoutId,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("An unknown error occurred.");
+      }
+    }
+  },
+};
+
+// Function to normalizate the exercise Id
+const normalizeExerciseName = (id: string): string => {
+  return id
+    .split(" ") // Dividi la stringa in parole
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalizza ogni parola
+    .join(""); // Unisci le parole senza spazi
 };
 
 export default FirestoreInterface;
