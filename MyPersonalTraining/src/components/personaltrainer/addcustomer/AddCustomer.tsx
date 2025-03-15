@@ -71,12 +71,12 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
             onClick={onClose} 
             sx={{ 
               color: "rgb(252, 252, 252)", 
-              backgroundColor: "rgb(153, 27, 27)", 
+              backgroundColor: "rgb(190, 34, 34)", 
               p: 0.5, // Resize the button outline
               width: 32, 
               height: 32,
               "&:hover": {
-                backgroundColor: "rgb(200, 50, 50)",
+                backgroundColor: "rgb(224, 60, 60)",
               }
             }}
           >

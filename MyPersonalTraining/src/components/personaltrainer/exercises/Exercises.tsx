@@ -135,9 +135,9 @@ function Exercises() {
             </Typography>
             <Box
               display="flex"
-              gap={1} // Riduci lo spazio tra i pulsanti
-              flexWrap={isSmallScreen ? "wrap" : "nowrap"} // A capo su schermi piccoli
-              justifyContent={isSmallScreen ? "center" : "flex-end"} // Centra i pulsanti su schermi piccoli
+              gap={1}
+              flexWrap={isSmallScreen ? "wrap" : "nowrap"}
+              justifyContent={isSmallScreen ? "center" : "flex-end"}
             >
               <Button
                 variant="contained"
@@ -145,7 +145,7 @@ function Exercises() {
                 startIcon={<Add />}
                 onClick={() => setIsModalOpen(true)}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Riduci la dimensione del testo su schermi piccoli
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
                   "&:hover": {
                     backgroundColor: "rgb(22, 170, 42)",
                   },
@@ -160,11 +160,14 @@ function Exercises() {
                 startIcon={<FilterList />}
                 onClick={handleFilterClick}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Riduci la dimensione del testo su schermi piccoli
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
+                  "&:hover": {
+                    backgroundColor: "rgb(37, 180, 236)",
+                  },
                   textTransform: "none",
                 }}
               >
-                Filter by Target
+                Filter
               </Button>
               <Button
                 variant="contained"

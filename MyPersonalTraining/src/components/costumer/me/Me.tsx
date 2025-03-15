@@ -145,7 +145,6 @@ export default function Me() {
             />
           </div>
         </div>
-
         {/* Bottone Modifica / Salva */}
         <div className="mt-8 flex justify-center">
           <button
@@ -154,7 +153,7 @@ export default function Me() {
               if (isEditing) saveChanges();
               setIsEditing(!isEditing);
             }}
-            className="bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white font-bold py-4 px-8 rounded-xl text-lg"
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-md text-lg"
           >
             {isEditing ? "Salva" : "Modifica"}
           </button>
