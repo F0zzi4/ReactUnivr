@@ -36,6 +36,7 @@ export default function Me() {
       const updatedUser = { ...user, ...formData };
       sessionStorage.setItem("user", JSON.stringify(updatedUser));
       FirestoreInterface.updateUser(updatedUser);
+      window.location.reload();
     }
     setIsEditing(false);
   };

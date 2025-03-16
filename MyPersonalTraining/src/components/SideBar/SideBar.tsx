@@ -64,7 +64,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           {
             icon: <AiOutlineFileText size={30} />,
             label: "Training Plan",
-            path: "/customer/trainingPlan"
+            path: "/customer/training-plan"
           },
           {
             icon: <GoGoal size={30} />,
@@ -166,13 +166,14 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               </li>
             ))}
           </ul>
+          <div className="border-t border-white my-2"></div>
         </div>
 
         {/* Logout Button */}
         <div className="p-3 mt-4">
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-red-500 hover:scale-105 hover:bg-red-600 transition-all text-white text-left ${
+            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-red-500 hover:bg-red-600 transition-all text-white text-left ${
               !open ? "justify-center" : "p-3"
             }`}
           >
@@ -187,7 +188,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                 !open ? "hidden" : "block text-lg"
               }`}
             >
-              Logout
+              <b>Logout</b>
             </p>
           </button>
         </div>

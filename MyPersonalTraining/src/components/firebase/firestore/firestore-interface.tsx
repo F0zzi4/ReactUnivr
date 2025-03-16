@@ -8,15 +8,23 @@ import {
   updateDoc,
   getDoc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
+
+// Constants for Firestore collections
+const COLLECTIONS = {
+  USERS: "users",
+  CUSTOMERS: "customers",
+  EXERCISES: "exercises",
+};
 
 const FirestoreInterface = {
   findUserByEmail: async (email: string): Promise<FirebaseObject | null> => {
     try {
       const q = query(
-        collection(Firestore, "users"),
+        collection(Firestore, COLLECTIONS.USERS),
         where("Email", "==", email)
       );
       const querySnapshot = await getDocs(q);
@@ -28,30 +36,23 @@ const FirestoreInterface = {
           break;
         }
         return user;
-      } else {
-        console.log("Nessun utente trovato con questa email.");
-        return null;
       }
+      return null;
     } catch (error) {
-      console.error("Errore nella ricerca:", error);
       return null;
     }
   },
 
   findUserById: async (id: string): Promise<FirebaseObject | null> => {
     try {
-      const userDocRef = doc(Firestore, "users", id);
+      const userDocRef = doc(Firestore, COLLECTIONS.USERS, id);
       const userDoc = await getDoc(userDocRef);
 
       if (userDoc.exists()) {
-        const user: FirebaseObject = { id: userDoc.id, ...userDoc.data() };
-        return user;
-      } else {
-        console.log("Nessun utente trovato con questo ID.");
-        return null;
+        return { id: userDoc.id, ...userDoc.data() };
       }
+      return null;
     } catch (error) {
-      console.error("Errore nella ricerca:", error);
       return null;
     }
   },
@@ -62,42 +63,21 @@ const FirestoreInterface = {
     try {
       const customersRef = collection(
         Firestore,
-        `users/${PersonalTrainerId}/customers`
+        `${COLLECTIONS.USERS}/${PersonalTrainerId}/${COLLECTIONS.CUSTOMERS}`
       );
       const querySnapshot = await getDocs(customersRef);
 
-      const customers: FirebaseObject[] = [];
-      querySnapshot.forEach((doc) => {
-        customers.push({ id: doc.id, ...doc.data() });
-      });
-
-      return customers;
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-      console.error("Errore nel recupero dei clienti:", error);
+      console.error("General error:", error);
       return [];
     }
   },
 
   updateUser: async (user: FirebaseObject): Promise<void> => {
     try {
-      const userRef = doc(Firestore, "users", user.id); // Create a reference to the specific user document
-
-      const userDoc = await getDoc(userRef);
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        // Update the user with the new data
-        await updateDoc(userRef, {
-          ...userData, // Keep existing data
-          Weight: user.Weight,
-          Name: user.Name,
-          Surname: user.Surname,
-          DateOfBirth: user.DateOfBirth,
-          Height: user.Height,
-        });
-        console.log("User data updated successfully!");
-      } else {
-        console.log("User document does not exist!");
-      }
+      const userRef = doc(Firestore, COLLECTIONS.USERS, user.id);
+      await updateDoc(userRef, { ...user });
     } catch (error) {
       console.error("Error updating user data:", error);
     }
@@ -109,93 +89,69 @@ const FirestoreInterface = {
     personalTrainerId: string
   ): Promise<void> => {
     try {
-      // Check if the user already exists
       const existingUser = await FirestoreInterface.findUserByEmail(
         customer.Email
       );
-
       if (existingUser) {
-        console.error("A user with this email already exists:", customer.Email);
         throw new Error("A user with this email already exists.");
       }
-
-      // Creation of the user in Firebase Authentication
       await createUserWithEmailAndPassword(Auth, customer.Email, password);
-
-      // Creation the doc in the main collection of users
+      
       const { id, ...customerWithoutId } = customer;
-      const userRef = doc(Firestore, `users/${customer.id}`);
-      await setDoc(userRef, { ...customerWithoutId });
-
-      // Creation the doc in the struct "users/{personalTrainerId}/customers/{customerId}"
-      const customerRef = doc(
-        Firestore,
-        `users/${personalTrainerId}/customers/${customer.id}`
-      );
-      await setDoc(customerRef, {}); // Set no fields in the doc reference
+      await setDoc(doc(Firestore, `${COLLECTIONS.USERS}/${customer.id}`), customerWithoutId);
+      await setDoc(doc(Firestore, `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}/${customer.id}`), {});
     } catch (error: any) {
-      console.error("Error creating customer:", error.message);
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("An unknown error occurred.");
-      }
+      throw new Error(error.message || "An unknown error occurred.");
     }
   },
 
-  // Return all exercises on Database
   getAllExercises: async (): Promise<FirebaseObject[]> => {
     try {
-      const exercisesRef = collection(Firestore, `exercises`);
+      const exercisesRef = collection(Firestore, COLLECTIONS.EXERCISES);
       const querySnapshot = await getDocs(exercisesRef);
-
-      const exercises: FirebaseObject[] = [];
-      querySnapshot.forEach((doc) => {
-        exercises.push({ id: doc.id, ...doc.data() });
-      });
-
-      return exercises;
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-      console.error("Error retrieving exercises:", error);
       return [];
     }
   },
+
   createExercise: async (exercise: FirebaseObject): Promise<void> => {
     try {
-      // Normalizza il nome dell'esercizio
-      const normalizedExerciseName = normalizeExerciseName(exercise.id);
-      exercise.id = normalizedExerciseName; // normliaze the exercise id
-      // Check if the exercise already exists
-      const exeDocRef = doc(Firestore, "users", exercise.id);
-      const exeDoc = await getDoc(exeDocRef);
-
-      // If the exercise already exists, throw an error
-      if (exeDoc.exists()) {
-        throw new Error("An exercise with this name already exists.");
-      }
-      const { id, ...exerciseWithoutId } = exercise;
-      const exerciseRef = doc(Firestore, `exercises/${exercise.id}`);
-
-      //Query add exercises
-      await setDoc(exerciseRef, {
-        ...exerciseWithoutId,
-      });
+      exercise.id = normalizeExerciseName(exercise.id);
+      const exerciseRef = doc(Firestore, COLLECTIONS.EXERCISES, exercise.id);
+      await setDoc(exerciseRef, { ...exercise });
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(error.message);
-      } else {
-        throw new Error("An unknown error occurred.");
-      }
+      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
+    }
+  },
+
+  deleteUsers: async (users: string[], personalTrainerId: string): Promise<void> => {
+    try {
+      await Promise.all(users.map(async (userId) => {
+        await deleteDoc(doc(Firestore, COLLECTIONS.USERS, userId));
+        await deleteDoc(doc(Firestore, `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}`, userId));
+      }));
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
+    }
+  },
+
+  deleteExercises: async (exercises: string[]): Promise<void> => {
+    try {
+      await Promise.all(exercises.map(async (exerciseId) => {
+        await deleteDoc(doc(Firestore, COLLECTIONS.EXERCISES, exerciseId));
+      }));
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
     }
   },
 };
 
-// Function to normalizate the exercise Id
 const normalizeExerciseName = (id: string): string => {
   return id
-    .split(" ") // Dividi la stringa in parole
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalizza ogni parola
-    .join(""); // Unisci le parole senza spazi
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("");
 };
 
 export default FirestoreInterface;

@@ -53,11 +53,19 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
       setError("Invalid email format.");
       return;
     }
+    if(formData.Weight <= 0){
+      setError("Weight must be greater than 0");
+      return;
+    }
+    if(formData.Height <= 0){
+      setError("Height must be greater than 0");
+      return;
+    }
 
     setError("");
     FirestoreInterface.createCustomer(formData, password, personalTrainerId)
       .then(() => window.location.reload())
-      .catch((err) => setError("Error: " + err.message));
+      .catch(() => setError("This user already exists"));
   };
 
   return (
@@ -80,7 +88,7 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
               }
             }}
           >
-            <Close sx={{ fontSize: 18 }} /> {/* Resize icon */}
+            <Close sx={{ fontSize: 18 }} />
           </IconButton>
         </div>
 

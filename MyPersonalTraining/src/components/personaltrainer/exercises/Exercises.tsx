@@ -73,6 +73,7 @@ function Exercises() {
     setExercises((prev) =>
       prev.filter((exercise) => !selectedElements.includes(exercise.id))
     );
+    FirestoreInterface.deleteExercises(selectedElements);
     setSelectedElements([]);
   };
 

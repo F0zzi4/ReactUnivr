@@ -55,7 +55,7 @@ export default function AddExercises({ onClose }: AddCustomerProps) {
   };
 
   const createExercise = () => {
-    if (!formData.id || !formData.Description || !formData.Target) {
+    if (!formData.Name || !formData.Description || !formData.Target) {
       setError("Please fill all required fields.");
       return;
     }
@@ -73,7 +73,7 @@ export default function AddExercises({ onClose }: AddCustomerProps) {
     setError("");
     FirestoreInterface.createExercise(formData)
       .then(() => window.location.reload())
-      .catch((err) => setError("Error: " + err.message));
+      .catch(() => setError("This exercise already exists"));
   };
 
   return (
