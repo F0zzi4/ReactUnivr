@@ -1,9 +1,7 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
 import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Divider from "@mui/material/Divider";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
@@ -20,7 +18,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect,useState } from "react";
+import {  } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import "./Login.css";
@@ -79,8 +78,16 @@ export default function Login() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const inputElement = document.getElementById("EmailInput") as HTMLInputElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
+
   const handleClickOpen = () => {
     setOpen(true);
+
   };
 
   const handleClose = () => {
@@ -181,6 +188,7 @@ export default function Login() {
             <FormControl>
               <FormLabel htmlFor="email">Email</FormLabel>
               <TextField
+                id="EmailInput"
                 error={emailError}
                 helperText={emailErrorMessage}
                 type="email"
@@ -199,6 +207,7 @@ export default function Login() {
             <FormControl>
               <FormLabel htmlFor="password">Password</FormLabel>
               <TextField
+                id="PasswordInput"
                 error={passwordError}
                 helperText={passwordErrorMessage}
                 name="password"
@@ -214,10 +223,7 @@ export default function Login() {
                 color={passwordError ? "error" : "primary"}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
+            <br></br>
             <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
@@ -241,7 +247,7 @@ export default function Login() {
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography sx={{ textAlign: "center" }}>
               Don&apos;t have an account? send email via:
-              fozzatodavide@gmail.com
+              <i>fozzatodavide@gmail.com</i>
             </Typography>
           </Box>
         </Card>

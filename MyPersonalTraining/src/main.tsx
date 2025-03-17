@@ -14,10 +14,12 @@ import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
 import Me from "./components/costumer/me/Me";
 import Goals from "./components/costumer/goals/Goals";
-import TrainingPlan from "./components/costumer/trainingplan/TrainingPlan";
+import TrainingPlan from "./components/costumer/training-plan/TrainingPlan";
 import PlanManagement from "./components/personaltrainer/plan-management/PlanManagement";
 import Customers from "./components/personaltrainer/customers/Customers";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
+import Inbox from "./components/inbox/Inbox";
+import Outbox from "./components/outbox/Outbox";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -82,7 +84,7 @@ root.render(
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
-          <Route path="/customer/trainingPlan" element={<TrainingPlan />} />
+          <Route path="/customer/training-plan" element={<TrainingPlan />} />
 
           {/* PersonalTrainer Routes */}
           <Route
@@ -91,6 +93,8 @@ root.render(
           />
           <Route path="/personalTrainer/customers" element={<Customers />} />
           <Route path="/personalTrainer/exercises" element={<Exercises />} />
+          <Route path="/inbox" element={<Inbox />} />
+          <Route path="/outbox" element={<Outbox />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -53,11 +53,19 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
       setError("Invalid email format.");
       return;
     }
+    if(formData.Weight <= 0){
+      setError("Weight must be greater than 0");
+      return;
+    }
+    if(formData.Height <= 0){
+      setError("Height must be greater than 0");
+      return;
+    }
 
     setError("");
     FirestoreInterface.createCustomer(formData, password, personalTrainerId)
       .then(() => window.location.reload())
-      .catch((err) => setError("Error: " + err.message));
+      .catch(() => setError("This user already exists"));
   };
 
   return (
@@ -71,16 +79,16 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
             onClick={onClose} 
             sx={{ 
               color: "rgb(252, 252, 252)", 
-              backgroundColor: "rgb(153, 27, 27)", 
+              backgroundColor: "rgb(190, 34, 34)", 
               p: 0.5, // Resize the button outline
               width: 32, 
               height: 32,
               "&:hover": {
-                backgroundColor: "rgb(200, 50, 50)",
+                backgroundColor: "rgb(224, 60, 60)",
               }
             }}
           >
-            <Close sx={{ fontSize: 18 }} /> {/* Resize icon */}
+            <Close sx={{ fontSize: 18 }} />
           </IconButton>
         </div>
 

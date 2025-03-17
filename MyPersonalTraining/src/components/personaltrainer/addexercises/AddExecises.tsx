@@ -55,7 +55,7 @@ export default function AddExercises({ onClose }: AddCustomerProps) {
   };
 
   const createExercise = () => {
-    if (!formData.id || !formData.Description || !formData.Target) {
+    if (!formData.Name || !formData.Description || !formData.Target) {
       setError("Please fill all required fields.");
       return;
     }
@@ -73,7 +73,7 @@ export default function AddExercises({ onClose }: AddCustomerProps) {
     setError("");
     FirestoreInterface.createExercise(formData)
       .then(() => window.location.reload())
-      .catch((err) => setError("Error: " + err.message));
+      .catch(() => setError("This exercise already exists"));
   };
 
   return (
@@ -84,17 +84,17 @@ export default function AddExercises({ onClose }: AddCustomerProps) {
           <h2 className="text-2xl font-bold text-center flex-1 pl-10">
             Create Exercise
           </h2>
-          <IconButton
-            onClick={onClose}
-            sx={{
-              color: "rgb(252, 252, 252)",
-              backgroundColor: "rgb(153, 27, 27)",
+          <IconButton 
+            onClick={onClose} 
+            sx={{ 
+              color: "rgb(252, 252, 252)", 
+              backgroundColor: "rgb(190, 34, 34)", 
               p: 0.5, // Resize the button outline
-              width: 32,
+              width: 32, 
               height: 32,
               "&:hover": {
-                backgroundColor: "rgb(200, 50, 50)",
-              },
+                backgroundColor: "rgb(224, 60, 60)",
+              }
             }}
           >
             <Close sx={{ fontSize: 18 }} /> {/* Resize icon */}

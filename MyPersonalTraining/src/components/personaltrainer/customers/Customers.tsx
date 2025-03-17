@@ -74,6 +74,7 @@ function Customers() {
     setCustomers((prev) =>
       prev.filter((customer) => !selectedElements.includes(customer.id))
     );
+    FirestoreInterface.deleteUsers(selectedElements, user.id);
     setSelectedElements([]);
   };
 
