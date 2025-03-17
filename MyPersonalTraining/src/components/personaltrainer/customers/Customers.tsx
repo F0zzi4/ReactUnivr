@@ -14,13 +14,14 @@ import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import AddCustomer from "../addcustomer/AddCustomer";
 import GenericList from "../../genericlist/GenericList";
+import { useNavigate } from "react-router-dom";
 
 function Customers() {
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [customers, setCustomers] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Check if the screen is small
 
@@ -176,7 +177,12 @@ function Customers() {
             items={filteredCustomers}
             selectedItems={selectedElements}
             onToggle={handleToggle}
-            onItemClick={(id) => console.log("Clicked on customer:", id)}
+            onItemClick={(customer) => {
+              console.log("Clicked on customer:", customer);
+              navigate("/personalTrainer/customers/customer", {
+                state: { customer },
+              });
+            }}
             primaryText={(customer) => `${customer.Name} ${customer.Surname}`}
           />
         </Paper>

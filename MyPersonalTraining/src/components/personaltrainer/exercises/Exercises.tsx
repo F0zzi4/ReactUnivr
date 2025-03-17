@@ -16,6 +16,7 @@ import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import GenericList from "../../genericlist/GenericList"; // Generic list component
 import AddExercises from "../addexercises/AddExecises";
+import { useNavigate } from "react-router-dom";
 
 function Exercises() {
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
@@ -24,6 +25,7 @@ function Exercises() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterTarget, setFilterTarget] = useState<string | null>(null); // State for filtering by target
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for the filter menu
+  const navigate = useNavigate();
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Controlla se lo schermo è piccolo
@@ -215,7 +217,12 @@ function Exercises() {
             items={filteredExercises}
             selectedItems={selectedElements}
             onToggle={handleToggle}
-            onItemClick={(id) => console.log("Clicked on exercise:", id)}
+            onItemClick={(exercise) => {
+              console.log("Clicked on exercise:", exercise);
+              navigate("/personalTrainer/exercises/exercise", {
+                state: { exercise },
+              });
+            }}
             primaryText={(exercise) => `${exercise.Name}`}
             secondaryText={(exercise) =>
               `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`

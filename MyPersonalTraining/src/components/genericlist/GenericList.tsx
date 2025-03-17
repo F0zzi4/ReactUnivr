@@ -71,7 +71,7 @@ function GenericList({
               <Fade in key={item.id} timeout={300}>
                 <ListItem
                   secondaryAction={
-                    <IconButton edge="end" onClick={() => onItemClick(item.id)}>
+                    <IconButton edge="end" onClick={() => onItemClick(item)}>
                       <ArrowForwardIos />
                     </IconButton>
                   }
