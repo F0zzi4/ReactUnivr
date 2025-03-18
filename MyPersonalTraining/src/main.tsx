@@ -20,6 +20,8 @@ import Customers from "./components/personaltrainer/customers/Customers";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
 import Inbox from "./components/inbox/Inbox";
 import Outbox from "./components/outbox/Outbox";
+import Customer from "./components/personaltrainer/customer/Customer";
+import Exercise from "./components/personaltrainer/Exercise/Esercise";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -80,12 +82,11 @@ root.render(
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
           <Route path="/homepage" element={<HomePage />} />
-
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
           <Route path="/customer/training-plan" element={<TrainingPlan />} />
-
+          Customer
           {/* PersonalTrainer Routes */}
           <Route
             path="/personalTrainer/plan-management"
@@ -93,6 +94,14 @@ root.render(
           />
           <Route path="/personalTrainer/customers" element={<Customers />} />
           <Route path="/personalTrainer/exercises" element={<Exercises />} />
+          <Route
+            path="/personalTrainer/customers/customer"
+            element={<Customer />}
+          />
+          <Route
+            path="/personalTrainer/exercises/exercise"
+            element={<Exercise />}
+          />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/outbox" element={<Outbox />} />
         </Route>

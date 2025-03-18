@@ -83,6 +83,15 @@ const FirestoreInterface = {
     }
   },
 
+  updateExercises: async (exercises: FirebaseObject): Promise<void> => {
+    try {
+      const userRef = doc(Firestore, COLLECTIONS.EXERCISES, exercises.id);
+      await updateDoc(userRef, { ...exercises });
+    } catch (error) {
+      console.error("Error updating user data:", error);
+    }
+  },
+
   createCustomer: async (
     customer: FirebaseObject,
     password: string,
@@ -96,10 +105,19 @@ const FirestoreInterface = {
         throw new Error("A user with this email already exists.");
       }
       await createUserWithEmailAndPassword(Auth, customer.Email, password);
-      
+
       const { id, ...customerWithoutId } = customer;
-      await setDoc(doc(Firestore, `${COLLECTIONS.USERS}/${customer.id}`), customerWithoutId);
-      await setDoc(doc(Firestore, `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}/${customer.id}`), {});
+      await setDoc(
+        doc(Firestore, `${COLLECTIONS.USERS}/${customer.id}`),
+        customerWithoutId
+      );
+      await setDoc(
+        doc(
+          Firestore,
+          `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}/${customer.id}`
+        ),
+        {}
+      );
     } catch (error: any) {
       throw new Error(error.message || "An unknown error occurred.");
     }
@@ -121,28 +139,47 @@ const FirestoreInterface = {
       const exerciseRef = doc(Firestore, COLLECTIONS.EXERCISES, exercise.id);
       await setDoc(exerciseRef, { ...exercise });
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
+      throw new Error(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
     }
   },
 
-  deleteUsers: async (users: string[], personalTrainerId: string): Promise<void> => {
+  deleteUsers: async (
+    users: string[],
+    personalTrainerId: string
+  ): Promise<void> => {
     try {
-      await Promise.all(users.map(async (userId) => {
-        await deleteDoc(doc(Firestore, COLLECTIONS.USERS, userId));
-        await deleteDoc(doc(Firestore, `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}`, userId));
-      }));
+      await Promise.all(
+        users.map(async (userId) => {
+          await deleteDoc(doc(Firestore, COLLECTIONS.USERS, userId));
+          await deleteDoc(
+            doc(
+              Firestore,
+              `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}`,
+              userId
+            )
+          );
+        })
+      );
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
+      throw new Error(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
     }
   },
 
   deleteExercises: async (exercises: string[]): Promise<void> => {
     try {
-      await Promise.all(exercises.map(async (exerciseId) => {
-        await deleteDoc(doc(Firestore, COLLECTIONS.EXERCISES, exerciseId));
-      }));
+      await Promise.all(
+        exercises.map(async (exerciseId) => {
+          await deleteDoc(doc(Firestore, COLLECTIONS.EXERCISES, exerciseId));
+        })
+      );
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : "An unknown error occurred.");
+      throw new Error(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
     }
   },
 };
