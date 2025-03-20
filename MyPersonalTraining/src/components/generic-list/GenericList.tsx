@@ -112,7 +112,13 @@ function GenericList({
           color="primary"
           onClick={handlePrevPage}
           disabled={currentPage === 0}
-          sx={{ fontSize: "1rem", px: 3, textTransform: "none" }}
+          sx={{
+            fontSize: "1rem", 
+            px: 3, 
+            textTransform: "none", 
+            "&:hover": {
+                    backgroundColor: "rgb(99, 132, 204)",
+          }, }}
         >
           Back
         </Button>
@@ -121,7 +127,13 @@ function GenericList({
           color="secondary"
           onClick={handleNextPage}
           disabled={(currentPage + 1) * itemsPerPage >= items.length}
-          sx={{ fontSize: "1rem", px: 3, textTransform: "none" }}
+          sx={{
+            fontSize: "1rem", 
+            px: 3, 
+            textTransform: "none", 
+            "&:hover": {
+                    backgroundColor: "rgb(177, 85, 189)",
+          }, }}
         >
           Next
         </Button>

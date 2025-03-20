@@ -18,6 +18,7 @@ const COLLECTIONS = {
   USERS: "users",
   CUSTOMERS: "customers",
   EXERCISES: "exercises",
+  TRAINING_PLANS: "training-plans"
 };
 
 const FirestoreInterface = {
@@ -127,6 +128,17 @@ const FirestoreInterface = {
     try {
       const exercisesRef = collection(Firestore, COLLECTIONS.EXERCISES);
       const querySnapshot = await getDocs(exercisesRef);
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      return [];
+    }
+  },
+
+  getAllPlansByPersonalTrainer: async (id: string): Promise<FirebaseObject[]> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      const querySnapshot = await getDocs(plansRef);
+      console.log(querySnapshot);
       return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       return [];

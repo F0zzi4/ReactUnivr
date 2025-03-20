@@ -21,7 +21,7 @@ import Exercises from "./components/personaltrainer/exercises/Exercises";
 import Inbox from "./components/inbox/Inbox";
 import Outbox from "./components/outbox/Outbox";
 import Customer from "./components/personaltrainer/customer/Customer";
-import Exercise from "./components/personaltrainer/Exercise/Esercise";
+import Exercise from "./components/personaltrainer/exercise/Exercise";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -101,6 +101,10 @@ root.render(
           <Route
             path="/personalTrainer/exercises/exercise"
             element={<Exercise />}
+          />
+          <Route
+            path="/personalTrainer/plan-management/training-plan"
+            element={<TrainingPlan />}
           />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/outbox" element={<Outbox />} />

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Container,
   Typography,
-  Button,
   Box,
   Paper,
   TextField,
@@ -10,16 +9,23 @@ import {
   MenuItem,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
-import { Delete, Add, FilterList } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import GenericList from "../../generic-list/GenericList"; // Generic list component
 import { useNavigate } from "react-router-dom";
+import { Add, Delete } from "@mui/icons-material";
 
-function PlanManagement() {
+interface TrainingPlanProps {
+  onClose: () => void; // function used on closing window
+  CustomerName : string;
+  CustomerSurname : string;
+}
+
+export default function TrainingPlan({ onClose, CustomerName, CustomerSurname }: TrainingPlanProps) {
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
-  const [plans, setPlan] = useState<FirebaseObject[]>([]);
+  const [exercises, setExercises] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterTarget, setFilterTarget] = useState<string | null>(null); // State for filtering by target
@@ -36,34 +42,55 @@ function PlanManagement() {
   useEffect(() => {
     const fetchData = async () => {
       if (user?.id) {
-        const firebaseExercises = await FirestoreInterface.getAllPlansByPersonalTrainer(user.id);
-        setPlan(firebaseExercises as FirebaseObject[]);
+        const firebaseExercises = await FirestoreInterface.getAllExercises();
+        setExercises(firebaseExercises as FirebaseObject[]);
       }
     };
 
     fetchData();
   }, [user]);
 
+  // Extract unique targets from exercises
+  const availableTargets = [
+    ...new Set(exercises.map((exercise) => exercise.Target)),
+  ];
+
   // Filter exercises based on search term and selected target
-  const filteredPlans = plans.filter((plan) => {
-    const matchesSearchTerm = `${plan.id}`
+  const filteredExercises = exercises.filter((exercise) => {
+    const matchesSearchTerm = `${exercise.Name}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-      return matchesSearchTerm;
+    const matchesTarget = filterTarget
+      ? exercise.Target === filterTarget
+      : true;
+    return matchesSearchTerm && matchesTarget;
   });
 
-  // Handler to select/deselect an exercise
-  const handleToggle = (plan: FirebaseObject) => {
-    setSelectedElements((prev) =>
-      prev.includes(plan.id)
-        ? prev.filter((id) => id !== plan.id)
-        : [...prev, plan.id]
+  // Remove selected exercises
+  const handleAddSelected = () => {
+    setExercises((prev) =>
+      prev.filter((exercise) => !selectedElements.includes(exercise.id))
     );
+    alert(selectedElements);
+    setSelectedElements([]);
   };
 
-  // Handler for opening the filter menu
-  const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  // Remove selected exercises
+  const handleRemoveSelected = () => {
+    setExercises((prev) =>
+      prev.filter((exercise) => !selectedElements.includes(exercise.id))
+    );
+    FirestoreInterface.deleteExercises(selectedElements);
+    setSelectedElements([]);
+  };
+  
+  // Handler to select/deselect an exercise
+  const handleToggle = (exercise: FirebaseObject) => {
+    setSelectedElements((prev) =>
+      prev.includes(exercise.id)
+        ? prev.filter((id) => id !== exercise.id)
+        : [...prev, exercise.id]
+    );
   };
 
   // Handler for selecting a target filter
@@ -73,28 +100,7 @@ function PlanManagement() {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        p: 2,
-      }}
-    >
-      {isModalOpen && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 10,
-          }}
-        />
-      )}
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <Container maxWidth="md" className="relative">
         <Paper
           elevation={6}
@@ -116,21 +122,21 @@ function PlanManagement() {
                 textAlign: isSmallScreen ? "center" : "left", // Centra il testo su schermi piccoli
               }}
             >
-              Training Plans
+              Manage {CustomerName} {CustomerSurname}'s Plan
             </Typography>
             <Box
               display="flex"
-              gap={1}
-              flexWrap={isSmallScreen ? "wrap" : "nowrap"}
-              justifyContent={isSmallScreen ? "center" : "flex-end"}
+              gap={1} // Reduce space between buttons
+              flexWrap={isSmallScreen ? "wrap" : "nowrap"} // Wrap buttons on small screens
+              justifyContent={isSmallScreen ? "center" : "flex-end"} // Center buttons on small screens
             >
               <Button
                 variant="contained"
                 color="success"
                 startIcon={<Add />}
-                onClick={() => setIsModalOpen(true)}
+                onClick={handleAddSelected}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Reduce text size on small screens
                   "&:hover": {
                     backgroundColor: "rgb(22, 170, 42)",
                   },
@@ -141,18 +147,16 @@ function PlanManagement() {
               </Button>
               <Button
                 variant="contained"
-                color="info"
-                startIcon={<FilterList />}
-                onClick={handleFilterClick}
+                color="error"
+                startIcon={<Delete />}
+                onClick={handleRemoveSelected}
+                disabled={selectedElements.length === 0}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
-                  "&:hover": {
-                    backgroundColor: "rgb(37, 180, 236)",
-                  },
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Reduce text size on small screens
                   textTransform: "none",
                 }}
               >
-                Filter
+                Remove
               </Button>
             </Box>
           </Box>
@@ -164,12 +168,17 @@ function PlanManagement() {
             onClose={() => setAnchorEl(null)}
           >
             <MenuItem onClick={() => handleFilterSelect(null)}>All</MenuItem>
+            {availableTargets.map((target) => (
+              <MenuItem key={target} onClick={() => handleFilterSelect(target)}>
+                {target}
+              </MenuItem>
+            ))}
           </Menu>
 
           {/* Search bar */}
           <TextField
             fullWidth
-            label="Search plan..."
+            label="Search exercise..."
             variant="outlined"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -178,20 +187,21 @@ function PlanManagement() {
 
           {/* Exercise list */}
           <GenericList
-            items={filteredPlans}
+            items={filteredExercises}
             selectedItems={selectedElements}
             onToggle={handleToggle}
-            onItemClick={(plan) => {
-              navigate("/personalTrainer/plan-management/training-plan", {
-                state: { plan: plan },
+            onItemClick={(exercise) => {
+              navigate("/personalTrainer/exercises/exercise", {
+                state: { exercise },
               });
             }}
-            primaryText={(plan) => `${plan.id}`}
+            primaryText={(exercise) => `${exercise.Name}`}
+            secondaryText={(exercise) =>
+              `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
+            }
           />
         </Paper>
       </Container>
-    </Box>
+    </div>
   );
 }
-
-export default PlanManagement;

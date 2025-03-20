@@ -1,7 +1,8 @@
 import { useState } from "react";
-import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
+import { Box } from "@mui/material";
+import TrainingPlan from "../plan-management/TrainingPlan";
 
 interface FormData {
   id: string;
@@ -14,7 +15,7 @@ interface FormData {
 }
 
 export default function Customer() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const customer = location.state?.customer;
@@ -41,29 +42,23 @@ export default function Customer() {
     }));
   };
 
-  const saveChanges = () => {
-    if (formData) {
-      console.log(formData);
-      const updatedCustomer = { ...customer, ...formData };
-      FirestoreInterface.updateUser(updatedCustomer);
-    }
-    setIsEditing(false);
-  };
-
   return (
     <div className="h-screen w-full flex items-center justify-center">
       <div className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-gray-700 hover:text-green-600 mb-6 transition-colors duration-200"
+          className="flex items-center text-gray-700 hover:text-green-600 hover:bg-green-100 mb-6 transition-colors duration-200 py-1 px-1 rounded-md"
+          style={{
+            
+          }}
         >
           <FaArrowLeft className="mr-2 hover:text-green-600 transition-colors duration-200" />
           <span className="font-semibold">Back</span>
         </button>
 
         <form>
-          <h2 className="text-3xl font-bold mb-8 text-center">Personal Info</h2>
+          <h2 className="text-3xl font-bold mb-8 text-center" style={{ marginBottom: "20px" }}>Personal Info</h2>
 
           {/* Nickname */}
           <div className="mb-5">
@@ -103,7 +98,7 @@ export default function Customer() {
                 name="Name"
                 value={formData.Name}
                 onChange={handleChange}
-                readOnly={!isEditing}
+                readOnly
               />
             </div>
             <div className="w-full md:w-1/2 px-3">
@@ -116,7 +111,7 @@ export default function Customer() {
                 name="Surname"
                 value={formData.Surname}
                 onChange={handleChange}
-                readOnly={!isEditing}
+                readOnly
               />
             </div>
           </div>
@@ -132,25 +127,40 @@ export default function Customer() {
               name="DateOfBirth"
               value={formData.DateOfBirth}
               onChange={handleChange}
-              readOnly={!isEditing}
+              readOnly
             />
           </div>
 
-          {/* Save/Modify Button */}
+          {/* Save / Edit Button */}
           <div className="mt-8 flex justify-center">
             <button
               type="button"
               onClick={() => {
-                if (isEditing) saveChanges();
-                setIsEditing(!isEditing);
+                setIsModalOpen(true)
               }}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-md text-lg"
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-7 rounded-md text-lg"
             >
-              {isEditing ? "Save" : "Edit"}
+              Manage Plan
             </button>
           </div>
         </form>
       </div>
+      {isModalOpen && (
+          <Box
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              zIndex: 11,
+            }}
+          >
+            <TrainingPlan
+              onClose={() => setIsModalOpen(false)}
+              CustomerName={formData.Name}
+              CustomerSurname={formData.Surname}
+            />
+          </Box>
+        )}
     </div>
   );
 }
