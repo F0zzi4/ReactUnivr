@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
-import { Box } from "@mui/material";
-import TrainingPlan from "../plan-management/TrainingPlan";
+import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 
 interface FormData {
   id: string;
@@ -15,10 +14,11 @@ interface FormData {
 }
 
 export default function Customer() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const customer = location.state?.customer;
+  const userData = sessionStorage.getItem("user");
+  const user = userData ? JSON.parse(userData) : null;
 
   const [formData, setFormData] = useState<FormData>({
     id: customer?.id || "",
@@ -40,6 +40,11 @@ export default function Customer() {
       ...prev,
       [name]: name === "Height" || name === "Weight" ? Number(value) : value,
     }));
+  };
+
+  const handleManagePlan = async () => {  
+      await FirestoreInterface.createTrainingPlan(user.id, formData.id);
+      navigate("/personalTrainer/plan-management/training-plan", { state: formData });
   };
 
   return (
@@ -135,9 +140,7 @@ export default function Customer() {
           <div className="mt-8 flex justify-center">
             <button
               type="button"
-              onClick={() => {
-                setIsModalOpen(true)
-              }}
+              onClick={handleManagePlan}
               className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-7 rounded-md text-lg"
             >
               Manage Plan
@@ -145,22 +148,6 @@ export default function Customer() {
           </div>
         </form>
       </div>
-      {isModalOpen && (
-          <Box
-            sx={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              zIndex: 11,
-            }}
-          >
-            <TrainingPlan
-              onClose={() => setIsModalOpen(false)}
-              CustomerName={formData.Name}
-              CustomerSurname={formData.Surname}
-            />
-          </Box>
-        )}
     </div>
   );
 }

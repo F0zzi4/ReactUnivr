@@ -157,6 +157,17 @@ const FirestoreInterface = {
     }
   },
 
+  createTrainingPlan: async (personalTrainerId: string, customerID : string): Promise<void> => {
+    try {
+      const trainingPlanId = `${personalTrainerId}-${customerID}`; // Concat both of the ID
+      const trainingPlanRef = doc(Firestore, "training-plans", trainingPlanId);
+  
+      await setDoc(trainingPlanRef, {});
+    } catch (error) {
+      console.error("Error during training plan creation:", error);
+    }
+  },
+
   deleteUsers: async (
     users: string[],
     personalTrainerId: string
