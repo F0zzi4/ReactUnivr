@@ -6,12 +6,10 @@ import {
   Box,
   Paper,
   TextField,
-  Menu,
-  MenuItem,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Delete, Add, FilterList } from "@mui/icons-material";
+import { Delete, Add } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import GenericList from "../../generic-list/GenericList"; // Generic list component
@@ -22,8 +20,6 @@ function PlanManagement() {
   const [plans, setPlan] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filterTarget, setFilterTarget] = useState<string | null>(null); // State for filtering by target
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null); // State for the filter menu
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -36,11 +32,26 @@ function PlanManagement() {
   useEffect(() => {
     const fetchData = async () => {
       if (user?.id) {
-        const firebaseExercises = await FirestoreInterface.getAllPlansByPersonalTrainer(user.id);
-        setPlan(firebaseExercises as FirebaseObject[]);
+        try {
+          // Get all plans
+          const firebaseTrainingPlans = await FirestoreInterface.getAllPlansByPersonalTrainer(user.id);
+          
+          // For each plans take his related customer 
+          const plansWithCustomers = await Promise.all(
+            firebaseTrainingPlans.map(async (plan) => {
+              // Passing the id of the customer (splitting the id and taking the second string)
+              const customer = await FirestoreInterface.getUserById(plan.id.split("-")[1]);
+              return { ...plan, customer };
+            })
+          );
+  
+          setPlan(plansWithCustomers as FirebaseObject[]);
+        } catch (error) {
+          console.error("Error fetching training plans and customers:", error);
+        }
       }
     };
-
+  
     fetchData();
   }, [user]);
 
@@ -61,15 +72,13 @@ function PlanManagement() {
     );
   };
 
-  // Handler for opening the filter menu
-  const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  // Handler for selecting a target filter
-  const handleFilterSelect = (target: string | null) => {
-    setFilterTarget(target);
-    setAnchorEl(null); // Close the menu
+  // Remove selected plans
+  const handleRemoveSelected = () => {
+    setPlan((prev) =>
+      prev.filter((plan) => !selectedElements.includes(plan.id))
+    );
+    // TODO: eliminare un piano
+    setSelectedElements([]);
   };
 
   return (
@@ -141,30 +150,19 @@ function PlanManagement() {
               </Button>
               <Button
                 variant="contained"
-                color="info"
-                startIcon={<FilterList />}
-                onClick={handleFilterClick}
+                color="error"
+                startIcon={<Delete />}
+                onClick={handleRemoveSelected}
+                disabled={selectedElements.length === 0}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
-                  "&:hover": {
-                    backgroundColor: "rgb(37, 180, 236)",
-                  },
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Reduce text size on small screens
                   textTransform: "none",
                 }}
               >
-                Filter
+                Remove
               </Button>
             </Box>
           </Box>
-
-          {/* Filter menu */}
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={() => setAnchorEl(null)}
-          >
-            <MenuItem onClick={() => handleFilterSelect(null)}>All</MenuItem>
-          </Menu>
 
           {/* Search bar */}
           <TextField
@@ -176,17 +174,15 @@ function PlanManagement() {
             sx={{ mb: 3, bgcolor: "white", borderRadius: 2 }}
           />
 
-          {/* Exercise list */}
+          {/* Training plan list */}
           <GenericList
             items={filteredPlans}
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(plan) => {
-              navigate("/personalTrainer/plan-management/training-plan", {
-                state: { plan: plan },
-              });
+              navigate("/personalTrainer/plan-management/training-plan", { state: plan.customer });
             }}
-            primaryText={(plan) => `${plan.id}`}
+            primaryText={(plan) => `${plan.customer.Name+" "+plan.customer.Surname+"'s Plan"}`}
           />
         </Paper>
       </Container>

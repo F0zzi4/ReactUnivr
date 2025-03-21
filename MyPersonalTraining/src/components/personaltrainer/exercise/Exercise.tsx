@@ -82,7 +82,7 @@ export default function Exercise() {
 
     // Update the exercise
     const updatedExercise = { ...exercise, ...formData };
-    FirestoreInterface.updateExercises(updatedExercise);
+    FirestoreInterface.updateExercise(updatedExercise);
 
     // Exit editing mode
     setIsEditing(false);
@@ -107,6 +107,8 @@ export default function Exercise() {
 
         {/* Form */}
         <form className="space-y-4">
+          <h2 className="text-3xl font-bold mb-8 text-center" style={{ marginBottom: "20px" }}>Exercise Info</h2>
+
           {/* Exercise Id */}
           <div>
             <label className="block font-semibold">Exercise Name</label>

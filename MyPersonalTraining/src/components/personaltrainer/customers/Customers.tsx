@@ -36,7 +36,7 @@ function Customers() {
           await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
         const customerPromises = firebaseCustomers.map(
           async (firebaseCustomer) => {
-            const customer = await FirestoreInterface.findUserById(
+            const customer = await FirestoreInterface.getUserById(
               firebaseCustomer.id
             );
             return customer;

@@ -15,13 +15,13 @@ import { ArrowForwardIos } from "@mui/icons-material";
 import { useState } from "react";
 
 interface GenericListProps {
-  items: any[]; // Array di elementi da visualizzare
-  selectedItems: string[]; // Elementi selezionati
-  onToggle: (item: any) => void; // Handler per selezionare/deselezionare un elemento
-  onItemClick: (itemId: string) => void; // Handler per cliccare su un elemento
-  primaryText: (item: any) => string; // Funzione per ottenere il testo primario
-  secondaryText?: (item: any) => string; // Funzione per ottenere il testo secondario (opzionale)
-  itemsPerPage?: number; // Numero di elementi per pagina (opzionale, default 10)
+  items: any[]; // Array of elements to show
+  selectedItems: string[]; // Selected elements
+  onToggle: (item: any) => void; // Handler select/deselect an element
+  onItemClick: (itemId: any) => void; // Handler to click on an element
+  primaryText: (item: any) => string; // Function to manage the primary text
+  secondaryText?: (item: any) => string; // Function to manage the secondary text (optional)
+  itemsPerPage?: number; // No of element per page (default=10)
 }
 
 function GenericList({

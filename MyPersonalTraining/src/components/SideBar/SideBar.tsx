@@ -171,12 +171,18 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
 
         {/* Logout Button */}
         <div className="p-3 mt-4">
-          <button
-            onClick={handleLogout}
-            className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer bg-red-500 hover:bg-red-600 transition-all text-white text-left ${
-              !open ? "justify-center" : "p-3"
-            }`}
-          >
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-3 p-3 w-full rounded-md cursor-pointer transition-all text-white text-left ${
+            !open ? "justify-center" : "p-3"
+          }`}
+          style={{
+            backgroundColor: "rgb(207, 74, 74)", 
+            transition: "background-color 0.3s ease-in-out",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgb(161, 34, 34)")} // Colore hover
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "rgb(207, 74, 74)")} // Torna al colore originale
+        >
             <div className="w-8 h-8 flex items-center justify-center">
               <MdLogout
                 size={30}
