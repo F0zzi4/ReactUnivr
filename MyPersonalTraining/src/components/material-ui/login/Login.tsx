@@ -99,7 +99,7 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(Auth, email, password);
-      const user: FirebaseObject | null = await FirestoreInterface.findUserByEmail(email);
+      const user: FirebaseObject | null = await FirestoreInterface.getUserByEmail(email);
     
       // Setting session data
       if (user) {

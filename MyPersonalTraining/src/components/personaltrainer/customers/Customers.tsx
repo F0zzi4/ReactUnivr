@@ -13,7 +13,7 @@ import { Delete, Add } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import AddCustomer from "../addcustomer/AddCustomer";
-import GenericList from "../../genericlist/GenericList";
+import GenericList from "../../generic-list/GenericList";
 import { useNavigate } from "react-router-dom";
 
 function Customers() {
@@ -36,7 +36,7 @@ function Customers() {
           await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
         const customerPromises = firebaseCustomers.map(
           async (firebaseCustomer) => {
-            const customer = await FirestoreInterface.findUserById(
+            const customer = await FirestoreInterface.getUserById(
               firebaseCustomer.id
             );
             return customer;
@@ -123,7 +123,7 @@ function Customers() {
                 textAlign: isSmallScreen ? "center" : "left", // Center text on small screens
               }}
             >
-              Customer List
+              Customers
             </Typography>
             <Box
               display="flex"
@@ -178,7 +178,6 @@ function Customers() {
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(customer) => {
-              console.log("Clicked on customer:", customer);
               navigate("/personalTrainer/customers/customer", {
                 state: { customer },
               });

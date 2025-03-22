@@ -82,7 +82,7 @@ export default function Exercise() {
 
     // Update the exercise
     const updatedExercise = { ...exercise, ...formData };
-    FirestoreInterface.updateExercises(updatedExercise);
+    FirestoreInterface.updateExercise(updatedExercise);
 
     // Exit editing mode
     setIsEditing(false);
@@ -99,7 +99,7 @@ export default function Exercise() {
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center text-gray-700 hover:text-green-600 mb-6 transition-colors duration-200"
+          className="flex items-center text-gray-700 hover:text-green-600 hover:bg-green-100 mb-6 transition-colors duration-200 py-1 px-1 rounded-md"
         >
           <FaArrowLeft className="mr-2 hover:text-green-600 transition-colors duration-200" />
           <span className="font-semibold">Back</span>
@@ -107,6 +107,8 @@ export default function Exercise() {
 
         {/* Form */}
         <form className="space-y-4">
+          <h2 className="text-3xl font-bold mb-8 text-center" style={{ marginBottom: "20px" }}>Exercise Info</h2>
+
           {/* Exercise Id */}
           <div>
             <label className="block font-semibold">Exercise Name</label>
@@ -195,7 +197,7 @@ export default function Exercise() {
                 if (isEditing) saveChanges(); // Save changes if editing
                 setIsEditing(!isEditing); // Toggle editing mode
               }}
-              className="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-md text-lg"
+              className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-7 rounded-md text-lg"
               disabled={error !== ""} // Disable if error exists
             >
               {isEditing ? "Save" : "Edit"}{" "}

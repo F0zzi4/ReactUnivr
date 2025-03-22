@@ -18,10 +18,11 @@ const COLLECTIONS = {
   USERS: "users",
   CUSTOMERS: "customers",
   EXERCISES: "exercises",
+  TRAINING_PLANS: "training-plans"
 };
 
 const FirestoreInterface = {
-  findUserByEmail: async (email: string): Promise<FirebaseObject | null> => {
+  getUserByEmail: async (email: string): Promise<FirebaseObject | null> => {
     try {
       const q = query(
         collection(Firestore, COLLECTIONS.USERS),
@@ -43,7 +44,7 @@ const FirestoreInterface = {
     }
   },
 
-  findUserById: async (id: string): Promise<FirebaseObject | null> => {
+  getUserById: async (id: string): Promise<FirebaseObject | null> => {
     try {
       const userDocRef = doc(Firestore, COLLECTIONS.USERS, id);
       const userDoc = await getDoc(userDocRef);
@@ -83,12 +84,12 @@ const FirestoreInterface = {
     }
   },
 
-  updateExercises: async (exercises: FirebaseObject): Promise<void> => {
+  updateExercise: async (exercise: FirebaseObject): Promise<void> => {
     try {
-      const userRef = doc(Firestore, COLLECTIONS.EXERCISES, exercises.id);
-      await updateDoc(userRef, { ...exercises });
+      const exerciseRef = doc(Firestore, COLLECTIONS.EXERCISES, exercise.id);
+      await updateDoc(exerciseRef, { ...exercise });
     } catch (error) {
-      console.error("Error updating user data:", error);
+      console.error("Error updating exercise data:", error);
     }
   },
 
@@ -98,7 +99,7 @@ const FirestoreInterface = {
     personalTrainerId: string
   ): Promise<void> => {
     try {
-      const existingUser = await FirestoreInterface.findUserByEmail(
+      const existingUser = await FirestoreInterface.getUserByEmail(
         customer.Email
       );
       if (existingUser) {
@@ -133,6 +134,67 @@ const FirestoreInterface = {
     }
   },
 
+  getAllPlansByPersonalTrainer: async (id: string): Promise<FirebaseObject[]> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      
+      // Defining a range to take any document that starts with {id}
+      const startId = id;
+      const endId = id + "\uf8ff"; // "\uf8ff" is the last Unicode char, so includes anything that starts with {id}
+      
+      const q = query(plansRef, where("__name__", ">=", startId), where("__name__", "<", endId));
+  
+      const querySnapshot = await getDocs(q);
+      
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+      return [];
+    }
+  },
+
+  getPlanById: async (id: string): Promise<FirebaseObject | null> => {
+    try {
+      const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);
+      const trainingPlanDoc = await getDoc(trainingPlanRef);
+      console.log(trainingPlanDoc);
+      if (trainingPlanDoc.exists()) {
+        return { id: trainingPlanDoc.id, ...trainingPlanDoc.data() };
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  },
+
+  getExercisesPlanByDayNo: async (id: string, dayNo: string): Promise<FirebaseObject[] | null> => {
+    try {
+        const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);
+        const trainingPlanDoc = await getDoc(trainingPlanRef);
+
+        if (trainingPlanDoc.exists()) {
+            const data = trainingPlanDoc.data();
+            return data[dayNo] || null;
+        }
+
+        return null;
+    } catch (error) {
+        console.error("Error fetching exercises for the training plan:", error);
+        return null;
+    }
+  },
+
+  updatePlanById: async (planId: string, dayNo: string, exercises: FirebaseObject[]): Promise<void> => {
+    try {
+        const planRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, planId);
+        await updateDoc(planRef, {
+            [dayNo]: exercises,
+        });
+    } catch (error) {
+        console.error("Error updating training plan:", error);
+    }
+  },
+
   createExercise: async (exercise: FirebaseObject): Promise<void> => {
     try {
       exercise.id = normalizeExerciseName(exercise.id);
@@ -142,6 +204,17 @@ const FirestoreInterface = {
       throw new Error(
         error instanceof Error ? error.message : "An unknown error occurred."
       );
+    }
+  },
+
+  createTrainingPlan: async (personalTrainerId: string, customerID : string): Promise<void> => {
+    try {
+      const trainingPlanId = `${personalTrainerId}-${customerID}`; // Concat both of the ID
+      const trainingPlanRef = doc(Firestore, "training-plans", trainingPlanId);
+  
+      await setDoc(trainingPlanRef, {});
+    } catch (error) {
+      console.error("Error during training plan creation:", error);
     }
   },
 

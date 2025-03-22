@@ -14,14 +14,15 @@ import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
 import Me from "./components/costumer/me/Me";
 import Goals from "./components/costumer/goals/Goals";
-import TrainingPlan from "./components/costumer/training-plan/TrainingPlan";
+import CustomerTrainingPlan from "./components/costumer/training-plan/TrainingPlan";
 import PlanManagement from "./components/personaltrainer/plan-management/PlanManagement";
 import Customers from "./components/personaltrainer/customers/Customers";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
 import Inbox from "./components/inbox/Inbox";
 import Outbox from "./components/outbox/Outbox";
 import Customer from "./components/personaltrainer/customer/Customer";
-import Exercise from "./components/personaltrainer/Exercise/Esercise";
+import Exercise from "./components/personaltrainer/exercise/Exercise";
+import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -85,7 +86,7 @@ root.render(
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
-          <Route path="/customer/training-plan" element={<TrainingPlan />} />
+          <Route path="/customer/training-plan" element={<CustomerTrainingPlan />} />
           Customer
           {/* PersonalTrainer Routes */}
           <Route
@@ -101,6 +102,10 @@ root.render(
           <Route
             path="/personalTrainer/exercises/exercise"
             element={<Exercise />}
+          />
+          <Route
+            path="/personalTrainer/plan-management/training-plan"
+            element={<TrainingPlan />}
           />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/outbox" element={<Outbox />} />

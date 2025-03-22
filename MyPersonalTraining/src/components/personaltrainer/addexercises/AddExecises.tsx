@@ -11,11 +11,11 @@ interface dataForm {
   Target: string;
 }
 
-interface AddCustomerProps {
+interface AddExerciseProps {
   onClose: () => void; // function used on closing window
 }
 
-export default function AddExercises({ onClose }: AddCustomerProps) {
+export default function AddExercises({ onClose }: AddExerciseProps) {
   const [formData, setFormData] = useState<dataForm>({
     id: "",
     Description: "",
