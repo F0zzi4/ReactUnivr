@@ -21,20 +21,24 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Add, Delete, FilterList } from "@mui/icons-material";
 
 export default function TrainingPlan() {
-  const [selectedElementsToAdd, setSelectedElementsToAdd] = useState<string[]>([]);
-  const [selectedElementsToRemove, setSelectedElementsToRemove] = useState<string[]>([]);
+  const [selectedElementsToAdd, setSelectedElementsToAdd] = useState<string[]>(
+    []
+  );
+  const [selectedElementsToRemove, setSelectedElementsToRemove] = useState<
+    string[]
+  >([]);
   const [exercises, setExercises] = useState<FirebaseObject[]>([]);
   const [addedExercises, setAddedExercises] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterTarget, setFilterTarget] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedDay, setSelectedDay] = useState<string>("Day 1"); // hook for selected day
+  const [selectedDay, setSelectedDay] = useState<string>("Day 1");
   const location = useLocation();
   const navigate = useNavigate();
 
   const customer = location.state;
 
-  if(!customer){
+  if (!customer) {
     navigate("/personalTrainer/plan-management");
   }
 
@@ -42,7 +46,7 @@ export default function TrainingPlan() {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
-  const planId = user.id+"-"+customer.id;
+  const planId = user.id + "-" + customer.id;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,8 +61,11 @@ export default function TrainingPlan() {
 
   useEffect(() => {
     const updateExercisesForDay = async () => {
-      const newExercises = await FirestoreInterface.getExercisesPlanByDayNo(planId, selectedDay);
-      setAddedExercises(newExercises ?? []); // if newExercises is null take an empty array
+      const newExercises = await FirestoreInterface.getExercisesPlanByDayNo(
+        planId,
+        selectedDay
+      );
+      setAddedExercises(newExercises ?? []);
     };
 
     updateExercisesForDay();
@@ -72,52 +79,82 @@ export default function TrainingPlan() {
     const matchesSearchTerm = `${exercise.Name}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-    const matchesTarget = filterTarget ? exercise.Target === filterTarget : true;
+    const matchesTarget = filterTarget
+      ? exercise.Target === filterTarget
+      : true;
     return matchesSearchTerm && matchesTarget;
   });
 
   const handleAddSelected = async () => {
     const newAddedExercises = exercises?.filter((exercise) =>
-        selectedElementsToAdd.includes(exercise.id)
+      selectedElementsToAdd.includes(exercise.id)
     );
 
+    const exercisesWithDefaults = newAddedExercises.map((exercise) => ({
+      ...exercise,
+      Reps: 10, // Default reps
+      Series: 4, // Default series
+    }));
+
     setAddedExercises((prev) => {
-        const updatedExercises = [
-            ...prev,
-            ...newAddedExercises.filter((e) => !prev.some((ae) => ae.id === e.id)),
-        ];
+      const updatedExercises = [
+        ...prev,
+        ...exercisesWithDefaults.filter(
+          (e) => !prev.some((ae) => ae.id === e.id)
+        ),
+      ];
 
-        FirestoreInterface.updatePlanById(planId, selectedDay, updatedExercises);
+      FirestoreInterface.updatePlanById(planId, selectedDay, updatedExercises);
 
-        return updatedExercises;
+      return updatedExercises;
     });
 
     setSelectedElementsToAdd([]);
   };
 
+  const handleSave = async (itemId: string, updatedItem: any) => {
+    // Aggiorna l'elemento nella lista degli esercizi aggiunti
+    setAddedExercises((prev) =>
+      prev.map((exercise) =>
+        exercise.id === itemId ? { ...exercise, ...updatedItem } : exercise
+      )
+    );
+
+    // Salva le modifiche nel database
+    await FirestoreInterface.updatePlanById(
+      planId,
+      selectedDay,
+      addedExercises
+    );
+  };
+
   const handleRemoveSelected = () => {
     setAddedExercises((prev) => {
-        const updatedExercises = prev.filter(
-            (exercise) => !selectedElementsToRemove.includes(exercise.id)
-        );
+      const updatedExercises = prev.filter(
+        (exercise) => !selectedElementsToRemove.includes(exercise.id)
+      );
 
-        FirestoreInterface.updatePlanById(planId, selectedDay, updatedExercises);
+      FirestoreInterface.updatePlanById(planId, selectedDay, updatedExercises);
 
-        return updatedExercises;
+      return updatedExercises;
     });
 
     setSelectedElementsToRemove([]);
-};
+  };
 
   const handleToggleAdd = (exercise: FirebaseObject) => {
     setSelectedElementsToAdd((prev) =>
-      prev.includes(exercise.id) ? prev.filter((id) => id !== exercise.id) : [...prev, exercise.id]
+      prev.includes(exercise.id)
+        ? prev.filter((id) => id !== exercise.id)
+        : [...prev, exercise.id]
     );
   };
 
   const handleToggleRemove = (exercise: FirebaseObject) => {
     setSelectedElementsToRemove((prev) =>
-      prev.includes(exercise.id) ? prev.filter((id) => id !== exercise.id) : [...prev, exercise.id]
+      prev.includes(exercise.id)
+        ? prev.filter((id) => id !== exercise.id)
+        : [...prev, exercise.id]
     );
   };
 
@@ -126,7 +163,9 @@ export default function TrainingPlan() {
     setAnchorEl(null);
   };
 
-  const availableTargets = [...new Set(exercises?.map((exercise) => exercise.Target))];
+  const availableTargets = [
+    ...new Set(exercises?.map((exercise) => exercise.Target)),
+  ];
 
   return (
     <Box
@@ -139,7 +178,10 @@ export default function TrainingPlan() {
       }}
     >
       <Container maxWidth="md" className="relative">
-        <Paper elevation={6} sx={{ p: 3, borderRadius: 5, bgcolor: "#fff", width: "100%" }}>
+        <Paper
+          elevation={6}
+          sx={{ p: 3, borderRadius: 5, bgcolor: "#fff", width: "100%" }}
+        >
           <Box
             display="flex"
             justifyContent="space-between"
@@ -196,14 +238,26 @@ export default function TrainingPlan() {
                 startIcon={<Delete />}
                 onClick={handleRemoveSelected}
                 disabled={selectedElementsToRemove.length === 0}
-                sx={{ fontSize: isSmallScreen ? "0.875rem" : "1rem", textTransform: "none" }}
+                sx={{
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
+                  textTransform: "none",
+                }}
               >
                 Remove
               </Button>
-              <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
-                <MenuItem onClick={() => handleFilterSelect(null)}>All</MenuItem>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+              >
+                <MenuItem onClick={() => handleFilterSelect(null)}>
+                  All
+                </MenuItem>
                 {availableTargets.map((target) => (
-                  <MenuItem key={target} onClick={() => handleFilterSelect(target)}>
+                  <MenuItem
+                    key={target}
+                    onClick={() => handleFilterSelect(target)}
+                  >
                     {target}
                   </MenuItem>
                 ))}
@@ -239,35 +293,55 @@ export default function TrainingPlan() {
           />
 
           {/* Available Exercise List */}
-          <Typography variant="h5" sx={{ fontWeight: "bold" }}>Available Exercises</Typography>
-          <GenericList 
-            items={filteredExercises} 
-            selectedItems={selectedElementsToAdd} 
-            onToggle={handleToggleAdd} 
-            primaryText={(exercise) => `${exercise.Name}`} 
-            secondaryText={(exercise) => `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`} 
+          <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+            Available Exercises
+          </Typography>
+          <GenericList
+            items={filteredExercises}
+            selectedItems={selectedElementsToAdd}
+            onToggle={handleToggleAdd}
+            primaryText={(exercise) => `${exercise.Name}`}
+            secondaryText={(exercise) =>
+              `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
+            }
             onItemClick={(exercise) => {
               navigate("/personalTrainer/exercises/exercise", {
                 state: { exercise },
               });
             }}
-            itemsPerPage={5} 
+            itemsPerPage={5}
+            addedItems={addedExercises}
           />
 
           {/* Added Exercise List */}
-          <Typography variant="h5" sx={{ mt: 3, fontWeight: "bold" }}>Added Exercises</Typography>
-          <GenericList 
-            items={addedExercises} 
-            selectedItems={selectedElementsToRemove} 
-            onToggle={handleToggleRemove} 
-            primaryText={(exercise) => `${exercise.Name}`} 
-            secondaryText={(exercise) => `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`} 
+          <Typography variant="h5" sx={{ mt: 3, fontWeight: "bold" }}>
+            Added Exercises
+          </Typography>
+          <GenericList
+            items={addedExercises}
+            selectedItems={selectedElementsToRemove}
+            onToggle={handleToggleRemove}
+            primaryText={(exercise) => `${exercise.Name}`}
+            secondaryText={(exercise) =>
+              `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
+            }
             onItemClick={(exercise) => {
               navigate("/personalTrainer/exercises/exercise", {
                 state: { exercise },
               });
             }}
-            itemsPerPage={5} 
+            itemsPerPage={5}
+            showSeriesReps={true}
+            onSave={handleSave}
+            onSeriesRepsChange={(id, field, value) => {
+              setAddedExercises((prev) =>
+                prev.map((exercise) =>
+                  exercise.id === id
+                    ? { ...exercise, [field]: value }
+                    : exercise
+                )
+              );
+            }}
           />
         </Paper>
       </Container>
