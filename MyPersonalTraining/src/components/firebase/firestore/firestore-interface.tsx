@@ -8,7 +8,7 @@ import {
   updateDoc,
   getDoc,
   setDoc,
-  deleteDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
@@ -167,6 +167,23 @@ const FirestoreInterface = {
     }
   },
 
+  getPlanByCustomerId: async (customerId: string): Promise<FirebaseObject[]> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      const querySnapshot = await getDocs(plansRef);
+      
+      // Filtra solo i documenti con ID che termina con `-{customerId}`
+      const filteredDocs = querySnapshot.docs
+          .filter(doc => doc.id.endsWith(`-${customerId}`))
+          .map(doc => ({ id: doc.id, ...doc.data() }));
+
+      return filteredDocs;
+    } catch (error) {
+        console.error("Error fetching training plans:", error);
+        return [];
+    }
+  },
+  
   getExercisesPlanByDayNo: async (id: string, dayNo: string): Promise<FirebaseObject[] | null> => {
     try {
         const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);

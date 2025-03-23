@@ -14,7 +14,7 @@ import {
 import { Delete, Add, FilterList } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
-import GenericList from "../../generic-list/GenericList"; // Generic list component
+import GenericList from "../../generic-list/GenericList";
 import AddExercises from "../addexercises/AddExecises";
 import { useNavigate } from "react-router-dom";
 
