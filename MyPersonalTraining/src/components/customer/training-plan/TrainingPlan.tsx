@@ -8,8 +8,6 @@ import {
   IconButton,
 } from "@mui/material";
 import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import BasicTable from "../../material-ui/basic-table/BasicTable";
@@ -19,12 +17,13 @@ export default function CustomerTrainingPlan() {
   const user = userData ? JSON.parse(userData) : null;
   const [days, setDays] = useState<FirebaseObject[]>([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [exercises, setExercises] = useState<any[]>([]); // Array per gli esercizi
+  const [exercises, setExercises] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchDays = async () => {
       if (user?.id) {
         const fetchedDays = await FirestoreInterface.getPlanByCustomerId(user.id);
+        console.log(fetchedDays);
         setDays(fetchedDays || []);
       }
     };
@@ -33,9 +32,12 @@ export default function CustomerTrainingPlan() {
 
   useEffect(() => {
     if (days.length > 0) {
-      const dayKey = "Day " + (selectedDayIndex + 1);
-      const dayExercises = days[selectedDayIndex]?.[dayKey] || []; // Dynamics extraction of the exercise of the day
-      setExercises(dayExercises);
+      const dayName = `Day ${selectedDayIndex + 1}`;
+  
+      // Find the related array element "Day X"
+      const selectedDay = days.find(day => day.name === dayName);
+  
+      setExercises(selectedDay?.exercises || []);
     }
   }, [selectedDayIndex, days]);
 
@@ -102,21 +104,21 @@ export default function CustomerTrainingPlan() {
                   : "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 background: index === selectedDayIndex
                   ? "linear-gradient(145deg,rgb(60, 173, 50),rgb(22, 192, 59))"
-                  : "linear-gradient(145deg, #f0f0f0, #e0e0e0)",
-                color: index === selectedDayIndex ? "white" : "#333",
+                  : "linear-gradient(145deg,rgb(240, 240, 240),rgb(255, 255, 255))",
+                color: index === selectedDayIndex ? "white" : "rgb(17, 131, 46)",
                 "&:hover": {
                   background: index === selectedDayIndex
                     ? "linear-gradient(145deg,rgb(73, 194, 57),rgb(31, 180, 51))"
                     : "#f5f5f5",
                   transform: "scale(1.10)",
-                  boxShadow: "0px 6px 20px rgba(31, 210, 25, 0.4)",
+                  boxShadow: "0px 6px 20px rgba(94, 155, 92, 0.4)",
                 },
               }}
             >
               <Typography variant="body1" sx={{ fontWeight: "bold" }}>{day.name || `Day ${index + 1}`}</Typography>
-              <Typography variant="body2" sx={{ fontSize: "0.85rem", fontWeight: "bold" }}>
+              {/* <Typography variant="body2" sx={{ fontSize: "0.85rem", fontWeight: "bold" }}>
                 {format(new Date(day.timestamp || Date.now()), "dd/MM", { locale: it })}
-              </Typography>
+              </Typography> */}
             </Button>
           ))}
 
@@ -135,8 +137,18 @@ export default function CustomerTrainingPlan() {
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <Typography variant="h6" sx={{ fontWeight: "bold", mb: 2 }}>
-            Exercises ({days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
+          <Typography
+            variant="h5"
+            sx={{
+              fontWeight: "bold",
+              mb: 2,
+              color: "rgb(59, 148, 51)",
+              textTransform: "uppercase",
+              letterSpacing: "1px",
+              textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
+            }}
+          >
+            Schedule ({days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
           </Typography>
 
           <BasicTable data={exercises} />

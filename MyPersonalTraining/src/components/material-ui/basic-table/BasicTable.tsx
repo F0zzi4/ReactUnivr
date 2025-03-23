@@ -18,10 +18,10 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Exercise Name</TableCell>
-            <TableCell align="right">Description</TableCell>
-            <TableCell align="right">Target</TableCell>
-            <TableCell align="right">Difficulty</TableCell>
+            <TableCell sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>Exercise Name</TableCell>
+            <TableCell align="right" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>Description</TableCell>
+            <TableCell align="right" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>Target</TableCell>
+            <TableCell align="right" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>Difficulty</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
