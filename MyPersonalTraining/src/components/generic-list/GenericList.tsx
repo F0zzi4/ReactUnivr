@@ -11,7 +11,7 @@ import {
   Button,
   TextField,
 } from "@mui/material";
-import { ArrowForwardIos, Check } from "@mui/icons-material"; // Aggiungi l'icona Check
+import { ArrowForwardIos, Check } from "@mui/icons-material";
 import { useState } from "react";
 import React from "react";
 
@@ -70,16 +70,14 @@ function GenericList({
   // Function to toggle editing mode
   const handleEditToggle = (itemId: string) => {
     if (editingItemId === itemId) {
-      // Se stiamo uscendo dalla modalità di modifica, salva le modifiche
       if (onSave) {
         const updatedItem = items.find((item) => item.id === itemId);
         if (updatedItem) {
           onSave(itemId, updatedItem);
         }
       }
-      setEditingItemId(null); // Disabilita la modalità di modifica
+      setEditingItemId(null);
     } else {
-      // Se c'è già un elemento in modalità di modifica, salva le modifiche prima di passare al nuovo elemento
       if (editingItemId) {
         const currentEditedItem = items.find(
           (item) => item.id === editingItemId
@@ -88,7 +86,7 @@ function GenericList({
           onSave(editingItemId, currentEditedItem);
         }
       }
-      setEditingItemId(itemId); // Abilita la modalità di modifica per il nuovo elemento
+      setEditingItemId(itemId); 
     }
   };
 
@@ -96,7 +94,7 @@ function GenericList({
   React.useEffect(() => {
     const newShownItems = items.slice(startIndex, startIndex + itemsPerPage);
     if (newShownItems.length === 0 && currentPage > 0) {
-      // Se la pagina corrente è vuota e non siamo sulla prima pagina, torna alla pagina precedente
+     // If the current page is empty and we are not on the first page, go back to the previous page
       setCurrentPage(currentPage - 1);
     }
   }, [items, currentPage, itemsPerPage, startIndex]);
@@ -132,11 +130,11 @@ function GenericList({
                       },
                       borderRadius: 2,
                       p: 1,
-                      display: "flex", // Aggiungi questa linea per usare flexbox
-                      alignItems: "center", // Allinea verticalmente gli elementi
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    {/* Mostra una spunta se l'elemento è già aggiunto, altrimenti mostra la checkbox */}
+                    {/*Show a tick if the item is already added, otherwise show the checkbox */}
                     {isAdded ? (
                       <Check
                         sx={{
@@ -144,14 +142,14 @@ function GenericList({
                           mr: 2,
                           fontSize: "1.5rem",
                         }}
-                      /> // Regola il fontSize per migliorarne la visibilità
+                      /> 
                     ) : (
                       <Checkbox
                         checked={selectedItems.includes(item.id)}
                         onChange={() => onToggle(item)} // Only checkbox handles selection
                         sx={{
-                          mr: 2, // Aggiungi un margine per distanziare la checkbox dal testo
-                          alignSelf: "center", // Allinea la checkbox al centro
+                          mr: 2, 
+                          alignSelf: "center",
                         }}
                       />
                     )}
@@ -179,7 +177,7 @@ function GenericList({
                         <Box sx={{ display: "flex", alignItems: "center" }}>
                           <TextField
                             type="number"
-                            value={item.Series} // Usa series come valore predefinito
+                            value={item.Series}
                             onChange={(e) =>
                               onSeriesRepsChange &&
                               onSeriesRepsChange(
@@ -192,12 +190,12 @@ function GenericList({
                               width: 50,
                               mr: 1,
                               "& input[type=number]": {
-                                "-moz-appearance": "textfield", // Nasconde le freccette in Firefox
-                                textAlign: "center", // Centra il testo all'interno del TextField
+                                "-moz-appearance": "textfield",
+                                textAlign: "center", 
                               },
                               "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
                                 {
-                                  "-webkit-appearance": "none", // Nasconde le freccette in Chrome, Safari
+                                  "-webkit-appearance": "none",
                                   margin: 0,
                                 },
                             }}
@@ -206,7 +204,7 @@ function GenericList({
                           <Typography variant="body2">x</Typography>
                           <TextField
                             type="number"
-                            value={item.Reps} // Usa reps come valore predefinito
+                            value={item.Reps}
                             onChange={(e) =>
                               onSeriesRepsChange &&
                               onSeriesRepsChange(
@@ -220,12 +218,12 @@ function GenericList({
                               mr: 1,
                               ml: 1,
                               "& input[type=number]": {
-                                "-moz-appearance": "textfield", // Nasconde le freccette in Firefox
-                                textAlign: "center", // Centra il testo all'interno del TextField
+                                "-moz-appearance": "textfield",
+                                textAlign: "center", 
                               },
                               "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button":
                                 {
-                                  "-webkit-appearance": "none", // Nasconde le freccette in Chrome, Safari
+                                  "-webkit-appearance": "none",
                                   margin: 0,
                                 },
                             }}
@@ -240,22 +238,22 @@ function GenericList({
                               editingItemId === item.id
                                 ? "contained"
                                 : "outlined"
-                            } // Cambia il variant
+                            } 
                             size="small"
                             onClick={() => handleEditToggle(item.id)}
                             sx={{
                               minWidth: 55, // Set a minimum width for the button
                               color:
-                                editingItemId === item.id ? "white" : "inherit", // Testo bianco in modalità "Save"
+                                editingItemId === item.id ? "white" : "inherit",
                               backgroundColor:
                                 editingItemId === item.id
                                   ? "primary.main"
-                                  : "inherit", // Colore di sfondo in modalità "Save"
+                                  : "inherit",
                               "&:hover": {
                                 backgroundColor:
                                   editingItemId === item.id
                                     ? "primary.dark"
-                                    : "inherit", // Colore di sfondo al passaggio del mouse
+                                    : "inherit",
                               },
                             }}
                           >

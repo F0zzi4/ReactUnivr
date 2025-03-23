@@ -265,7 +265,7 @@ export default function TrainingPlan() {
             </Box>
           </Box>
 
-          {/* Dropdown per selezionare il giorno */}
+          {/* Dropdown to select the day */}
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>Choose day</InputLabel>
             <Select
@@ -282,7 +282,7 @@ export default function TrainingPlan() {
             </Select>
           </FormControl>
 
-          {/* Barra di ricerca */}
+          {/*SearchBar */}
           <TextField
             fullWidth
             label="Search exercise..."
