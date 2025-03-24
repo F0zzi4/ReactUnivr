@@ -23,7 +23,6 @@ export default function CustomerTrainingPlan() {
     const fetchDays = async () => {
       if (user?.id) {
         const fetchedDays = await FirestoreInterface.getPlanByCustomerId(user.id);
-        console.log(fetchedDays);
         setDays(fetchedDays || []);
       }
     };
