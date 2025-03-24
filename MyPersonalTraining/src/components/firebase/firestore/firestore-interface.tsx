@@ -8,7 +8,8 @@ import {
   updateDoc,
   getDoc,
   setDoc,
-  deleteDoc
+  deleteDoc,
+  addDoc
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
@@ -18,7 +19,8 @@ const COLLECTIONS = {
   USERS: "users",
   CUSTOMERS: "customers",
   EXERCISES: "exercises",
-  TRAINING_PLANS: "training-plans"
+  TRAINING_PLANS: "training-plans",
+  GOALS: "goals"
 };
 
 const FirestoreInterface = {
@@ -220,6 +222,83 @@ const FirestoreInterface = {
     } catch (error) {
         console.error("Error fetching exercises for the training plan:", error);
         return null;
+    }
+  },
+
+  getGoalsByCustomerId: async (id: string): Promise<FirebaseObject[] | null> => {
+    try {
+      const goalsRef = collection(Firestore, COLLECTIONS.USERS, id, COLLECTIONS.GOALS);
+      const querySnapshot = await getDocs(goalsRef);
+  
+      const goals = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      return goals;
+    } catch (error) {
+      console.error("Error fetching goals for the user:", error);
+      return null;
+    }
+  },
+
+  addGoalByCustomerId: async (userId: string, goal : FirebaseObject): Promise<FirebaseObject[] | null> => {
+    try {
+      await addDoc(collection(Firestore, COLLECTIONS.USERS, userId, "goals"), {
+        name: goal.name,
+        targetValue: goal.targetValue,
+        completed: goal.completed || false,
+      });
+
+      // Recupera tutti i goals aggiornati
+      const snapshot = await getDocs(collection(Firestore, COLLECTIONS.USERS, userId, "goals"));
+      const updatedGoals: FirebaseObject[] = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as FirebaseObject[];
+
+      return updatedGoals;
+    } catch (error) {
+      console.error("Error adding goal:", error);
+      return null;
+    }
+  },
+
+  updateGoalByCustomerId: async (userId: string, goal : FirebaseObject): Promise<void> => {
+    try {
+      const goalsRef = collection(Firestore, COLLECTIONS.USERS, userId, "goals");
+
+      const snapshot = await getDocs(goalsRef);
+      const existingGoalDoc = snapshot.docs.find((docItem) => docItem.id === goal.id);
+
+      if (existingGoalDoc) {
+        await updateDoc(doc(Firestore, goalsRef.path, goal.id), {
+          name: goal.name,
+          targetValue: goal.targetValue,
+          completed: goal.completed || false,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating goal:", error);
+    }
+  },
+
+  removeGoalsByCustomerId: async (userId: string, goals : FirebaseObject[]): Promise<void> => {
+    try {
+      const goalsRef = collection(Firestore, COLLECTIONS.USERS, userId, "goals");
+      
+      // Fetch all goals
+      const snapshot = await getDocs(goalsRef);
+      
+      // Iterate over the passed goals and delete them if they exist
+      for (const goal of goals) {
+          const goalDoc = snapshot.docs.find(docItem => docItem.id === goal.id);
+          if (goalDoc) {
+              await deleteDoc(doc(Firestore, goalsRef.path, goal.id));
+          }
+      }
+    } catch (error) {
+        console.error("Error removing goals:", error);
     }
   },
 

@@ -25,7 +25,6 @@ export default function CustomerTrainingPlan() {
         const fetchedDays = await FirestoreInterface.getPlanByCustomerId(
           user.id
         );
-        console.log(fetchedDays);
         setDays(fetchedDays || []);
       }
     };
