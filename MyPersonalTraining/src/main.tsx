@@ -9,7 +9,6 @@ import {
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
 import SideBar from "./components/sidebar/SideBar";
-import HomePage from "./components/homepage/HomePage";
 import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
 import Me from "./components/customer/me/Me";
@@ -23,6 +22,7 @@ import Outbox from "./components/outbox/Outbox";
 import Customer from "./components/personaltrainer/customer/Customer";
 import Exercise from "./components/personaltrainer/exercise/Exercise";
 import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
+import './main.css';
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -41,10 +41,12 @@ const Layout = () => {
       <SessionManager />
       {/* Main content */}
       <main
-        className={`transition-all duration-300 ${
+        className={`main-content transition-all duration-300 ${
           showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
         } flex-1 overflow-auto`}
       >
+          <img src="../gym1.png" alt="Gym Center" className="background-image image-left" />
+          <img src="../gym3.png" alt="Gym Right" className="background-image image-right" />
         <Outlet />
       </main>
     </div>
@@ -61,7 +63,7 @@ const LoginWithRedirect = () => {
 
   useEffect(() => {
     if (user && location.pathname === "/") {
-      window.location.replace("/homepage");
+      window.location.replace("/inbox");
     }
   }, [user, location.pathname]);
 
@@ -82,11 +84,11 @@ root.render(
 
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
-          <Route path="/homepage" element={<HomePage />} />
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
           <Route path="/customer/training-plan" element={<CustomerTrainingPlan />} />
+          <Route path="/inbox" element={<Inbox />} />
           Customer
           {/* PersonalTrainer Routes */}
           <Route

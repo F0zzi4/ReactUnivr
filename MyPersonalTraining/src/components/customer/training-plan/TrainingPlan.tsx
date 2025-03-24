@@ -68,7 +68,7 @@ export default function CustomerTrainingPlan() {
         sx={{
           p: 3,
           borderRadius: 5,
-          background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
+          background: "rgb(147, 229, 165)",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -79,7 +79,10 @@ export default function CustomerTrainingPlan() {
             mb: 3,
             textAlign: "center",
             color: "#333",
-            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)", 
+            background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
           Training Plan
@@ -149,7 +152,7 @@ export default function CustomerTrainingPlan() {
           </IconButton>
         </Box>
 
-        {/* Box con la lista degli esercizi */}
+        {/* Exercises list */}
         <Box
           sx={{
             mt: 3,

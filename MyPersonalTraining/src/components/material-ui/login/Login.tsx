@@ -5,13 +5,11 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import FormLabel from "@mui/material/FormLabel";
 import FormControl from "@mui/material/FormControl";
-import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import ForgotPassword from "./subcomponents/ForgotPassword";
 import AppTheme from "../shared-theme/AppTheme";
 import AppIcon from "../../../assets/mypersonaltraining.webp";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -75,7 +73,6 @@ export default function Login() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,15 +81,6 @@ export default function Login() {
       inputElement.focus();
     }
   }, []);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -106,8 +94,8 @@ export default function Login() {
         user.timestamp = Date.now();
         sessionStorage.setItem("user", JSON.stringify(user));
       }
-      // Go to homepage
-      navigate("/homepage");
+      // Go to training-plan
+      navigate("/inbox");
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setPasswordError(true);
@@ -224,7 +212,6 @@ export default function Login() {
               />
             </FormControl>
             <br></br>
-            <ForgotPassword open={open} handleClose={handleClose} />
             <Button
               type="submit"
               fullWidth
@@ -233,20 +220,11 @@ export default function Login() {
             >
               Sign in
             </Button>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: "center" }}
-            >
-              Forgot your password?
-            </Link>
           </Box>
           <Divider>or</Divider>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography sx={{ textAlign: "center" }}>
-              Don&apos;t have an account? send email via:
+              Don&apos;t have an account or having problem with access? send email via:
               <i>fozzatodavide@gmail.com</i>
             </Typography>
           </Box>

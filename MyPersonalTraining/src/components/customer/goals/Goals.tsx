@@ -15,7 +15,6 @@ import {
   Alert,
   Chip,
   Pagination,
-  Divider,
   Tooltip,
   CircularProgress,
 } from "@mui/material";
@@ -163,7 +162,7 @@ export default function GymGoals() {
           p: 4,
           mt: 4,
           borderRadius: 5,
-          background: "linear-gradient(145deg, #f5f7fa, #e4e8f0)",
+          backgroundColor: "rgb(211, 250, 217)",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
           position: "relative",
           border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -186,7 +185,7 @@ export default function GymGoals() {
               color: "#2c3e50",
               textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
               mb: 1,
-              background: "linear-gradient(to right, #3498db, #2c3e50)",
+              background: "linear-gradient(to right,rgb(57, 206, 119),rgb(48, 126, 80))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -220,7 +219,7 @@ export default function GymGoals() {
           <Chip
             label={`Active: ${goals.filter((g) => !g.completed).length}`}
             variant={filter === "active" ? "filled" : "outlined"}
-            color="secondary"
+            color="success"
             onClick={() => setFilter("active")}
           />
           <Chip
@@ -425,12 +424,12 @@ export default function GymGoals() {
                 onClick={addGoal}
                 sx={{
                   color: "white",
-                  backgroundColor: "#3498db",
-                  p: 1.5,
+                  backgroundColor: "rgb(22, 151, 33)",
+                  p: 1.2,
                   borderRadius: 2,
                   "&:hover": {
-                    backgroundColor: "#2980b9",
-                    transform: "scale(1.05)",
+                    backgroundColor: "rgb(15, 97, 22)",
+                    transform: "scale(1.1)",
                   },
                   transition: "all 0.3s ease",
                 }}

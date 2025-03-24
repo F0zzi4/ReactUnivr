@@ -122,7 +122,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index} className="p-0">
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-800 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
@@ -148,7 +148,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-800 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
