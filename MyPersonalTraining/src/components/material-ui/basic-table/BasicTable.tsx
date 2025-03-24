@@ -53,13 +53,9 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
     return targetA.localeCompare(targetB);
   });
 
-  let lastTarget: string | null = null;
   let exerciseNumber = 1; // Numerazione dinamica degli esercizi
 
   const renderTableRow = (exercise: FirebaseObject, index: number) => {
-    const isTargetChanged = lastTarget !== exercise.Target;
-    lastTarget = exercise.Target;
-
     return (
       <React.Fragment key={exercise.id || index}>
         {/* Numerazione dinamica e riga per gli esercizi */}
@@ -122,6 +118,9 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
                   display: "flex",
                   justifyContent: "center",
                   minHeight: "auto",
+                  "&:hover": {
+                    backgroundColor: "#e8f5e9",
+                  },
                   "& .MuiAccordionSummary-expandIconWrapper": {
                     transition: "all 0.2s ease",
                     borderRadius: "50%",
