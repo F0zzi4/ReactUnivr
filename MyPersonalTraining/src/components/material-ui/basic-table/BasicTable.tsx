@@ -43,28 +43,147 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
     const targetA = a.Target || "";
     const targetB = b.Target || "";
 
-    // Ordina prima secondo la priorità specificata in targetOrder
     const indexA = targetOrder.indexOf(targetA);
     const indexB = targetOrder.indexOf(targetB);
 
-    // Se il target è presente in targetOrder, ordina in base alla posizione
     if (indexA !== -1 && indexB !== -1) {
       return indexA - indexB;
     }
 
-    // Se uno dei target non è presente, ordina alfabeticamente
     return targetA.localeCompare(targetB);
   });
 
   let lastTarget: string | null = null;
   let exerciseNumber = 1; // Numerazione dinamica degli esercizi
 
+  const renderTableRow = (exercise: FirebaseObject, index: number) => {
+    const isTargetChanged = lastTarget !== exercise.Target;
+    lastTarget = exercise.Target;
+
+    return (
+      <React.Fragment key={exercise.id || index}>
+        {/* Numerazione dinamica e riga per gli esercizi */}
+        <TableRow
+          sx={{
+            cursor: "pointer",
+            "&:hover": { backgroundColor: "#e8f5e9" },
+            textAlign: "center",
+            backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white", // Alternanza delle righe
+          }}
+        >
+          <TableCell
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+              color: "#388e3c", // Colore verde per il numero
+            }}
+          >
+            {exerciseNumber++} {/* Numerazione dinamica */}
+          </TableCell>
+          <TableCell
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+            }}
+          >
+            {exercise.Name}
+          </TableCell>
+          <TableCell sx={{ textAlign: "center" }}>
+            {`${exercise.Series}x${exercise.Reps}`}
+          </TableCell>
+          <TableCell sx={{ textAlign: "center" }}>
+            {exercise.Difficulty || "N/A"}
+          </TableCell>
+          <TableCell sx={{ textAlign: "center" }}>
+            {exercise.Target || "N/A"}
+          </TableCell>
+          <TableCell sx={{ textAlign: "center" }}>
+            <Accordion
+              expanded={expanded === `panel${index}`}
+              onChange={handleChange(`panel${index}`)}
+              sx={{
+                boxShadow: "none",
+                m: 0,
+                p: 0,
+                backgroundColor: "transparent",
+                minWidth: "fit-content",
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <AccordionSummary
+                aria-controls={`panel${index}-content`}
+                id={`panel${index}-header`}
+                sx={{
+                  padding: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                  minHeight: "auto",
+                  "& .MuiAccordionSummary-expandIconWrapper": {
+                    transition: "all 0.2s ease",
+                    borderRadius: "50%",
+                    padding: "4px",
+                    color: "rgba(0, 0, 0, 0.54)",
+                    "&:hover": {
+                      backgroundColor: "#4CAF50",
+                      color: "white !important",
+                    },
+                  },
+                  "&.Mui-expanded": {
+                    minHeight: "auto",
+                    "& .MuiAccordionSummary-expandIconWrapper": {
+                      transform: "rotate(180deg)",
+                      color: "rgba(0, 0, 0, 0.54)",
+                    },
+                  },
+                }}
+                expandIcon={<ExpandMore />}
+              />
+            </Accordion>
+          </TableCell>
+        </TableRow>
+        {expanded === `panel${index}` && (
+          <TableRow>
+            <TableCell
+              colSpan={6}
+              sx={{
+                p: 0,
+                borderBottom: "none",
+                textAlign: "center",
+                width: "100%",
+              }}
+            >
+              <AccordionDetails>
+                <Typography
+                  sx={{
+                    p: 1,
+                    fontSize: "0.875rem",
+                    lineHeight: 1.5,
+                    color: "text.secondary",
+                    overflowWrap: "break-word",
+                  }}
+                >
+                  <b>Description:</b>
+                  <br />
+                  {exercise.Description || "No description available"}
+                </Typography>
+              </AccordionDetails>
+            </TableCell>
+          </TableRow>
+        )}
+      </React.Fragment>
+    );
+  };
+
   return (
     <TableContainer
       component={Paper}
       sx={{
         borderRadius: 3,
-        overflowX: "auto", // Permette lo scroll orizzontale sui dispositivi piccoli
+        overflowX: "auto",
         boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
         maxWidth: "100%",
       }}
@@ -73,7 +192,7 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
         sx={{
           minWidth: 650,
           "@media (max-width: 768px)": {
-            tableLayout: "auto", // Usa auto per adattarsi alla larghezza
+            tableLayout: "auto",
           },
         }}
       >
@@ -140,127 +259,7 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedData.map((exercise, index) => {
-            const isTargetChanged = lastTarget !== exercise.Target;
-            lastTarget = exercise.Target;
-
-            return (
-              <React.Fragment key={exercise.id || index}>
-                {/* Numerazione dinamica e riga per gli esercizi */}
-                <TableRow
-                  sx={{
-                    cursor: "pointer",
-                    "&:hover": { backgroundColor: "#e8f5e9" },
-                    textAlign: "center",
-                    backgroundColor: index % 2 === 0 ? "#f9f9f9" : "white", // Alternanza delle righe
-                  }}
-                >
-                  <TableCell
-                    sx={{
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      fontSize: "1.1rem",
-                      color: "#388e3c", // Colore verde per il numero
-                    }}
-                  >
-                    {exerciseNumber++} {/* Numerazione dinamica */}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      textAlign: "center",
-                      fontWeight: "bold",
-                      fontSize: "1.1rem",
-                    }}
-                  >
-                    {exercise.Name}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    {`${exercise.Series}x${exercise.Reps}`}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    {exercise.Difficulty || "N/A"}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    {exercise.Target || "N/A"}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>
-                    <Accordion
-                      expanded={expanded === `panel${index}`}
-                      onChange={handleChange(`panel${index}`)}
-                      sx={{
-                        boxShadow: "none",
-                        m: 0,
-                        p: 0,
-                        backgroundColor: "transparent",
-                        minWidth: "fit-content",
-                        display: "flex",
-                        justifyContent: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <AccordionSummary
-                        aria-controls={`panel${index}-content`}
-                        id={`panel${index}-header`}
-                        sx={{
-                          padding: 0,
-                          display: "flex",
-                          justifyContent: "center",
-                          minHeight: "auto",
-                          "& .MuiAccordionSummary-expandIconWrapper": {
-                            transition: "all 0.2s ease",
-                            borderRadius: "50%",
-                            padding: "4px",
-                            color: "rgba(0, 0, 0, 0.54)",
-                            "&:hover": {
-                              backgroundColor: "#4CAF50",
-                              color: "white !important",
-                            },
-                          },
-                          "&.Mui-expanded": {
-                            minHeight: "auto",
-                            "& .MuiAccordionSummary-expandIconWrapper": {
-                              transform: "rotate(180deg)",
-                              color: "rgba(0, 0, 0, 0.54)",
-                            },
-                          },
-                        }}
-                        expandIcon={<ExpandMore />}
-                      />
-                    </Accordion>
-                  </TableCell>
-                </TableRow>
-                {expanded === `panel${index}` && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      sx={{
-                        p: 0,
-                        borderBottom: "none",
-                        textAlign: "center",
-                        width: "100%",
-                      }}
-                    >
-                      <AccordionDetails>
-                        <Typography
-                          sx={{
-                            p: 1,
-                            fontSize: "0.875rem",
-                            lineHeight: 1.5,
-                            color: "text.secondary",
-                            overflowWrap: "break-word",
-                          }}
-                        >
-                          <b>Description:</b>
-                          <br />
-                          {exercise.Description || "No description available"}
-                        </Typography>
-                      </AccordionDetails>
-                    </TableCell>
-                  </TableRow>
-                )}
-              </React.Fragment>
-            );
-          })}
+          {sortedData.map((exercise, index) => renderTableRow(exercise, index))}
         </TableBody>
       </Table>
     </TableContainer>

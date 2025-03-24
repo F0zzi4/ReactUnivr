@@ -33,13 +33,20 @@ export default function CustomerTrainingPlan() {
   }, [user?.id]);
 
   useEffect(() => {
-    if (days.length > 0) {
-      const dayName = `Day ${selectedDayIndex + 1}`;
+    if (
+      days.length > 0 &&
+      selectedDayIndex >= 0 &&
+      selectedDayIndex < days.length
+    ) {
+      // Prendi il giorno selezionato direttamente tramite l'indice
+      const selectedDay = days[selectedDayIndex];
 
-      // Find the related array element "Day X"
-      const selectedDay = days.find((day) => day.name === dayName);
-
-      setExercises(selectedDay?.exercises || []);
+      if (selectedDay) {
+        setExercises(selectedDay.exercises || []);
+      } else {
+        console.error(`No exercises found for ${selectedDayIndex + 1}`);
+        setExercises([]);
+      }
     }
   }, [selectedDayIndex, days]);
 
