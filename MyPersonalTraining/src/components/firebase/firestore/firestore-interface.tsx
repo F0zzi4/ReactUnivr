@@ -8,7 +8,7 @@ import {
   updateDoc,
   getDoc,
   setDoc,
-  deleteDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
@@ -167,6 +167,45 @@ const FirestoreInterface = {
     }
   },
 
+  getPlanByCustomerId: async (customerId: string): Promise<FirebaseObject[]> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      const querySnapshot = await getDocs(plansRef);
+  
+      // Filtra i documenti con ID che termina con `-{customerId}`
+      const filteredDocs = querySnapshot.docs
+        .filter(doc => doc.id.endsWith(`-${customerId}`))
+        .map(doc => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+  
+      if (filteredDocs.length === 0) return [];
+  
+      // Estrai solo i campi relativi ai giorni e assegna un ID unico
+      const daysArray: FirebaseObject[] = filteredDocs.flatMap(({ id, data }) =>
+        Object.keys(data)
+          .filter(key => key.startsWith("Day ")) // Prendi solo chiavi che iniziano con "Day "
+          .sort((a, b) => {
+            // Estrai i numeri dai nomi dei giorni (es. "Day 1" -> 1, "Day 10" -> 10)
+            const numA = parseInt(a.replace("Day ", ""), 10);
+            const numB = parseInt(b.replace("Day ", ""), 10);
+            return numA - numB; // Ordina numericamente
+          })
+          .map(dayKey => ({
+            id: `${id}-${dayKey}`, // ID univoco
+            name: dayKey, // Nome del giorno
+            exercises: data[dayKey], // Lista di esercizi
+          }))
+      );
+  
+      return daysArray;
+    } catch (error) {
+      console.error("Error fetching training plans:", error);
+      return [];
+    }
+  },
+  
   getExercisesPlanByDayNo: async (id: string, dayNo: string): Promise<FirebaseObject[] | null> => {
     try {
         const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);
