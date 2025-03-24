@@ -107,7 +107,12 @@ export default function Exercise() {
 
         {/* Form */}
         <form className="space-y-4">
-          <h2 className="text-3xl font-bold mb-8 text-center" style={{ marginBottom: "20px" }}>Exercise Info</h2>
+          <h2
+            className="text-3xl font-bold mb-8 text-center"
+            style={{ marginBottom: "20px" }}
+          >
+            Exercise Info
+          </h2>
 
           {/* Exercise Id */}
           <div>

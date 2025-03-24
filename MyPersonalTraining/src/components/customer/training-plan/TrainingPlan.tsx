@@ -22,7 +22,9 @@ export default function CustomerTrainingPlan() {
   useEffect(() => {
     const fetchDays = async () => {
       if (user?.id) {
-        const fetchedDays = await FirestoreInterface.getPlanByCustomerId(user.id);
+        const fetchedDays = await FirestoreInterface.getPlanByCustomerId(
+          user.id
+        );
         console.log(fetchedDays);
         setDays(fetchedDays || []);
       }
@@ -33,10 +35,10 @@ export default function CustomerTrainingPlan() {
   useEffect(() => {
     if (days.length > 0) {
       const dayName = `Day ${selectedDayIndex + 1}`;
-  
+
       // Find the related array element "Day X"
-      const selectedDay = days.find(day => day.name === dayName);
-  
+      const selectedDay = days.find((day) => day.name === dayName);
+
       setExercises(selectedDay?.exercises || []);
     }
   }, [selectedDayIndex, days]);
@@ -77,7 +79,15 @@ export default function CustomerTrainingPlan() {
           Training Plan
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 2, mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
+            mb: 3,
+          }}
+        >
           <IconButton onClick={handlePrev} disabled={selectedDayIndex === 0}>
             <ChevronLeft />
           </IconButton>
@@ -99,30 +109,36 @@ export default function CustomerTrainingPlan() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: index === selectedDayIndex
-                  ? "0px 4px 15px rgba(25, 118, 210, 0.3)"
-                  : "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                background: index === selectedDayIndex
-                  ? "linear-gradient(145deg,rgb(60, 173, 50),rgb(22, 192, 59))"
-                  : "linear-gradient(145deg,rgb(240, 240, 240),rgb(255, 255, 255))",
-                color: index === selectedDayIndex ? "white" : "rgb(17, 131, 46)",
+                boxShadow:
+                  index === selectedDayIndex
+                    ? "0px 4px 15px rgba(25, 118, 210, 0.3)"
+                    : "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                background:
+                  index === selectedDayIndex
+                    ? "linear-gradient(145deg,rgb(60, 173, 50),rgb(22, 192, 59))"
+                    : "linear-gradient(145deg,rgb(240, 240, 240),rgb(255, 255, 255))",
+                color:
+                  index === selectedDayIndex ? "white" : "rgb(17, 131, 46)",
                 "&:hover": {
-                  background: index === selectedDayIndex
-                    ? "linear-gradient(145deg,rgb(73, 194, 57),rgb(31, 180, 51))"
-                    : "#f5f5f5",
+                  background:
+                    index === selectedDayIndex
+                      ? "linear-gradient(145deg,rgb(73, 194, 57),rgb(31, 180, 51))"
+                      : "#f5f5f5",
                   transform: "scale(1.10)",
                   boxShadow: "0px 6px 20px rgba(94, 155, 92, 0.4)",
                 },
               }}
             >
-              <Typography variant="body1" sx={{ fontWeight: "bold" }}>{day.name || `Day ${index + 1}`}</Typography>
-              {/* <Typography variant="body2" sx={{ fontSize: "0.85rem", fontWeight: "bold" }}>
-                {format(new Date(day.timestamp || Date.now()), "dd/MM", { locale: it })}
-              </Typography> */}
+              <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                {day.name || `Day ${index + 1}`}
+              </Typography>
             </Button>
           ))}
 
-          <IconButton onClick={handleNext} disabled={selectedDayIndex === days.length - 1}>
+          <IconButton
+            onClick={handleNext}
+            disabled={selectedDayIndex === days.length - 1}
+          >
             <ChevronRight />
           </IconButton>
         </Box>
@@ -148,7 +164,8 @@ export default function CustomerTrainingPlan() {
               textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
             }}
           >
-            Schedule ({days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
+            Schedule (
+            {days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
           </Typography>
 
           <BasicTable data={exercises} />
