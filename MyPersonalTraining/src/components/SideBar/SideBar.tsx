@@ -130,7 +130,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     {item.icon}
                   </div>
                   <p
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-300 font-bold ${
                       !open ? "hidden" : "block text-lg"
                     }`}
                   >
@@ -156,7 +156,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     {item.icon}
                   </div>
                   <p
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-300 font-bold ${
                       !open ? "hidden" : "block text-lg"
                     }`}
                   >

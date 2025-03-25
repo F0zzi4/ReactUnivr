@@ -196,7 +196,7 @@ const BasicTable: React.FC<BasicTableProps> = ({ data }) => {
         }}
       >
         <TableHead>
-          <TableRow sx={{ backgroundColor: "#4CAF50" }}>
+          <TableRow sx={{ background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))" }}>
             <TableCell
               sx={{
                 color: "white",

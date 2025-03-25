@@ -9,7 +9,8 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
-  addDoc
+  addDoc,
+  Timestamp
 } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
@@ -20,7 +21,8 @@ const COLLECTIONS = {
   CUSTOMERS: "customers",
   EXERCISES: "exercises",
   TRAINING_PLANS: "training-plans",
-  GOALS: "goals"
+  GOALS: "goals",
+  MESSAGES: "messages"
 };
 
 const FirestoreInterface = {
@@ -373,6 +375,76 @@ const FirestoreInterface = {
       );
     }
   },
+
+  createMessage: async (sender: string, recipient: string, subject: string, body: string): Promise<void> => {
+    try {
+      const newMessage = {
+        sender: sender,
+        recipient: recipient,
+        subject: subject,
+        body: body,
+        timestamp: Timestamp.fromDate(new Date()),
+      };
+  
+      // Add a message in collection "messages" with random and valid ID
+      await addDoc(collection(Firestore, "messages"), newMessage);
+    } catch (e) {
+      console.error("Error adding message: ", e);
+    }
+  },
+
+  getAllMessagesBySenderId: async (senderId: string): Promise<FirebaseObject[] | undefined> => {
+    try {
+      const messagesRef = collection(Firestore, COLLECTIONS.MESSAGES);
+      const q = query(messagesRef, where("sender", "==", senderId));
+      const querySnapshot = await getDocs(q);
+  
+      const messages = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      return messages;
+    } catch (e) {
+      console.error("Error retrieving messages: ", e);
+    }
+  },
+
+  getAllMessagesByRecipientId: async (recipientId: string): Promise<FirebaseObject[] | undefined> => {
+    try {
+      const messagesRef = collection(Firestore, COLLECTIONS.MESSAGES);
+      const q = query(messagesRef, where("recipient", "==", recipientId));
+      const querySnapshot = await getDocs(q);
+  
+      const messages = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      return messages;
+    } catch (e) {
+      console.error("Error retrieving messages: ", e);
+    }
+  },
+
+  getPersonalTrainerId: async (customerId : string): Promise<string> => {
+    const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      const querySnapshot = await getDocs(plansRef);
+  
+      const filteredDocs = querySnapshot.docs
+        .filter(doc => doc.id.endsWith(`-${customerId}`))
+        .map(doc => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+  
+      if (filteredDocs.length === 0)
+        return "";
+      else{
+        const splitted = filteredDocs[0].id.split("-");
+        return splitted[0];
+      }
+  }
 };
 
 const normalizeExerciseName = (id: string): string => {

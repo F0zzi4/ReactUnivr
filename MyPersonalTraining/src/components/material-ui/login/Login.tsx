@@ -135,7 +135,7 @@ export default function Login() {
     <AppTheme>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
+        <Card variant="outlined" sx={{ backgroundColor: "rgb(147, 229, 165)" }}>
           <Box
             sx={{
               display: "flex",

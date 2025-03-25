@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import {
   Container,
   Typography,
@@ -162,7 +163,7 @@ export default function GymGoals() {
           p: 4,
           mt: 4,
           borderRadius: 5,
-          backgroundColor: "rgb(211, 250, 217)",
+          backgroundColor: "rgb(147, 229, 165)",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
           position: "relative",
           border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -185,7 +186,7 @@ export default function GymGoals() {
               color: "#2c3e50",
               textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
               mb: 1,
-              background: "linear-gradient(to right,rgb(57, 206, 119),rgb(48, 126, 80))",
+              background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -194,7 +195,7 @@ export default function GymGoals() {
           </Typography>
           <Typography
             variant="subtitle1"
-            sx={{ color: "#7f8c8d", textAlign: "center" }}
+            sx={{ textAlign: "center", fontWeight: "bold", color: "rgb(10, 59, 26)" }}
           >
             Set your fitness targets and track your progress
           </Typography>
@@ -213,7 +214,7 @@ export default function GymGoals() {
           <Chip
             label={`All: ${goals.length}`}
             variant={filter === "all" ? "filled" : "outlined"}
-            color="primary"
+            color="success"
             onClick={() => setFilter("all")}
           />
           <Chip
@@ -253,8 +254,8 @@ export default function GymGoals() {
                       display: "flex",
                       justifyContent: "space-between",
                       bgcolor: goal.completed
-                        ? "rgba(46, 204, 113, 0.1)"
-                        : "inherit",
+                        ? "rgb(218, 245, 206)"
+                        : "rgb(255, 255, 255)",
                       borderRadius: 2,
                       mb: 1,
                       transition: "all 0.3s ease",
@@ -367,8 +368,9 @@ export default function GymGoals() {
               alignItems: "center",
             }}
           >
-            <AddIcon sx={{ mr: 1 }} /> Add New Goal
+            <TrackChangesIcon sx={{ mr: 1, color: "rgb(30, 124, 62)" }} /> Add New Goal
           </Typography>
+          
           <Box
             sx={{
               display: "flex",
@@ -391,16 +393,16 @@ export default function GymGoals() {
               }
               sx={{
                 "& .MuiOutlinedInput-root": {
+                  backgroundColor: "white",
                   borderRadius: 2,
                   "&:hover fieldset": {
-                    borderColor: "#3498db",
+                    borderColor: "rgb(30, 124, 62)",
                   },
                 },
               }}
             />
             <TextField
               label="Target Value"
-              variant="outlined"
               fullWidth
               size="small"
               value={newGoal?.targetValue || ""}
@@ -413,8 +415,9 @@ export default function GymGoals() {
               sx={{
                 "& .MuiOutlinedInput-root": {
                   borderRadius: 2,
+                  backgroundColor: "white",
                   "&:hover fieldset": {
-                    borderColor: "#3498db",
+                    borderColor: "rgb(30, 124, 62)",
                   },
                 },
               }}
@@ -424,11 +427,11 @@ export default function GymGoals() {
                 onClick={addGoal}
                 sx={{
                   color: "white",
-                  backgroundColor: "rgb(22, 151, 33)",
+                  background: "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
                   p: 1.2,
                   borderRadius: 2,
                   "&:hover": {
-                    backgroundColor: "rgb(15, 97, 22)",
+                    background: "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
                     transform: "scale(1.1)",
                   },
                   transition: "all 0.3s ease",
@@ -442,7 +445,15 @@ export default function GymGoals() {
 
         {/* Action buttons */}
         {goals.some((goal) => goal.completed) && (
-          <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end" }}>
+          <Box
+            sx={{
+              mt: 3,
+              display: "flex",
+              justifyContent: "center", // Centra il bottone
+              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" }, // Layout colonna su mobile
+            }}
+          >
             <Tooltip title="Remove all completed goals">
               <IconButton
                 onClick={removeCompletedGoals}
