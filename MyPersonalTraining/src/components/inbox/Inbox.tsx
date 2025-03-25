@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaInbox, FaPencilAlt, FaTimes } from "react-icons/fa";
+import { FaInbox, FaPencilAlt, FaTimes, FaTrash } from "react-icons/fa";
 import FirebaseObject from "../firebase/firestore/data-model/FirebaseObject";
 import FirestoreInterface from "../firebase/firestore/firestore-interface";
 
@@ -19,34 +19,44 @@ export default function Inbox() {
     subject: "",
     body: "",
     timestamp: Date.now(),
+    read: false,
   });
   const [error, setError] = useState<string | null>(null);
+
+  // get a valid date from a firestore timestamp
+  const formatFirestoreDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+    const date = new Date(timestamp.seconds * 1000);
+    return date.toLocaleString();
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         let recipientList: FirebaseObject[] = [];
 
-        if(user?.UserType === "Customer"){
+        if (user?.UserType === "Customer") {
           const ptId = await FirestoreInterface.getPersonalTrainerId(user.id);
           const pt = await FirestoreInterface.getUserById(ptId);
           recipientList = pt ? [{ ...pt, id: ptId }] : [];
-        }else if(user?.UserType === "Personal Trainer"){
+        } else if (user?.UserType === "Personal Trainer") {
           const customersId = await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
-
-          const customersPromises = customersId.map(async customerId => {
+          const customersPromises = customersId.map(async (customerId) => {
             return await FirestoreInterface.getUserById(customerId.id);
           });
-
-          // to make sure all the customers will be set before the setRecipients hook
-          const customers = (await Promise.all(customersPromises)).filter(customer => customer !== null);
-          recipientList = customers;      
+          const customers = (await Promise.all(customersPromises)).filter((customer) => customer !== null);
+          recipientList = customers;
         }
 
         setSenders(recipientList);
+
+        let messagesArray = await FirestoreInterface.getAllMessagesByRecipientId(user.id);
         
-        const messagesArray = await FirestoreInterface.getAllMessagesByRecipientId(user.id);
-        setMessages(Array.isArray(messagesArray) ? messagesArray : []);
+        // Ordina i messaggi per data decrescente
+        messagesArray = Array.isArray(messagesArray) 
+          ? messagesArray.sort((a, b) => b.timestamp - a.timestamp) 
+          : [];
+
+        setMessages(messagesArray);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching recipients or messages:", error);
@@ -55,6 +65,31 @@ export default function Inbox() {
     };
     fetchData();
   }, [user.id]);
+
+  const handleSelectMessage = async (msg: FirebaseObject) => {
+    setSelectedMessage(msg);
+    if (!msg.read) {
+      try {
+        await FirestoreInterface.updateMessage(msg.id, !msg.read);
+        setMessages((prevMessages) =>
+          prevMessages.map((m) => (m.id === msg.id ? { ...m, read: true } : m))
+        );
+      } catch (error) {
+        console.error("Error marking message as read:", error);
+      }
+    }
+  };
+
+  const handleRemoveMessage = async () => {
+    if (!selectedMessage) return;
+
+    try {
+      setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== selectedMessage.id));
+      setSelectedMessage(null);
+    } catch (error) {
+      console.error("Error deleting message:", error);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!newMessage.to || !newMessage.subject || !newMessage.body) {
@@ -65,7 +100,7 @@ export default function Inbox() {
       await FirestoreInterface.createMessage(user.id, newMessage.to, newMessage.subject, newMessage.body);
       setIsComposeOpen(false);
       window.location.reload();
-      setNewMessage({ id: "", to: "", subject: "", body: "", timestamp: Date.now() });
+      setNewMessage({ id: "", to: "", subject: "", body: "", timestamp: Date.now(), read: false });
       setError(null);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -75,7 +110,7 @@ export default function Inbox() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto h-screen flex flex-col">
-      <div className="shadow-lg rounded-lg p-6 flex-grow flex flex-col" style={{ background: "rgb(147, 229, 165)"}}>
+      <div className="relative flex-grow flex flex-col shadow-lg rounded-lg p-6" style={{ background: "rgb(147, 229, 165)" }}>
         <div
           className="text-white p-4 rounded-t-lg text-center text-2xl font-bold flex items-center justify-center"
           style={{ background: "linear-gradient(to right,rgb(50, 197, 112),rgb(39, 153, 86))" }}
@@ -86,21 +121,44 @@ export default function Inbox() {
         {loading ? (
           <div className="text-center p-4 font-semibold">Loading messages...</div>
         ) : (
-          <ul className="p-4 flex-grow overflow-auto">
+          <ul className="p-4 flex-grow overflow-y-auto max-h-96 space-y-2">
             {messages.map((msg) => (
               <li
                 key={msg.id}
-                className="border-b py-4 px-4 cursor-pointer hover:bg-green-400 rounded-lg transition duration-200"
-                onClick={() => setSelectedMessage(msg)}
+                className={`border-b py-4 px-4 cursor-pointer rounded-lg transition duration-200 ${msg.read ? "bg-white hover:bg-gray-200" : "bg-green-500 text-white font-bold"}`}
+                onClick={() => handleSelectMessage(msg)}
               >
-                <div className="font-bold text-lg">{senders.find(sender => sender.id === msg.sender)?.Name+" "+senders.find(rec => rec.id === msg.sender)?.Surname || "Unknown"}</div>
-                <div className="text-gray-600 text-sm">{msg.subject}: {msg.body}</div>
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center">
+                    <div className="font-bold text-lg">
+                      {senders.find(sender => sender.id === msg.sender)?.Name + " " + senders.find(rec => rec.id === msg.sender)?.Surname || "Unknown"}
+                    </div>
+                  </div>
+
+                  <div className="text-sm mt-1">{msg.subject}: {msg.body}</div>
+
+                  <div className="text-sm text-right mt-2 sm:mt-1 font-bold">
+                    {formatFirestoreDate(msg.timestamp)}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
         )}
 
-        <button className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg" onClick={() => setIsComposeOpen(true)}>
+        {/* Remove button */}
+        <button
+          className="absolute bottom-4 left-4 bg-red-500 hover:bg-red-600 text-white p-4 rounded-full shadow-lg"
+          onClick={() => handleRemoveMessage}
+        >
+          <FaTrash size={25} />
+        </button>
+
+        {/* Write Button */}
+        <button
+          className="absolute bottom-4 right-4 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg"
+          onClick={() => setIsComposeOpen(true)}
+        >
           <FaPencilAlt size={30} />
         </button>
       </div>
@@ -110,7 +168,10 @@ export default function Inbox() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="p-6 rounded-lg shadow-lg max-w-lg w-full relative" style={{ backgroundColor: "rgb(133, 204, 148)" }}>
             <h3 className="text-xl font-bold border-b pb-2 mb-4">{selectedMessage.subject}</h3>
-            <p className="text-sm text-gray-700 font-semibold">From: {senders[0].Name} {senders[0].Surname}</p>
+            <p className="text-sm text-gray-700 font-semibold">
+              From: {senders.find(sender => sender.id === selectedMessage.sender)?.Name || "Unknown"} {senders.find(sender => sender.id === selectedMessage.sender)?.Surname || ""}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">Date: {formatFirestoreDate(selectedMessage.timestamp)}</p>
             <p className="mt-4 text-lg">{selectedMessage.body}</p>
             <button
               className="absolute top-3 right-3 bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-110"
