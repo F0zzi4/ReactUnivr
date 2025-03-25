@@ -1,5 +1,6 @@
 import { useState } from "react";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
+import { Typography } from "@mui/material";
 
 interface FormData {
   Name: string;
@@ -43,8 +44,22 @@ export default function Me() {
 
   return (
     <div className="h-screen w-full flex items-center justify-center">
-      <form className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
-        <h2 className="text-3xl font-bold mb-8 text-center">Personal Info</h2>
+      <form className="w-11/12 max-w-2xl p-10 shadow-xl rounded-xl" style={{ backgroundColor: "rgb(147, 229, 165)" }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontWeight: "bold",
+            mb: 3,
+            textAlign: "center",
+            color: "#333",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+            background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+          }}
+        >
+          Personal Info
+        </Typography>
 
         {/* NickName */}
         <div className="mb-5">
@@ -52,7 +67,7 @@ export default function Me() {
             Nick Name
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none"
+            className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none"
             type="text"
             value={user?.id || ""}
             readOnly
@@ -65,7 +80,7 @@ export default function Me() {
             Email
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none"
+            className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none"
             type="email"
             value={user?.Email || ""}
             readOnly
@@ -79,7 +94,7 @@ export default function Me() {
               First Name
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
+              className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
               type="text"
               name="Name"
               value={formData.Name}
@@ -92,7 +107,7 @@ export default function Me() {
               Last Name
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
+              className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
               type="text"
               name="Surname"
               value={formData.Surname}
@@ -108,7 +123,7 @@ export default function Me() {
             Date of Birth
           </label>
           <input
-            className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
+            className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
             type="date"
             name="DateOfBirth"
             value={formData.DateOfBirth}
@@ -124,7 +139,7 @@ export default function Me() {
               Height (cm)
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
+              className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
               type="number"
               name="Height"
               value={formData.Height}
@@ -137,7 +152,7 @@ export default function Me() {
               Weight (kg)
             </label>
             <input
-              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
+              className="appearance-none block w-full bg-white text-gray-700 border border-gray-300 rounded py-4 px-5 leading-tight focus:outline-none focus:bg-white"
               type="number"
               name="Weight"
               value={formData.Weight}

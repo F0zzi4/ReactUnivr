@@ -68,7 +68,7 @@ export default function CustomerTrainingPlan() {
         sx={{
           p: 3,
           borderRadius: 5,
-          background: "linear-gradient(145deg, #ffffff, #f0f0f0)",
+          background: "rgb(147, 229, 165)",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -78,8 +78,10 @@ export default function CustomerTrainingPlan() {
             fontWeight: "bold",
             mb: 3,
             textAlign: "center",
-            color: "#333",
-            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
+            textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)", 
+            background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
           }}
         >
           Training Plan
@@ -117,19 +119,15 @@ export default function CustomerTrainingPlan() {
                 justifyContent: "center",
                 boxShadow:
                   index === selectedDayIndex
-                    ? "0px 4px 15px rgba(25, 118, 210, 0.3)"
+                    ? "0px 4px 15px rgba(25, 210, 118, 0.3)"
                     : "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 background:
                   index === selectedDayIndex
-                    ? "linear-gradient(145deg,rgb(60, 173, 50),rgb(22, 192, 59))"
-                    : "linear-gradient(145deg,rgb(240, 240, 240),rgb(255, 255, 255))",
+                    ? "linear-gradient(145deg,rgb(114, 214, 155),rgb(37, 190, 101))"
+                    : "linear-gradient(145deg,rgb(199, 235, 183),rgb(132, 230, 145))",
                 color:
-                  index === selectedDayIndex ? "white" : "rgb(17, 131, 46)",
+                  index === selectedDayIndex ? "white" : "rgb(255, 255, 255)",
                 "&:hover": {
-                  background:
-                    index === selectedDayIndex
-                      ? "linear-gradient(145deg,rgb(73, 194, 57),rgb(31, 180, 51))"
-                      : "#f5f5f5",
                   transform: "scale(1.10)",
                   boxShadow: "0px 6px 20px rgba(94, 155, 92, 0.4)",
                 },
@@ -149,7 +147,7 @@ export default function CustomerTrainingPlan() {
           </IconButton>
         </Box>
 
-        {/* Box con la lista degli esercizi */}
+        {/* Exercises list */}
         <Box
           sx={{
             mt: 3,
@@ -164,14 +162,13 @@ export default function CustomerTrainingPlan() {
             sx={{
               fontWeight: "bold",
               mb: 2,
-              color: "rgb(59, 148, 51)",
+              color: "rgb(58, 161, 110)",
               textTransform: "uppercase",
               letterSpacing: "1px",
               textShadow: "1px 1px 4px rgba(0, 0, 0, 0.2)",
             }}
           >
-            Schedule (
-            {days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
+            Schedule ({days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
           </Typography>
 
           <BasicTable data={exercises} />

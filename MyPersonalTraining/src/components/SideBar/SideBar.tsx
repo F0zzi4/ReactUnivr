@@ -122,7 +122,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index} className="p-0">
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-800 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
@@ -130,7 +130,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     {item.icon}
                   </div>
                   <p
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-300 font-bold ${
                       !open ? "hidden" : "block text-lg"
                     }`}
                   >
@@ -148,7 +148,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
               <li key={index}>
                 <Link
                   to={item.path}
-                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-600 hover:scale-105 transition-all group text-white no-underline ${
+                  className={`flex items-center gap-4 p-3 rounded-md cursor-pointer hover:bg-green-800 hover:scale-105 transition-all group text-white no-underline ${
                     !open ? "justify-center" : "p-3"
                   }`}
                 >
@@ -156,7 +156,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                     {item.icon}
                   </div>
                   <p
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-300 font-bold ${
                       !open ? "hidden" : "block text-lg"
                     }`}
                   >
