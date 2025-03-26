@@ -22,7 +22,7 @@ import Outbox from "./components/outbox/Outbox";
 import Customer from "./components/personaltrainer/customer/Customer";
 import Exercise from "./components/personaltrainer/exercise/Exercise";
 import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
-import './main.css';
+import "./main.css";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -43,11 +43,25 @@ const Layout = () => {
       <main
         className={`main-content transition-all duration-300 ${
           showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
-        } flex-1 overflow-auto`}
+        }`}
       >
-          <img src="../gym1.png" alt="Gym Center" className="background-image image-left" />
-          <img src="../gym3.png" alt="Gym Right" className="background-image image-right" />
-        <Outlet />
+        {/* Immagini di background fisse */}
+        <img
+          src="../gym1.png"
+          alt="Gym Center"
+          className="background-image fixed image-left object-cover"
+          style={{ left: showSidebar ? (open ? "1rem" : "3rem") : "0" }}
+        />
+        <img
+          src="../gym3.png"
+          alt="Gym Right"
+          className="background-image fixed image-right object-cover -z-10"
+        />
+
+        {/* Contenuto scrollabile */}
+        <div className="relative z-0 h-full overflow-auto">
+          <Outlet />
+        </div>
       </main>
     </div>
   ) : (
@@ -87,7 +101,10 @@ root.render(
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
-          <Route path="/customer/training-plan" element={<CustomerTrainingPlan />} />
+          <Route
+            path="/customer/training-plan"
+            element={<CustomerTrainingPlan />}
+          />
           <Route path="/inbox" element={<Inbox />} />
           Customer
           {/* PersonalTrainer Routes */}
