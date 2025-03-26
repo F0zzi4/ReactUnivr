@@ -10,9 +10,12 @@ import {
   setDoc,
   deleteDoc,
   addDoc,
-  Timestamp
+  Timestamp,
 } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
 import FirebaseObject from "./data-model/FirebaseObject";
 
 // Constants for Firestore collections
@@ -22,7 +25,7 @@ const COLLECTIONS = {
   EXERCISES: "exercises",
   TRAINING_PLANS: "training-plans",
   GOALS: "goals",
-  MESSAGES: "messages"
+  MESSAGES: "messages",
 };
 
 const FirestoreInterface = {
@@ -138,18 +141,24 @@ const FirestoreInterface = {
     }
   },
 
-  getAllPlansByPersonalTrainer: async (id: string): Promise<FirebaseObject[]> => {
+  getAllPlansByPersonalTrainer: async (
+    id: string
+  ): Promise<FirebaseObject[]> => {
     try {
       const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
-      
+
       // Defining a range to take any document that starts with {id}
       const startId = id;
       const endId = id + "\uf8ff"; // "\uf8ff" is the last Unicode char, so includes anything that starts with {id}
-      
-      const q = query(plansRef, where("__name__", ">=", startId), where("__name__", "<", endId));
-  
+
+      const q = query(
+        plansRef,
+        where("__name__", ">=", startId),
+        where("__name__", "<", endId)
+      );
+
       const querySnapshot = await getDocs(q);
-      
+
       return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.error("Error fetching plans:", error);
@@ -171,72 +180,84 @@ const FirestoreInterface = {
     }
   },
 
-  getPlanByCustomerId: async (customerId: string): Promise<FirebaseObject[]> => {
+  getPlanByCustomerId: async (
+    customerId: string
+  ): Promise<FirebaseObject[]> => {
     try {
       const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
       const querySnapshot = await getDocs(plansRef);
-  
+
       // Filtra i documenti con ID che termina con `-{customerId}`
       const filteredDocs = querySnapshot.docs
-        .filter(doc => doc.id.endsWith(`-${customerId}`))
-        .map(doc => ({
+        .filter((doc) => doc.id.endsWith(`-${customerId}`))
+        .map((doc) => ({
           id: doc.id,
           data: doc.data(),
         }));
-  
+
       if (filteredDocs.length === 0) return [];
-  
+
       // Estrai solo i campi relativi ai giorni e assegna un ID unico
       const daysArray: FirebaseObject[] = filteredDocs.flatMap(({ id, data }) =>
         Object.keys(data)
-          .filter(key => key.startsWith("Day ")) // Prendi solo chiavi che iniziano con "Day "
+          .filter((key) => key.startsWith("Day ")) // Prendi solo chiavi che iniziano con "Day "
           .sort((a, b) => {
             // Estrai i numeri dai nomi dei giorni (es. "Day 1" -> 1, "Day 10" -> 10)
             const numA = parseInt(a.replace("Day ", ""), 10);
             const numB = parseInt(b.replace("Day ", ""), 10);
             return numA - numB; // Ordina numericamente
           })
-          .map(dayKey => ({
+          .map((dayKey) => ({
             id: `${id}-${dayKey}`, // ID univoco
             name: dayKey, // Nome del giorno
             exercises: data[dayKey], // Lista di esercizi
           }))
       );
-  
+
       return daysArray;
     } catch (error) {
       console.error("Error fetching training plans:", error);
       return [];
     }
   },
-  
-  getExercisesPlanByDayNo: async (id: string, dayNo: string): Promise<FirebaseObject[] | null> => {
+
+  getExercisesPlanByDayNo: async (
+    id: string,
+    dayNo: string
+  ): Promise<FirebaseObject[] | null> => {
     try {
-        const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);
-        const trainingPlanDoc = await getDoc(trainingPlanRef);
+      const trainingPlanRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, id);
+      const trainingPlanDoc = await getDoc(trainingPlanRef);
 
-        if (trainingPlanDoc.exists()) {
-            const data = trainingPlanDoc.data();
-            return data[dayNo] || null;
-        }
+      if (trainingPlanDoc.exists()) {
+        const data = trainingPlanDoc.data();
+        return data[dayNo] || null;
+      }
 
-        return null;
+      return null;
     } catch (error) {
-        console.error("Error fetching exercises for the training plan:", error);
-        return null;
+      console.error("Error fetching exercises for the training plan:", error);
+      return null;
     }
   },
 
-  getGoalsByCustomerId: async (id: string): Promise<FirebaseObject[] | null> => {
+  getGoalsByCustomerId: async (
+    id: string
+  ): Promise<FirebaseObject[] | null> => {
     try {
-      const goalsRef = collection(Firestore, COLLECTIONS.USERS, id, COLLECTIONS.GOALS);
+      const goalsRef = collection(
+        Firestore,
+        COLLECTIONS.USERS,
+        id,
+        COLLECTIONS.GOALS
+      );
       const querySnapshot = await getDocs(goalsRef);
-  
-      const goals = querySnapshot.docs.map(doc => ({
+
+      const goals = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-  
+
       return goals;
     } catch (error) {
       console.error("Error fetching goals for the user:", error);
@@ -244,7 +265,10 @@ const FirestoreInterface = {
     }
   },
 
-  addGoalByCustomerId: async (userId: string, goal : FirebaseObject): Promise<FirebaseObject[] | null> => {
+  addGoalByCustomerId: async (
+    userId: string,
+    goal: FirebaseObject
+  ): Promise<FirebaseObject[] | null> => {
     try {
       await addDoc(collection(Firestore, COLLECTIONS.USERS, userId, "goals"), {
         name: goal.name,
@@ -253,7 +277,9 @@ const FirestoreInterface = {
       });
 
       // Recupera tutti i goals aggiornati
-      const snapshot = await getDocs(collection(Firestore, COLLECTIONS.USERS, userId, "goals"));
+      const snapshot = await getDocs(
+        collection(Firestore, COLLECTIONS.USERS, userId, "goals")
+      );
       const updatedGoals: FirebaseObject[] = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -266,12 +292,22 @@ const FirestoreInterface = {
     }
   },
 
-  updateGoalByCustomerId: async (userId: string, goal : FirebaseObject): Promise<void> => {
+  updateGoalByCustomerId: async (
+    userId: string,
+    goal: FirebaseObject
+  ): Promise<void> => {
     try {
-      const goalsRef = collection(Firestore, COLLECTIONS.USERS, userId, "goals");
+      const goalsRef = collection(
+        Firestore,
+        COLLECTIONS.USERS,
+        userId,
+        "goals"
+      );
 
       const snapshot = await getDocs(goalsRef);
-      const existingGoalDoc = snapshot.docs.find((docItem) => docItem.id === goal.id);
+      const existingGoalDoc = snapshot.docs.find(
+        (docItem) => docItem.id === goal.id
+      );
 
       if (existingGoalDoc) {
         await updateDoc(doc(Firestore, goalsRef.path, goal.id), {
@@ -285,33 +321,45 @@ const FirestoreInterface = {
     }
   },
 
-  removeGoalsByCustomerId: async (userId: string, goals : FirebaseObject[]): Promise<void> => {
+  removeGoalsByCustomerId: async (
+    userId: string,
+    goals: FirebaseObject[]
+  ): Promise<void> => {
     try {
-      const goalsRef = collection(Firestore, COLLECTIONS.USERS, userId, "goals");
-      
+      const goalsRef = collection(
+        Firestore,
+        COLLECTIONS.USERS,
+        userId,
+        "goals"
+      );
+
       // Fetch all goals
       const snapshot = await getDocs(goalsRef);
-      
+
       // Iterate over the passed goals and delete them if they exist
       for (const goal of goals) {
-          const goalDoc = snapshot.docs.find(docItem => docItem.id === goal.id);
-          if (goalDoc) {
-              await deleteDoc(doc(Firestore, goalsRef.path, goal.id));
-          }
+        const goalDoc = snapshot.docs.find((docItem) => docItem.id === goal.id);
+        if (goalDoc) {
+          await deleteDoc(doc(Firestore, goalsRef.path, goal.id));
+        }
       }
     } catch (error) {
-        console.error("Error removing goals:", error);
+      console.error("Error removing goals:", error);
     }
   },
 
-  updatePlanById: async (planId: string, dayNo: string, exercises: FirebaseObject[]): Promise<void> => {
+  updatePlanById: async (
+    planId: string,
+    dayNo: string,
+    exercises: FirebaseObject[]
+  ): Promise<void> => {
     try {
-        const planRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, planId);
-        await updateDoc(planRef, {
-            [dayNo]: exercises,
-        });
+      const planRef = doc(Firestore, COLLECTIONS.TRAINING_PLANS, planId);
+      await updateDoc(planRef, {
+        [dayNo]: exercises,
+      });
     } catch (error) {
-        console.error("Error updating training plan:", error);
+      console.error("Error updating training plan:", error);
     }
   },
 
@@ -327,11 +375,14 @@ const FirestoreInterface = {
     }
   },
 
-  createTrainingPlan: async (personalTrainerId: string, customerID : string): Promise<void> => {
+  createTrainingPlan: async (
+    personalTrainerId: string,
+    customerID: string
+  ): Promise<void> => {
     try {
       const trainingPlanId = `${personalTrainerId}-${customerID}`; // Concat both of the ID
       const trainingPlanRef = doc(Firestore, "training-plans", trainingPlanId);
-  
+
       await setDoc(trainingPlanRef, {});
     } catch (error) {
       console.error("Error during training plan creation:", error);
@@ -376,7 +427,12 @@ const FirestoreInterface = {
     }
   },
 
-  createMessage: async (sender: string, recipient: string, subject: string, body: string): Promise<void> => {
+  createMessage: async (
+    sender: string,
+    recipient: string,
+    subject: string,
+    body: string
+  ): Promise<void> => {
     try {
       const newMessage = {
         sender: sender,
@@ -384,9 +440,9 @@ const FirestoreInterface = {
         subject: subject,
         body: body,
         timestamp: Timestamp.fromDate(new Date()),
-        read: false
+        read: false,
       };
-  
+
       // Add a message in collection "messages" with random and valid ID
       await addDoc(collection(Firestore, "messages"), newMessage);
     } catch (e) {
@@ -397,44 +453,47 @@ const FirestoreInterface = {
   updateMessage: async (messageId: string, read: boolean): Promise<void> => {
     try {
       const messageRef = doc(Firestore, "messages", messageId);
-  
+
       await updateDoc(messageRef, {
-        read: read
+        read: read,
       });
-  
     } catch (e) {
       console.error("Error updating message: ", e);
     }
   },
 
-  getAllMessagesBySenderId: async (senderId: string): Promise<FirebaseObject[] | undefined> => {
+  getAllMessagesBySenderId: async (
+    senderId: string
+  ): Promise<FirebaseObject[] | undefined> => {
     try {
       const messagesRef = collection(Firestore, COLLECTIONS.MESSAGES);
       const q = query(messagesRef, where("sender", "==", senderId));
       const querySnapshot = await getDocs(q);
-  
+
       const messages = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-  
+
       return messages;
     } catch (e) {
       console.error("Error retrieving messages: ", e);
     }
   },
 
-  getAllMessagesByRecipientId: async (recipientId: string): Promise<FirebaseObject[] | undefined> => {
+  getAllMessagesByRecipientId: async (
+    recipientId: string
+  ): Promise<FirebaseObject[] | undefined> => {
     try {
       const messagesRef = collection(Firestore, COLLECTIONS.MESSAGES);
       const q = query(messagesRef, where("recipient", "==", recipientId));
       const querySnapshot = await getDocs(q);
-  
+
       const messages = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
-  
+
       return messages;
     } catch (e) {
       console.error("Error retrieving messages: ", e);
@@ -451,13 +510,18 @@ const FirestoreInterface = {
         const userId = userDoc.id;
 
         // Verifica se la raccolta "customers" esiste sotto "users/{userId}"
-        const customersRef = collection(Firestore, `${COLLECTIONS.USERS}/${userId}/${COLLECTIONS.CUSTOMERS}`);
+        const customersRef = collection(
+          Firestore,
+          `${COLLECTIONS.USERS}/${userId}/${COLLECTIONS.CUSTOMERS}`
+        );
         const customersSnapshot = await getDocs(customersRef);
 
         // Se la raccolta "customers" non contiene documenti, passa al prossimo utente
         if (customersSnapshot.empty) continue;
 
-        const customerExists = customersSnapshot.docs.some(doc => doc.id === customerId);
+        const customerExists = customersSnapshot.docs.some(
+          (doc) => doc.id === customerId
+        );
 
         if (customerExists) {
           return userId;
@@ -468,6 +532,15 @@ const FirestoreInterface = {
     } catch (error) {
       console.error("Error retrieving personal trainer:", error);
       return "";
+    }
+  },
+
+  async resetPassword(email: string): Promise<string> {
+    try {
+      await sendPasswordResetEmail(Auth, email);
+      return "Password reset link has been sent to your email.";
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to send password reset email.");
     }
   },
 };

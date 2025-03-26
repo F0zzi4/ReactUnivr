@@ -16,10 +16,11 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { useNavigate } from "react-router-dom";
-import { useEffect,useState } from "react";
-import {  } from "react";
+import { useEffect, useState } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
+import { Alert } from "@mui/material"; // Import Alert
+import { Link } from "react-router-dom"; // Import Link
 import "./Login.css";
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -76,7 +77,9 @@ export default function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const inputElement = document.getElementById("EmailInput") as HTMLInputElement;
+    const inputElement = document.getElementById(
+      "EmailInput"
+    ) as HTMLInputElement;
     if (inputElement) {
       inputElement.focus();
     }
@@ -85,10 +88,14 @@ export default function Login() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Validate the inputs
+    if (!validateInputs()) return;
+
     try {
       await signInWithEmailAndPassword(Auth, email, password);
-      const user: FirebaseObject | null = await FirestoreInterface.getUserByEmail(email);
-    
+      const user: FirebaseObject | null =
+        await FirestoreInterface.getUserByEmail(email);
+
       // Setting session data
       if (user) {
         user.timestamp = Date.now();
@@ -99,7 +106,7 @@ export default function Login() {
     } catch (error: unknown) {
       if (error instanceof FirebaseError) {
         setPasswordError(true);
-        setPasswordErrorMessage("Error during login, try again");
+        setPasswordErrorMessage("Error during login, try again.");
       } else {
         console.error("Unknown error:", error);
       }
@@ -109,22 +116,22 @@ export default function Login() {
   const validateInputs = () => {
     let isValid = true;
 
+    // Reset all errors before validation
+    setEmailError(false);
+    setEmailErrorMessage("");
+    setPasswordError(false);
+    setPasswordErrorMessage("");
+
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage("Please enter a valid email address.");
       isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
     }
 
     if (!password || password.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage("Password must be at least 6 characters long.");
       isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
     }
 
     return isValid;
@@ -132,105 +139,128 @@ export default function Login() {
 
   return (
     <div className="login-background">
-    <AppTheme>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined" sx={{ backgroundColor: "rgb(147, 229, 165)" }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-            }}
+      <AppTheme>
+        <CssBaseline enableColorScheme />
+        <SignInContainer direction="column" justifyContent="space-between">
+          <Card
+            variant="outlined"
+            sx={{ backgroundColor: "rgb(147, 229, 165)" }}
           >
-            <img
-              src={AppIcon}
-              alt="App Logo"
-              style={{ width: "210px", height: "210px" }}
-            />
-            <Typography
-              component="h1"
-              variant="h4"
+            <Box
               sx={{
-                fontSize: "clamp(2rem, 10vw, 2.15rem)",
-                fontWeight: "bold",
-                textAlign: "center",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 1,
               }}
             >
-              Sign in
-            </Typography>
-          </Box>
+              <img
+                src={AppIcon}
+                alt="App Logo"
+                style={{ width: "210px", height: "210px" }}
+              />
+              <Typography
+                component="h1"
+                variant="h4"
+                sx={{
+                  fontSize: "clamp(2rem, 10vw, 2.15rem)",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                Sign in
+              </Typography>
+            </Box>
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                id="EmailInput"
-                error={emailError}
-                helperText={emailErrorMessage}
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? "error" : "primary"}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                id="PasswordInput"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••"
-                type="password"
-                autoComplete="current-password"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? "error" : "primary"}
-              />
-            </FormControl>
-            <br></br>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                gap: 2,
+              }}
             >
-              Sign in
-            </Button>
-          </Box>
-          <Divider>or</Divider>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography sx={{ textAlign: "center" }}>
-              Don&apos;t have an account or having problem with access? send email via:
-              <i>fozzatodavide@gmail.com</i>
-            </Typography>
-          </Box>
-        </Card>
-      </SignInContainer>
-    </AppTheme>
+              <FormControl>
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <TextField
+                  id="EmailInput"
+                  error={emailError}
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  autoComplete="email"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              {emailError && (
+                <Alert
+                  severity="error"
+                  sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}
+                >
+                  {emailErrorMessage}
+                </Alert>
+              )}
+
+              <FormControl>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <TextField
+                  id="PasswordInput"
+                  error={passwordError}
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              {passwordError && (
+                <Alert
+                  severity="error"
+                  sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}
+                >
+                  {passwordErrorMessage}
+                </Alert>
+              )}
+
+              <br />
+              <Button type="submit" fullWidth variant="contained">
+                Sign in
+              </Button>
+            </Box>
+
+            <Divider>or</Divider>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Typography sx={{ textAlign: "center" }}>
+                Don&apos;t have an account or having problems with access? Send
+                an email to:<br></br>
+                <i>fozzatodavide@gmail.com</i>
+                <br></br>
+                <i>mattia.rebonato31@gmail.com</i>
+              </Typography>
+              <Link
+                to="/resetPassword"
+                style={{ textAlign: "center", marginTop: "10px" }}
+              >
+                <Button variant="text" color="primary">
+                  Forgot Password?
+                </Button>
+              </Link>
+            </Box>
+          </Card>
+        </SignInContainer>
+      </AppTheme>
     </div>
   );
 }

@@ -10,7 +10,9 @@ export default function Inbox() {
   const [senders, setSenders] = useState<FirebaseObject[]>([]);
   const [selectedSender, setSelectedSender] = useState<string>("");
   const [messages, setMessages] = useState<FirebaseObject[]>([]);
-  const [selectedMessage, setSelectedMessage] = useState<FirebaseObject | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<FirebaseObject | null>(
+    null
+  );
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState<FirebaseObject>({
@@ -24,7 +26,10 @@ export default function Inbox() {
   const [error, setError] = useState<string | null>(null);
 
   // get a valid date from a firestore timestamp
-  const formatFirestoreDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+  const formatFirestoreDate = (timestamp: {
+    seconds: number;
+    nanoseconds: number;
+  }) => {
     const date = new Date(timestamp.seconds * 1000);
     return date.toLocaleString();
   };
@@ -39,21 +44,25 @@ export default function Inbox() {
           const pt = await FirestoreInterface.getUserById(ptId);
           recipientList = pt ? [{ ...pt, id: ptId }] : [];
         } else if (user?.UserType === "Personal Trainer") {
-          const customersId = await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
+          const customersId =
+            await FirestoreInterface.getAllCustomersByPersonalTrainer(user.id);
           const customersPromises = customersId.map(async (customerId) => {
             return await FirestoreInterface.getUserById(customerId.id);
           });
-          const customers = (await Promise.all(customersPromises)).filter((customer) => customer !== null);
+          const customers = (await Promise.all(customersPromises)).filter(
+            (customer) => customer !== null
+          );
           recipientList = customers;
         }
 
         setSenders(recipientList);
 
-        let messagesArray = await FirestoreInterface.getAllMessagesByRecipientId(user.id);
-        
+        let messagesArray =
+          await FirestoreInterface.getAllMessagesByRecipientId(user.id);
+
         // Ordina i messaggi per data decrescente
-        messagesArray = Array.isArray(messagesArray) 
-          ? messagesArray.sort((a, b) => b.timestamp - a.timestamp) 
+        messagesArray = Array.isArray(messagesArray)
+          ? messagesArray.sort((a, b) => b.timestamp - a.timestamp)
           : [];
 
         setMessages(messagesArray);
@@ -84,7 +93,9 @@ export default function Inbox() {
     if (!selectedMessage) return;
 
     try {
-      setMessages((prevMessages) => prevMessages.filter((msg) => msg.id !== selectedMessage.id));
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== selectedMessage.id)
+      );
       setSelectedMessage(null);
     } catch (error) {
       console.error("Error deleting message:", error);
@@ -97,10 +108,22 @@ export default function Inbox() {
       return;
     }
     try {
-      await FirestoreInterface.createMessage(user.id, newMessage.to, newMessage.subject, newMessage.body);
+      await FirestoreInterface.createMessage(
+        user.id,
+        newMessage.to,
+        newMessage.subject,
+        newMessage.body
+      );
       setIsComposeOpen(false);
       window.location.reload();
-      setNewMessage({ id: "", to: "", subject: "", body: "", timestamp: Date.now(), read: false });
+      setNewMessage({
+        id: "",
+        to: "",
+        subject: "",
+        body: "",
+        timestamp: Date.now(),
+        read: false,
+      });
       setError(null);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -110,32 +133,50 @@ export default function Inbox() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto h-screen flex flex-col">
-      <div className="relative flex-grow flex flex-col shadow-lg rounded-lg p-6" style={{ background: "rgb(147, 229, 165)" }}>
+      <div
+        className="relative flex-grow flex flex-col shadow-lg rounded-lg p-6"
+        style={{ background: "rgb(147, 229, 165)" }}
+      >
         <div
           className="text-white p-4 rounded-t-lg text-center text-2xl font-bold flex items-center justify-center"
-          style={{ background: "linear-gradient(to right,rgb(50, 197, 112),rgb(39, 153, 86))" }}
+          style={{
+            background:
+              "linear-gradient(to right,rgb(50, 197, 112),rgb(39, 153, 86))",
+          }}
         >
           <FaInbox className="mr-2" /> Inbox
         </div>
 
         {loading ? (
-          <div className="text-center p-4 font-semibold">Loading messages...</div>
+          <div className="text-center p-4 font-semibold">
+            Loading messages...
+          </div>
         ) : (
           <ul className="p-4 flex-grow overflow-y-auto max-h-96 space-y-2">
             {messages.map((msg) => (
               <li
                 key={msg.id}
-                className={`border-b py-4 px-4 cursor-pointer rounded-lg transition duration-200 ${msg.read ? "bg-white hover:bg-gray-200" : "bg-green-500 text-white font-bold"}`}
+                className={`border-b py-4 px-4 cursor-pointer rounded-lg transition duration-200 ${
+                  msg.read
+                    ? "bg-white hover:bg-gray-200"
+                    : "bg-green-500 text-white font-bold"
+                }`}
                 onClick={() => handleSelectMessage(msg)}
               >
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-lg">
-                      {senders.find(sender => sender.id === msg.sender)?.Name + " " + senders.find(rec => rec.id === msg.sender)?.Surname || "Unknown"}
+                      {senders.find((sender) => sender.id === msg.sender)
+                        ?.Name +
+                        " " +
+                        senders.find((rec) => rec.id === msg.sender)?.Surname ||
+                        "Unknown"}
                     </div>
                   </div>
 
-                  <div className="text-sm mt-1">{msg.subject}: {msg.body}</div>
+                  <div className="text-sm mt-1">
+                    {msg.subject}: {msg.body}
+                  </div>
 
                   <div className="text-sm text-right mt-2 sm:mt-1 font-bold">
                     {formatFirestoreDate(msg.timestamp)}
@@ -166,12 +207,23 @@ export default function Inbox() {
       {/* Modal per il messaggio selezionato */}
       {selectedMessage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="p-6 rounded-lg shadow-lg max-w-lg w-full relative" style={{ backgroundColor: "rgb(133, 204, 148)" }}>
-            <h3 className="text-xl font-bold border-b pb-2 mb-4">{selectedMessage.subject}</h3>
+          <div
+            className="p-6 rounded-lg shadow-lg max-w-lg w-full relative"
+            style={{ backgroundColor: "rgb(133, 204, 148)" }}
+          >
+            <h3 className="text-xl font-bold border-b pb-2 mb-4">
+              {selectedMessage.subject}
+            </h3>
             <p className="text-sm text-gray-700 font-semibold">
-              From: {senders.find(sender => sender.id === selectedMessage.sender)?.Name || "Unknown"} {senders.find(sender => sender.id === selectedMessage.sender)?.Surname || ""}
+              From:{" "}
+              {senders.find((sender) => sender.id === selectedMessage.sender)
+                ?.Name || "Unknown"}{" "}
+              {senders.find((sender) => sender.id === selectedMessage.sender)
+                ?.Surname || ""}
             </p>
-            <p className="text-sm text-gray-600 mt-1">Date: {formatFirestoreDate(selectedMessage.timestamp)}</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Date: {formatFirestoreDate(selectedMessage.timestamp)}
+            </p>
             <p className="mt-4 text-lg">{selectedMessage.body}</p>
             <button
               className="absolute top-3 right-3 bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-110"
@@ -185,7 +237,10 @@ export default function Inbox() {
 
       {isComposeOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="p-6 rounded-lg shadow-lg max-w-lg w-full" style={{ backgroundColor: "rgb(133, 204, 148)" }}>
+          <div
+            className="p-6 rounded-lg shadow-lg max-w-lg w-full"
+            style={{ backgroundColor: "rgb(133, 204, 148)" }}
+          >
             <h3 className="text-xl font-semibold mb-3">New Message</h3>
             <select
               className="w-full p-3 border rounded mb-3"
@@ -198,7 +253,8 @@ export default function Inbox() {
               <option value="">Select recipient</option>
               {senders.map((rec) => (
                 <option key={rec.id} value={rec.id}>
-                  {rec.Name ? rec.Name : "Unknown"} {rec.Surname ? rec.Surname : ""}
+                  {rec.Name ? rec.Name : "Unknown"}{" "}
+                  {rec.Surname ? rec.Surname : ""}
                 </option>
               ))}
             </select>
@@ -207,23 +263,35 @@ export default function Inbox() {
               placeholder="Subject"
               className="w-full p-3 border rounded mb-3"
               value={newMessage.subject}
-              onChange={(e) => setNewMessage({ ...newMessage, subject: e.target.value })}
+              onChange={(e) =>
+                setNewMessage({ ...newMessage, subject: e.target.value })
+              }
             />
             <textarea
               placeholder="Message"
               className="w-full p-3 border rounded mb-3"
               rows={5}
               value={newMessage.body}
-              onChange={(e) => setNewMessage({ ...newMessage, body: e.target.value })}
+              onChange={(e) =>
+                setNewMessage({ ...newMessage, body: e.target.value })
+              }
             ></textarea>
 
-            {error && <div className="text-red-700 mb-3 font-bold">{error}</div>}
+            {error && (
+              <div className="text-red-700 mb-3 font-bold">{error}</div>
+            )}
 
             <div className="flex justify-end">
-              <button className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2" onClick={() => setIsComposeOpen(false)}>
+              <button
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded mr-2"
+                onClick={() => setIsComposeOpen(false)}
+              >
                 Cancel
               </button>
-              <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" onClick={handleSendMessage}>
+              <button
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                onClick={handleSendMessage}
+              >
                 Send
               </button>
             </div>
