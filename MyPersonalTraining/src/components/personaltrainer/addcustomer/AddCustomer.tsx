@@ -11,14 +11,18 @@ interface dataForm {
   Height: number;
   Weight: number;
   Email: string;
+  UserType: string;
 }
 
 interface AddCustomerProps {
-  onClose: () => void;    // function used on closing window
-  personalTrainerId : string
+  onClose: () => void; // function used on closing window
+  personalTrainerId: string;
 }
 
-export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerProps) {
+export default function AddCustomer({
+  onClose,
+  personalTrainerId,
+}: AddCustomerProps) {
   const [formData, setFormData] = useState<dataForm>({
     id: "",
     Name: "",
@@ -27,6 +31,7 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
     Height: 0,
     Weight: 0,
     Email: "",
+    UserType: "Customer",
   });
 
   const [password, setPassword] = useState<string>("");
@@ -53,11 +58,11 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
       setError("Invalid email format.");
       return;
     }
-    if(formData.Weight <= 0){
+    if (formData.Weight <= 0) {
       setError("Weight must be greater than 0");
       return;
     }
-    if(formData.Height <= 0){
+    if (formData.Height <= 0) {
       setError("Height must be greater than 0");
       return;
     }
@@ -71,21 +76,22 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="relative w-full max-w-2xl bg-white p-6 rounded-lg shadow-xl overflow-y-auto max-h-[90vh]">
-        
         {/* Title & close button */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-center flex-1 pl-10">Create Customer</h2>
-          <IconButton 
-            onClick={onClose} 
-            sx={{ 
-              color: "rgb(252, 252, 252)", 
-              backgroundColor: "rgb(190, 34, 34)", 
+          <h2 className="text-2xl font-bold text-center flex-1 pl-10">
+            Create Customer
+          </h2>
+          <IconButton
+            onClick={onClose}
+            sx={{
+              color: "rgb(252, 252, 252)",
+              backgroundColor: "rgb(190, 34, 34)",
               p: 0.5, // Resize the button outline
-              width: 32, 
+              width: 32,
               height: 32,
               "&:hover": {
                 backgroundColor: "rgb(224, 60, 60)",
-              }
+              },
             }}
           >
             <Close sx={{ fontSize: 18 }} />
@@ -94,7 +100,6 @@ export default function AddCustomer({ onClose, personalTrainerId }: AddCustomerP
 
         {/* Form */}
         <form className="space-y-4">
-          
           {/* Nickname */}
           <div>
             <label className="block font-semibold">Nickname (ID)</label>

@@ -163,7 +163,7 @@ export default function GymGoals() {
           p: 4,
           mt: 4,
           borderRadius: 5,
-          backgroundColor: "rgb(147, 229, 165)",
+          backgroundColor: "white",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
           position: "relative",
           border: "1px solid rgba(0, 0, 0, 0.1)",
@@ -186,7 +186,8 @@ export default function GymGoals() {
               color: "#2c3e50",
               textShadow: "1px 1px 2px rgba(0,0,0,0.1)",
               mb: 1,
-              background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+              background:
+                "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
@@ -195,7 +196,11 @@ export default function GymGoals() {
           </Typography>
           <Typography
             variant="subtitle1"
-            sx={{ textAlign: "center", fontWeight: "bold", color: "rgb(10, 59, 26)" }}
+            sx={{
+              textAlign: "center",
+              fontWeight: "bold",
+              color: "rgb(10, 59, 26)",
+            }}
           >
             Set your fitness targets and track your progress
           </Typography>
@@ -368,9 +373,10 @@ export default function GymGoals() {
               alignItems: "center",
             }}
           >
-            <TrackChangesIcon sx={{ mr: 1, color: "rgb(30, 124, 62)" }} /> Add New Goal
+            <TrackChangesIcon sx={{ mr: 1, color: "rgb(30, 124, 62)" }} /> Add
+            New Goal
           </Typography>
-          
+
           <Box
             sx={{
               display: "flex",
@@ -427,11 +433,13 @@ export default function GymGoals() {
                 onClick={addGoal}
                 sx={{
                   color: "white",
-                  background: "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
+                  background:
+                    "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
                   p: 1.2,
                   borderRadius: 2,
                   "&:hover": {
-                    background: "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
+                    background:
+                      "linear-gradient(145deg,rgb(136, 196, 110),rgb(68, 184, 93))",
                     transform: "scale(1.1)",
                   },
                   transition: "all 0.3s ease",

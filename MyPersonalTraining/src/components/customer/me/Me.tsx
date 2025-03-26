@@ -44,7 +44,10 @@ export default function Me() {
 
   return (
     <div className="h-screen w-full flex items-center justify-center">
-      <form className="w-11/12 max-w-2xl p-10 shadow-xl rounded-xl" style={{ backgroundColor: "rgb(147, 229, 165)" }}>
+      <form
+        className="w-11/12 max-w-2xl p-10 shadow-xl rounded-xl"
+        style={{ backgroundColor: "white" }}
+      >
         <Typography
           variant="h4"
           sx={{
@@ -53,7 +56,8 @@ export default function Me() {
             textAlign: "center",
             color: "#333",
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
-            background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+            background:
+              "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}

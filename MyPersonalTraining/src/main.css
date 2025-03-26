@@ -6,9 +6,14 @@
     position: relative;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
     z-index: 0;
-}
+    /* overflow: hidden rimosso per permettere lo scroll */
+  }
+  
+  /* Assicurati che il contenuto non sia più grande dello schermo */
+  .main-content > div {
+    height: 100%;
+  }
 
 .background-image {
     position: absolute;

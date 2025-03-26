@@ -34,24 +34,27 @@ function PlanManagement() {
       if (user?.id) {
         try {
           // Get all plans
-          const firebaseTrainingPlans = await FirestoreInterface.getAllPlansByPersonalTrainer(user.id);
-          
-          // For each plans take his related customer 
+          const firebaseTrainingPlans =
+            await FirestoreInterface.getAllPlansByPersonalTrainer(user.id);
+
+          // For each plans take his related customer
           const plansWithCustomers = await Promise.all(
             firebaseTrainingPlans.map(async (plan) => {
               // Passing the id of the customer (splitting the id and taking the second string)
-              const customer = await FirestoreInterface.getUserById(plan.id.split("-")[1]);
+              const customer = await FirestoreInterface.getUserById(
+                plan.id.split("-")[1]
+              );
               return { ...plan, customer };
             })
           );
-  
+
           setPlan(plansWithCustomers as FirebaseObject[]);
         } catch (error) {
           console.error("Error fetching training plans and customers:", error);
         }
       }
     };
-  
+
     fetchData();
   }, [user]);
 
@@ -60,7 +63,7 @@ function PlanManagement() {
     const matchesSearchTerm = `${plan.id}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
-      return matchesSearchTerm;
+    return matchesSearchTerm;
   });
 
   // Handler to select/deselect an exercise
@@ -141,7 +144,7 @@ function PlanManagement() {
                 sx={{
                   fontSize: isSmallScreen ? "0.875rem" : "1rem",
                   "&:hover": {
-                    backgroundColor: "rgb(22, 170, 42)",
+                    backgroundColor: "white",
                   },
                   textTransform: "none",
                 }}
@@ -180,9 +183,13 @@ function PlanManagement() {
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(plan) => {
-              navigate("/personalTrainer/plan-management/training-plan", { state: plan.customer });
+              navigate("/personalTrainer/plan-management/training-plan", {
+                state: plan.customer,
+              });
             }}
-            primaryText={(plan) => `${plan.customer.Name+" "+plan.customer.Surname+"'s Plan"}`}
+            primaryText={(plan) =>
+              `${plan.customer.Name + " " + plan.customer.Surname + "'s Plan"}`
+            }
           />
         </Paper>
       </Container>
