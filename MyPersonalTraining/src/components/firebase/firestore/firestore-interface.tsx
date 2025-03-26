@@ -384,12 +384,26 @@ const FirestoreInterface = {
         subject: subject,
         body: body,
         timestamp: Timestamp.fromDate(new Date()),
+        read: false
       };
   
       // Add a message in collection "messages" with random and valid ID
       await addDoc(collection(Firestore, "messages"), newMessage);
     } catch (e) {
       console.error("Error adding message: ", e);
+    }
+  },
+
+  updateMessage: async (messageId: string, read: boolean): Promise<void> => {
+    try {
+      const messageRef = doc(Firestore, "messages", messageId);
+  
+      await updateDoc(messageRef, {
+        read: read
+      });
+  
+    } catch (e) {
+      console.error("Error updating message: ", e);
     }
   },
 

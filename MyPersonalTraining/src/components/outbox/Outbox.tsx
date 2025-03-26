@@ -12,6 +12,12 @@ export default function Outbox() {
   const [selectedMessage, setSelectedMessage] = useState<FirebaseObject | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // get a valid date from a firestore timestamp
+  const formatFirestoreDate = (timestamp: { seconds: number; nanoseconds: number }) => {
+    const date = new Date(timestamp.seconds * 1000);
+    return date.toLocaleString();
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,15 +65,27 @@ export default function Outbox() {
         {loading ? (
           <div className="text-center p-4 font-semibold">Loading messages...</div>
         ) : (
-          <ul className="p-4 flex-grow overflow-auto">
+          <ul className="p-4 flex-grow overflow-y-auto max-h-96 space-y-2">
             {messages.map((msg) => (
               <li
                 key={msg.id}
-                className="border-b py-4 px-4 cursor-pointer hover:bg-green-400 rounded-lg transition duration-200"
+                className="border-b py-4 px-4 cursor-pointer bg-white hover:bg-gray-200 rounded-lg transition duration-200"
                 onClick={() => setSelectedMessage(msg)}
               >
-                <div className="font-bold text-lg">{recipients.find(rec => rec.id === msg.recipient)?.Name+" "+recipients.find(rec => rec.id === msg.recipient)?.Surname || "Unknown"}</div>
-                <div className="text-gray-600 text-sm">{msg.subject}: {msg.body}</div>
+                <div className="flex flex-col">
+                  <div className="font-bold text-lg">
+                    {recipients.find((rec) => rec.id === msg.recipient)?.Name +
+                      " " +
+                      recipients.find((rec) => rec.id === msg.recipient)?.Surname ||
+                      "Unknown"}
+                  </div>
+
+                  <div className="text-gray-600 text-sm mt-1">{msg.subject}: {msg.body}</div>
+
+                  <div className="text-sm text-right mt-2 sm:mt-1 font-bold">
+                    {formatFirestoreDate(msg.timestamp)}
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
@@ -82,6 +100,7 @@ export default function Outbox() {
             <p className="text-sm text-gray-700 font-semibold">
               To: {recipients.find(rec => rec.id === selectedMessage.recipient)?.Name+" "+recipients.find(rec => rec.id === selectedMessage.recipient)?.Surname || "Unknown"}
             </p>
+            <p className="text-sm text-gray-600 mt-1">Date: {formatFirestoreDate(selectedMessage.timestamp)}</p>
             <p className="mt-4 text-lg">{selectedMessage.body}</p>
             <button
               className="absolute top-3 right-3 bg-gray-500 hover:bg-gray-600 text-white p-2 rounded-full shadow-md transition-transform transform hover:scale-110"
