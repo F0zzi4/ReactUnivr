@@ -441,24 +441,35 @@ const FirestoreInterface = {
     }
   },
 
-  getPersonalTrainerId: async (customerId : string): Promise<string> => {
-    const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
-      const querySnapshot = await getDocs(plansRef);
-  
-      const filteredDocs = querySnapshot.docs
-        .filter(doc => doc.id.endsWith(`-${customerId}`))
-        .map(doc => ({
-          id: doc.id,
-          data: doc.data(),
-        }));
-  
-      if (filteredDocs.length === 0)
-        return "";
-      else{
-        const splitted = filteredDocs[0].id.split("-");
-        return splitted[0];
+  getPersonalTrainerId: async (customerId: string): Promise<string> => {
+    try {
+      // Ottieni tutti gli utenti dalla collezione "users"
+      const usersRef = collection(Firestore, COLLECTIONS.USERS);
+      const usersSnapshot = await getDocs(usersRef);
+
+      for (const userDoc of usersSnapshot.docs) {
+        const userId = userDoc.id;
+
+        // Verifica se la raccolta "customers" esiste sotto "users/{userId}"
+        const customersRef = collection(Firestore, `${COLLECTIONS.USERS}/${userId}/${COLLECTIONS.CUSTOMERS}`);
+        const customersSnapshot = await getDocs(customersRef);
+
+        // Se la raccolta "customers" non contiene documenti, passa al prossimo utente
+        if (customersSnapshot.empty) continue;
+
+        const customerExists = customersSnapshot.docs.some(doc => doc.id === customerId);
+
+        if (customerExists) {
+          return userId;
+        }
       }
-  }
+
+      return ""; // Nessun personal trainer trovato
+    } catch (error) {
+      console.error("Error retrieving personal trainer:", error);
+      return "";
+    }
+  },
 };
 
 const normalizeExerciseName = (id: string): string => {
