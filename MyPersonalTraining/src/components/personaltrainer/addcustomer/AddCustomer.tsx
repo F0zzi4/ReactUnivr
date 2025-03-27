@@ -8,14 +8,16 @@ interface dataForm {
   Name: string;
   Surname: string;
   DateOfBirth: string;
-  Height: number;
-  Weight: number;
+  Height: number | "";
+  Weight: number | "";
   Email: string;
   UserType: string;
+  Limitations: string;
+  GymLevel: string;
 }
 
 interface AddCustomerProps {
-  onClose: () => void; // function used on closing window
+  onClose: () => void;
   personalTrainerId: string;
 }
 
@@ -28,20 +30,31 @@ export default function AddCustomer({
     Name: "",
     Surname: "",
     DateOfBirth: "",
-    Height: 0,
-    Weight: 0,
+    Height: "",
+    Weight: "",
     Email: "",
     UserType: "Customer",
+    Limitations: "",
+    GymLevel: "",
   });
 
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "Height" || name === "Weight" ? Number(value) : value,
+      [name]:
+        name === "Height" || name === "Weight"
+          ? value === ""
+            ? ""
+            : Number(value)
+          : value,
     }));
   };
 
@@ -58,11 +71,11 @@ export default function AddCustomer({
       setError("Invalid email format.");
       return;
     }
-    if (formData.Weight <= 0) {
+    if (formData.Weight === "" || formData.Weight <= 0) {
       setError("Weight must be greater than 0");
       return;
     }
-    if (formData.Height <= 0) {
+    if (formData.Height === "" || formData.Height <= 0) {
       setError("Height must be greater than 0");
       return;
     }
@@ -86,7 +99,7 @@ export default function AddCustomer({
             sx={{
               color: "rgb(252, 252, 252)",
               backgroundColor: "rgb(190, 34, 34)",
-              p: 0.5, // Resize the button outline
+              p: 0.5,
               width: 32,
               height: 32,
               "&:hover": {
@@ -102,9 +115,9 @@ export default function AddCustomer({
         <form className="space-y-4">
           {/* Nickname */}
           <div>
-            <label className="block font-semibold">Nickname (ID)</label>
+            <label className="block font-semibold text-lg">Nickname (ID)</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
               type="text"
               name="id"
               value={formData.id}
@@ -114,9 +127,9 @@ export default function AddCustomer({
 
           {/* Email */}
           <div>
-            <label className="block font-semibold">Email</label>
+            <label className="block font-semibold text-lg">Email</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
               type="email"
               name="Email"
               value={formData.Email}
@@ -126,9 +139,9 @@ export default function AddCustomer({
 
           {/* Password */}
           <div>
-            <label className="block font-semibold">Password</label>
+            <label className="block font-semibold text-lg">Password</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
               type="password"
               name="Password"
               value={password}
@@ -139,9 +152,9 @@ export default function AddCustomer({
           {/* Name & Surname */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold">First Name</label>
+              <label className="block font-semibold text-lg">First Name</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 type="text"
                 name="Name"
                 value={formData.Name}
@@ -149,9 +162,9 @@ export default function AddCustomer({
               />
             </div>
             <div>
-              <label className="block font-semibold">Last Name</label>
+              <label className="block font-semibold text-lg">Last Name</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 type="text"
                 name="Surname"
                 value={formData.Surname}
@@ -162,9 +175,9 @@ export default function AddCustomer({
 
           {/* Date Of Birth */}
           <div>
-            <label className="block font-semibold">Date of Birth</label>
+            <label className="block font-semibold text-lg">Date of Birth</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
               type="date"
               name="DateOfBirth"
               value={formData.DateOfBirth}
@@ -175,25 +188,59 @@ export default function AddCustomer({
           {/* Height & Weight */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block font-semibold">Height (cm)</label>
+              <label className="block font-semibold text-lg">Height (cm)</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 type="number"
                 name="Height"
-                value={formData.Height}
+                value={formData.Height === "" ? "" : formData.Height}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label className="block font-semibold">Weight (kg)</label>
+              <label className="block font-semibold text-lg">Weight (kg)</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"
+                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
                 type="number"
                 name="Weight"
-                value={formData.Weight}
+                value={formData.Weight === "" ? "" : formData.Weight}
                 onChange={handleChange}
               />
             </div>
+          </div>
+
+          {/* Gym Level */}
+          <div>
+            <label className="block font-semibold text-lg">Gym Level</label>
+            <select
+              name="GymLevel"
+              value={formData.GymLevel}
+              onChange={handleChange}
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="">Select Level</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+
+          {/* Limitations (textarea) */}
+          <div>
+            <label className="block font-semibold text-lg">
+              Limitations (optional)
+            </label>
+            <textarea
+              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              name="Limitations"
+              value={formData.Limitations}
+              onChange={handleChange}
+              maxLength={200}
+              placeholder="Describe any limitations..."
+            />
+            <p className="text-sm text-gray-500">
+              {formData.Limitations.length}/200
+            </p>
           </div>
 
           {/* Error message */}

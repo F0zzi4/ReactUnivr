@@ -23,6 +23,7 @@ import Customer from "./components/personaltrainer/customer/Customer";
 import Exercise from "./components/personaltrainer/exercise/Exercise";
 import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
 import "./main.css";
+import ResetPassword from "./components/resetpassword/ResetPassword";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -34,42 +35,45 @@ const Layout = () => {
   // If path is "/", do not show the sidebar
   const showSidebar = location.pathname !== "/";
 
-  return user ? ( // Check if user is logged
-    <div className="flex h-screen maincontent-backgroundcolor">
-      {/* Fixed sidebar */}
-      {showSidebar && <SideBar open={open} setOpen={setOpen} />}
-      <SessionManager />
-      {/* Main content */}
-      <main
-        className={`main-content transition-all duration-300 ${
-          showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
-        }`}
-      >
-        {/* Immagini di background fisse */}
-        <img
-          src="../gym1.png"
-          alt="Gym Center"
-          className="background-image fixed image-left object-cover"
-          style={{ left: showSidebar ? (open ? "1rem" : "3rem") : "0" }}
-        />
-        <img
-          src="../gym3.png"
-          alt="Gym Right"
-          className="background-image fixed image-right object-cover -z-10"
-        />
+  return (
+    // If user is logged in, show the main content with Sidebar
+    user ? (
+      <div className="flex h-screen maincontent-backgroundcolor">
+        {/* Fixed sidebar */}
+        {showSidebar && <SideBar open={open} setOpen={setOpen} />}
+        <SessionManager />
+        {/* Main content */}
+        <main
+          className={`main-content transition-all duration-300 ${
+            showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
+          }`}
+        >
+          {/* Immagini di background fisse */}
+          <img
+            src="../gym1.png"
+            alt="Gym Center"
+            className="background-image fixed image-left object-cover"
+            style={{ left: showSidebar ? (open ? "1rem" : "3rem") : "0" }}
+          />
+          <img
+            src="../gym3.png"
+            alt="Gym Right"
+            className="background-image fixed image-right object-cover -z-10"
+          />
 
-        {/* Contenuto scrollabile */}
-        <div className="relative z-0 h-full overflow-auto">
-          <Outlet />
-        </div>
-      </main>
-    </div>
-  ) : (
-    <Navigate to={"/"} />
+          {/* Contenuto scrollabile */}
+          <div className="relative z-0 h-full overflow-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    ) : (
+      <Navigate to="/" /> // If user is not logged, navigate to login page
+    )
   );
 };
 
-// Redirect logic inside login component
+// LoginWithRedirect for redirecting when user is already logged in
 const LoginWithRedirect = () => {
   const location = useLocation();
   const userData = sessionStorage.getItem("user");
@@ -95,6 +99,8 @@ root.render(
       <Routes>
         {/* Login with redirect logic */}
         <Route path="/" element={<LoginWithRedirect />} />
+        {/* Route for reset password without authentication */}
+        <Route path="/resetPassword" element={<ResetPassword />} />
 
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
@@ -106,7 +112,6 @@ root.render(
             element={<CustomerTrainingPlan />}
           />
           <Route path="/inbox" element={<Inbox />} />
-          Customer
           {/* PersonalTrainer Routes */}
           <Route
             path="/personalTrainer/plan-management"
@@ -126,7 +131,6 @@ root.render(
             path="/personalTrainer/plan-management/training-plan"
             element={<TrainingPlan />}
           />
-          <Route path="/inbox" element={<Inbox />} />
           <Route path="/outbox" element={<Outbox />} />
         </Route>
       </Routes>
