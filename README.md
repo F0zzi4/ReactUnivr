@@ -8,7 +8,7 @@ React project to manage personal coaching for patients
 
 - **node**: ^22.12.0
 
-# Depencences
+# Dependences
 
 ```bash
 # React Router
