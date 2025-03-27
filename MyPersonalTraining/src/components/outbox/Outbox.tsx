@@ -116,8 +116,7 @@ export default function Outbox() {
       {selectedMessage && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div
-            className="p-6 rounded-lg shadow-lg max-w-lg w-full relative"
-            style={{ backgroundColor: "rgb(133, 204, 148)" }}
+            className="p-6 rounded-lg shadow-lg max-w-lg w-full relative bg-white"
           >
             <h3 className="text-xl font-bold border-b pb-2 mb-4">
               {selectedMessage.subject}

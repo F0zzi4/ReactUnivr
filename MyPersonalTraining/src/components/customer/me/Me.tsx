@@ -78,13 +78,13 @@ export default function Me() {
   const hasError = (fieldName: string) => errorFields.has(fieldName);
 
   return (
-    <div className="h-screen w-full flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <form
-        className="w-11/12 max-w-2xl p-10 shadow-xl rounded-xl"
+        className="w-full max-w-lg md:max-w-2xl p-6 md:p-8 shadow-xl rounded-xl bg-white"
         style={{ backgroundColor: "white" }}
       >
         {/* Title and GymLevel Chip */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col items-center mb-6">
           <Typography
             variant="h4"
             sx={{
@@ -121,7 +121,7 @@ export default function Me() {
             Nick Name
           </label>
           <input
-            className={`appearance-none block w-full bg-white text-gray-700 border ${
+            className={`appearance-none block w-full bg-gray-100 text-gray-700 border ${
               hasError("id") ? "border-red-500" : "border-gray-300"
             } rounded py-4 px-5 leading-tight focus:outline-none`}
             type="text"
@@ -136,7 +136,7 @@ export default function Me() {
             Email
           </label>
           <input
-            className={`appearance-none block w-full bg-white text-gray-700 border ${
+            className={`appearance-none block w-full bg-gray-100 text-gray-700 border ${
               hasError("Email") ? "border-red-500" : "border-gray-300"
             } rounded py-4 px-5 leading-tight focus:outline-none`}
             type="email"

@@ -46,17 +46,17 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           {
             icon: <AiOutlineFileText size={30} />,
             label: "Plan Management",
-            path: "/personalTrainer/plan-management",
+            path: "/personal-trainer/plan-management",
           },
           {
             icon: <FaUsers size={30} />,
             label: "Customers",
-            path: "/personalTrainer/customers",
+            path: "/personal-trainer/customers",
           },
           {
             icon: <MdOutlineDashboard size={30} />,
             label: "Exercises",
-            path: "/personalTrainer/exercises",
+            path: "/personal-trainer/exercises",
           },
         ]
       : [

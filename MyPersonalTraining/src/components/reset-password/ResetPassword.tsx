@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import FirestoreInterface from "../firebase/firestore/firestore-interface";
-import "./ResetPassword.css";
+import "../material-ui/login/Login.css";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
@@ -31,7 +31,6 @@ const ResetPassword = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Form submitted!"); // Aggiungi questo per verificare
     setErrorMessage("");
     setSuccessMessage("");
     setEmailError(false);
@@ -66,16 +65,25 @@ const ResetPassword = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mb: 4 }}>
+    <Container
+      maxWidth={false}
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+      className="login-background"
+    >
       <Paper
         elevation={6}
         sx={{
           p: 4,
-          mt: 4,
+          width: "100%",
+          maxWidth: "600px",
           borderRadius: 5,
           backgroundColor: "white",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
-          position: "relative",
           border: "1px solid rgba(0, 0, 0, 0.1)",
         }}
       >

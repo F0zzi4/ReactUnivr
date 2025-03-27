@@ -243,18 +243,25 @@ export default function Login() {
             <Divider>or</Divider>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography sx={{ textAlign: "center" }}>
-                Don&apos;t have an account or having problems with access? Send
-                an email to:<br></br>
+                Don&apos;t have an account or having problems with access?<br />
+                Send an email to:<br />
                 <i>fozzatodavide@gmail.com</i>
                 <br></br>
                 <i>mattia.rebonato31@gmail.com</i>
               </Typography>
               <Link
-                to="/resetPassword"
+                to="/reset-password"
                 style={{ textAlign: "center", marginTop: "10px" }}
               >
-                <Button variant="text" color="primary">
-                  Forgot Password?
+                <Button 
+                  variant="text" 
+                  color="primary"
+                  sx={{
+                    transition: "background-color 0.3s",
+                    "&:hover": { backgroundColor: "rgb(36, 201, 118)", color: "white" }
+                  }}
+                  >
+                  <b>Forgot Password?</b>
                 </Button>
               </Link>
             </Box>

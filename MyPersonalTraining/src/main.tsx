@@ -23,7 +23,7 @@ import Customer from "./components/personaltrainer/customer/Customer";
 import Exercise from "./components/personaltrainer/exercise/Exercise";
 import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
 import "./main.css";
-import ResetPassword from "./components/resetpassword/ResetPassword";
+import ResetPassword from "./components/reset-password/ResetPassword";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -100,7 +100,7 @@ root.render(
         {/* Login with redirect logic */}
         <Route path="/" element={<LoginWithRedirect />} />
         {/* Route for reset password without authentication */}
-        <Route path="/resetPassword" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
@@ -114,21 +114,21 @@ root.render(
           <Route path="/inbox" element={<Inbox />} />
           {/* PersonalTrainer Routes */}
           <Route
-            path="/personalTrainer/plan-management"
+            path="/personal-trainer/plan-management"
             element={<PlanManagement />}
           />
-          <Route path="/personalTrainer/customers" element={<Customers />} />
-          <Route path="/personalTrainer/exercises" element={<Exercises />} />
+          <Route path="/personal-trainer/customers" element={<Customers />} />
+          <Route path="/personal-trainer/exercises" element={<Exercises />} />
           <Route
-            path="/personalTrainer/customers/customer"
+            path="/personal-trainer/customers/customer"
             element={<Customer />}
           />
           <Route
-            path="/personalTrainer/exercises/exercise"
+            path="/personal-trainer/exercises/exercise"
             element={<Exercise />}
           />
           <Route
-            path="/personalTrainer/plan-management/training-plan"
+            path="/personal-trainer/plan-management/training-plan"
             element={<TrainingPlan />}
           />
           <Route path="/outbox" element={<Outbox />} />

@@ -9,7 +9,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Delete, Add } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import GenericList from "../../generic-list/GenericList"; // Generic list component
@@ -19,7 +19,6 @@ function PlanManagement() {
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [plans, setPlan] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const theme = useTheme();
@@ -94,19 +93,6 @@ function PlanManagement() {
         p: 2,
       }}
     >
-      {isModalOpen && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            zIndex: 10,
-          }}
-        />
-      )}
       <Container maxWidth="md" className="relative">
         <Paper
           elevation={6}
@@ -136,21 +122,6 @@ function PlanManagement() {
               flexWrap={isSmallScreen ? "wrap" : "nowrap"}
               justifyContent={isSmallScreen ? "center" : "flex-end"}
             >
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<Add />}
-                onClick={() => setIsModalOpen(true)}
-                sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
-                  "&:hover": {
-                    backgroundColor: "white",
-                  },
-                  textTransform: "none",
-                }}
-              >
-                Add
-              </Button>
               <Button
                 variant="contained"
                 color="error"
