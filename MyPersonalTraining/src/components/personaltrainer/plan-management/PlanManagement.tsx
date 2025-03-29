@@ -154,7 +154,7 @@ function PlanManagement() {
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(plan) => {
-              navigate("/personalTrainer/plan-management/training-plan", {
+              navigate("/personal-trainer/plan-management/training-plan", {
                 state: plan.customer,
               });
             }}

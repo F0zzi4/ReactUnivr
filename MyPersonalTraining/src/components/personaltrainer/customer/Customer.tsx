@@ -64,7 +64,7 @@ export default function Customer() {
 
   const handleManagePlan = async () => {
     await FirestoreInterface.createTrainingPlan(user.id, formData.id);
-    navigate("/personalTrainer/plan-management/training-plan", {
+    navigate("/personal-trainer/plan-management/training-plan", {
       state: formData,
     });
   };
@@ -109,7 +109,7 @@ export default function Customer() {
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center">
+    <div className="h-screen w-full flex items-center justify-center mt-10">
       <div className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
         {/* Back Button */}
         <button

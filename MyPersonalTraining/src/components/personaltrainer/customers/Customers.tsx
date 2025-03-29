@@ -178,7 +178,7 @@ function Customers() {
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(customer) => {
-              navigate("/personalTrainer/customers/customer", {
+              navigate("/personal-trainer/customers/customer", {
                 state: { customer },
               });
             }}

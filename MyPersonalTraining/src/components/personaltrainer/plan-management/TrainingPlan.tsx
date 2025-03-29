@@ -39,7 +39,7 @@ export default function TrainingPlan() {
   const customer = location.state;
 
   if (!customer) {
-    navigate("/personalTrainer/plan-management");
+    navigate("/personal-trainer/plan-management");
   }
 
   const theme = useTheme();
@@ -305,7 +305,7 @@ export default function TrainingPlan() {
               `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
             }
             onItemClick={(exercise) => {
-              navigate("/personalTrainer/exercises/exercise", {
+              navigate("/personal-trainer/exercises/exercise", {
                 state: { exercise },
               });
             }}
@@ -326,7 +326,7 @@ export default function TrainingPlan() {
               `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
             }
             onItemClick={(exercise) => {
-              navigate("/personalTrainer/exercises/exercise", {
+              navigate("/personal-trainer/exercises/exercise", {
                 state: { exercise },
               });
             }}

@@ -218,7 +218,7 @@ function Exercises() {
             selectedItems={selectedElements}
             onToggle={handleToggle}
             onItemClick={(exercise) => {
-              navigate("/personalTrainer/exercises/exercise", {
+              navigate("/personal-trainer/exercises/exercise", {
                 state: { exercise },
               });
             }}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FaInbox, FaPencilAlt, FaTimes, FaTrash } from "react-icons/fa";
+import { FaInbox, FaPencilAlt, FaTimes } from "react-icons/fa";
 import FirebaseObject from "../firebase/firestore/data-model/FirebaseObject";
 import FirestoreInterface from "../firebase/firestore/firestore-interface";
 
@@ -89,19 +89,6 @@ export default function Inbox() {
     }
   };
 
-  const handleRemoveMessage = async () => {
-    if (!selectedMessage) return;
-
-    try {
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.id !== selectedMessage.id)
-      );
-      setSelectedMessage(null);
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
-  };
-
   const handleSendMessage = async () => {
     if (!newMessage.to || !newMessage.subject || !newMessage.body) {
       setError("All fields are required!");
@@ -186,14 +173,6 @@ export default function Inbox() {
             ))}
           </ul>
         )}
-
-        {/* Remove button */}
-        <button
-          className="absolute bottom-4 left-4 bg-red-500 hover:bg-red-600 text-white p-4 rounded-full shadow-lg"
-          onClick={() => handleRemoveMessage}
-        >
-          <FaTrash size={25} />
-        </button>
 
         {/* Write Button */}
         <button

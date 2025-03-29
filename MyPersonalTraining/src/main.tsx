@@ -8,7 +8,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
-import SideBar from "./components/sidebar/SideBar";
+import SideBar from "./components/sideBar/SideBar";
 import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
 import Me from "./components/customer/me/Me";
