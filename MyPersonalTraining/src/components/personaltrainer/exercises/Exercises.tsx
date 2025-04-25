@@ -28,7 +28,7 @@ function Exercises() {
   const navigate = useNavigate();
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Controlla se lo schermo è piccolo
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // check if the screen is small
 
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
@@ -123,15 +123,15 @@ function Exercises() {
             justifyContent="space-between"
             alignItems="center"
             mb={2}
-            flexDirection={isSmallScreen ? "column" : "row"} // Cambia direzione su schermi piccoli
-            gap={isSmallScreen ? 2 : 0} // Aggiunge spazio verticale su schermi piccoli
+            flexDirection={isSmallScreen ? "column" : "row"}
+            gap={isSmallScreen ? 2 : 0}
           >
             <Typography
               variant="h3"
               sx={{
                 fontWeight: "bold",
-                fontSize: isSmallScreen ? "1.5rem" : "2rem", // Riduci la dimensione del testo su schermi piccoli
-                textAlign: isSmallScreen ? "center" : "left", // Centra il testo su schermi piccoli
+                fontSize: isSmallScreen ? "1.5rem" : "2rem",
+                textAlign: isSmallScreen ? "center" : "left",
               }}
             >
               Exercises
@@ -179,7 +179,7 @@ function Exercises() {
                 onClick={handleRemoveSelected}
                 disabled={selectedElements.length === 0}
                 sx={{
-                  fontSize: isSmallScreen ? "0.875rem" : "1rem", // Riduci la dimensione del testo su schermi piccoli
+                  fontSize: isSmallScreen ? "0.875rem" : "1rem",
                   textTransform: "none",
                 }}
               >

@@ -41,7 +41,7 @@ export default function Me() {
   };
 
   const saveChanges = () => {
-    // Validazione dei campi obbligatori
+    // Validation required fields
     const fieldsWithErrors = new Set<string>();
     if (!formData.Name) fieldsWithErrors.add("Name");
     if (!formData.Surname) fieldsWithErrors.add("Surname");
@@ -69,9 +69,9 @@ export default function Me() {
 
   // Determine the color based on GymLevel
   const gymLevelColor = {
-    Beginner: "#FF6F61", // Living Coral
-    Intermediate: "#88D8B0", // Mint Green
-    Advanced: "#5F4B8B", // Ultra Violet
+    Beginner: "#FF6F61",
+    Intermediate: "#88D8B0",
+    Advanced: "#5F4B8B",
   }[formData.GymLevel];
 
   // Helper function to determine if a field has an error
@@ -179,7 +179,7 @@ export default function Me() {
           </div>
         </div>
 
-        {/* Data di nascita */}
+        {/* Date of birth */}
         <div className="mb-5">
           <label className="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2">
             Date of Birth
@@ -196,7 +196,7 @@ export default function Me() {
           />
         </div>
 
-        {/* Altezza e Peso */}
+        {/* Height & Weight */}
         <div className="flex flex-wrap -mx-3 mb-6">
           <div className="w-full md:w-1/2 px-3">
             <label className="block uppercase tracking-wide text-gray-700 text-base font-bold mb-2">

@@ -12,7 +12,7 @@ import {
 import { Delete } from "@mui/icons-material";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
-import GenericList from "../../generic-list/GenericList"; // Generic list component
+import GenericList from "../../generic-list/GenericList";
 import { useNavigate } from "react-router-dom";
 
 function PlanManagement() {
@@ -22,7 +22,7 @@ function PlanManagement() {
   const navigate = useNavigate();
 
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // Controlla se lo schermo è piccolo
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // check if the screen is small
 
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
@@ -39,7 +39,7 @@ function PlanManagement() {
           // For each plans take his related customer
           const plansWithCustomers = await Promise.all(
             firebaseTrainingPlans.map(async (plan) => {
-              // Passing the id of the customer (splitting the id and taking the second string)
+              // Passing the customer id (splitting the id and taking the second string)
               const customer = await FirestoreInterface.getUserById(
                 plan.id.split("-")[1]
               );
@@ -75,11 +75,11 @@ function PlanManagement() {
   };
 
   // Remove selected plans
-  const handleRemoveSelected = () => {
+  const handleRemoveSelected = async () => {
     setPlan((prev) =>
       prev.filter((plan) => !selectedElements.includes(plan.id))
     );
-    // TODO: eliminare un piano
+    await FirestoreInterface.removeTrainingPlans(selectedElements);
     setSelectedElements([]);
   };
 
@@ -103,15 +103,15 @@ function PlanManagement() {
             justifyContent="space-between"
             alignItems="center"
             mb={2}
-            flexDirection={isSmallScreen ? "column" : "row"} // Cambia direzione su schermi piccoli
-            gap={isSmallScreen ? 2 : 0} // Aggiunge spazio verticale su schermi piccoli
+            flexDirection={isSmallScreen ? "column" : "row"}
+            gap={isSmallScreen ? 2 : 0}
           >
             <Typography
               variant="h3"
               sx={{
                 fontWeight: "bold",
-                fontSize: isSmallScreen ? "1.5rem" : "2rem", // Riduci la dimensione del testo su schermi piccoli
-                textAlign: isSmallScreen ? "center" : "left", // Centra il testo su schermi piccoli
+                fontSize: isSmallScreen ? "1.5rem" : "2rem",
+                textAlign: isSmallScreen ? "center" : "left",
               }}
             >
               Training Plans

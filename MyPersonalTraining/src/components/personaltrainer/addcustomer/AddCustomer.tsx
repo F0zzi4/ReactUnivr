@@ -3,6 +3,7 @@ import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { IconButton } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
+// Interface for the form data structure
 interface dataForm {
   id: string;
   Name: string;
@@ -16,6 +17,7 @@ interface dataForm {
   GymLevel: string;
 }
 
+// Props expected by this component
 interface AddCustomerProps {
   onClose: () => void;
   personalTrainerId: string;
@@ -25,6 +27,7 @@ export default function AddCustomer({
   onClose,
   personalTrainerId,
 }: AddCustomerProps) {
+  // State for the form inputs
   const [formData, setFormData] = useState<dataForm>({
     id: "",
     Name: "",
@@ -38,15 +41,19 @@ export default function AddCustomer({
     GymLevel: "",
   });
 
+  // Separate state for password and error message
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  // Handle changes in the form inputs
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
+
+    // Parse numeric fields as numbers, leave empty string otherwise
     setFormData((prev) => ({
       ...prev,
       [name]:
@@ -58,38 +65,45 @@ export default function AddCustomer({
     }));
   };
 
+  // Main function to validate and create a customer
   const createCustomer = () => {
+    // Basic validations
     if (!formData.Name || !formData.Surname || !formData.Email || !password) {
       setError("Please fill all required fields.");
       return;
     }
+
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
       return;
     }
+
     if (!/\S+@\S+\.\S+/.test(formData.Email)) {
       setError("Invalid email format.");
       return;
     }
+
     if (formData.Weight === "" || formData.Weight <= 0) {
       setError("Weight must be greater than 0");
       return;
     }
+
     if (formData.Height === "" || formData.Height <= 0) {
       setError("Height must be greater than 0");
       return;
     }
 
+    // If validation passes, try to create the customer in Firestore
     setError("");
     FirestoreInterface.createCustomer(formData, password, personalTrainerId)
-      .then(() => window.location.reload())
-      .catch(() => setError("This user already exists"));
+      .then(() => window.location.reload()) // Refresh page on success
+      .catch(() => setError("This user already exists")); // Show error if user exists
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4">
       <div className="relative w-full max-w-2xl bg-white p-6 rounded-lg shadow-xl overflow-y-auto max-h-[90vh]">
-        {/* Title & close button */}
+        {/* Modal header with title and close button */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-center flex-1 pl-10">
             Create Customer
@@ -111,13 +125,13 @@ export default function AddCustomer({
           </IconButton>
         </div>
 
-        {/* Form */}
+        {/* Form content */}
         <form className="space-y-4">
-          {/* Nickname */}
+          {/* Nickname / ID field */}
           <div>
             <label className="block font-semibold text-lg">Nickname (ID)</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
               type="text"
               name="id"
               value={formData.id}
@@ -129,7 +143,7 @@ export default function AddCustomer({
           <div>
             <label className="block font-semibold text-lg">Email</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
               type="email"
               name="Email"
               value={formData.Email}
@@ -141,7 +155,7 @@ export default function AddCustomer({
           <div>
             <label className="block font-semibold text-lg">Password</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
               type="password"
               name="Password"
               value={password}
@@ -149,12 +163,12 @@ export default function AddCustomer({
             />
           </div>
 
-          {/* Name & Surname */}
+          {/* Name and Surname */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold text-lg">First Name</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="input-style"
                 type="text"
                 name="Name"
                 value={formData.Name}
@@ -164,7 +178,7 @@ export default function AddCustomer({
             <div>
               <label className="block font-semibold text-lg">Last Name</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="input-style"
                 type="text"
                 name="Surname"
                 value={formData.Surname}
@@ -173,11 +187,11 @@ export default function AddCustomer({
             </div>
           </div>
 
-          {/* Date Of Birth */}
+          {/* Date of Birth */}
           <div>
             <label className="block font-semibold text-lg">Date of Birth</label>
             <input
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
               type="date"
               name="DateOfBirth"
               value={formData.DateOfBirth}
@@ -185,12 +199,12 @@ export default function AddCustomer({
             />
           </div>
 
-          {/* Height & Weight */}
+          {/* Height and Weight */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block font-semibold text-lg">Height (cm)</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="input-style"
                 type="number"
                 name="Height"
                 value={formData.Height === "" ? "" : formData.Height}
@@ -200,7 +214,7 @@ export default function AddCustomer({
             <div>
               <label className="block font-semibold text-lg">Weight (kg)</label>
               <input
-                className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="input-style"
                 type="number"
                 name="Weight"
                 value={formData.Weight === "" ? "" : formData.Weight}
@@ -209,14 +223,14 @@ export default function AddCustomer({
             </div>
           </div>
 
-          {/* Gym Level */}
+          {/* Gym Level dropdown */}
           <div>
             <label className="block font-semibold text-lg">Gym Level</label>
             <select
               name="GymLevel"
               value={formData.GymLevel}
               onChange={handleChange}
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
             >
               <option value="">Select Level</option>
               <option value="Beginner">Beginner</option>
@@ -225,13 +239,13 @@ export default function AddCustomer({
             </select>
           </div>
 
-          {/* Limitations (textarea) */}
+          {/* Limitations textarea */}
           <div>
             <label className="block font-semibold text-lg">
               Limitations (optional)
             </label>
             <textarea
-              className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="input-style"
               name="Limitations"
               value={formData.Limitations}
               onChange={handleChange}
@@ -243,7 +257,7 @@ export default function AddCustomer({
             </p>
           </div>
 
-          {/* Error message */}
+          {/* Display validation or API errors */}
           {error && <p className="text-red-500 text-center">{error}</p>}
 
           {/* Submit button */}

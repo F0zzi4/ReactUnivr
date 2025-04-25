@@ -48,7 +48,7 @@ const Layout = () => {
             showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
           }`}
         >
-          {/* Immagini di background fisse */}
+          {/* Fixed background images */}
           <img
             src="../gym1.png"
             alt="Gym Center"
@@ -61,7 +61,7 @@ const Layout = () => {
             className="background-image fixed image-right object-cover -z-10"
           />
 
-          {/* Contenuto scrollabile */}
+          {/* Scrollable content */}
           <div className="relative z-0 h-full overflow-auto">
             <Outlet />
           </div>

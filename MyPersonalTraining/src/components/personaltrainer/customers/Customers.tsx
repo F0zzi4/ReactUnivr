@@ -75,7 +75,7 @@ function Customers() {
     setCustomers((prev) =>
       prev.filter((customer) => !selectedElements.includes(customer.id))
     );
-    FirestoreInterface.deleteUsers(selectedElements, user.id);
+    FirestoreInterface.deleteCustomers(selectedElements, user.id);
     setSelectedElements([]);
   };
 
@@ -154,6 +154,9 @@ function Customers() {
                 disabled={selectedElements.length === 0}
                 sx={{
                   fontSize: isSmallScreen ? "0.875rem" : "1rem", // Reduce text size on small screens
+                  "&:hover": {
+                    backgroundColor: "rgb(170, 22, 22)",
+                  },
                   textTransform: "none",
                 }}
               >

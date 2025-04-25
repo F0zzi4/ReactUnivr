@@ -180,14 +180,14 @@ const FirestoreInterface = {
     }
   },
 
-  getPlanByCustomerId: async (
+  getDaysPlanByCustomerId: async (
     customerId: string
   ): Promise<FirebaseObject[]> => {
     try {
       const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
       const querySnapshot = await getDocs(plansRef);
 
-      // Filtra i documenti con ID che termina con `-{customerId}`
+      // Filters documents with IDs ending with `-{customerId}`
       const filteredDocs = querySnapshot.docs
         .filter((doc) => doc.id.endsWith(`-${customerId}`))
         .map((doc) => ({
@@ -197,20 +197,20 @@ const FirestoreInterface = {
 
       if (filteredDocs.length === 0) return [];
 
-      // Estrai solo i campi relativi ai giorni e assegna un ID unico
+      // Extract only the fields related to days and assign a unique ID
       const daysArray: FirebaseObject[] = filteredDocs.flatMap(({ id, data }) =>
         Object.keys(data)
-          .filter((key) => key.startsWith("Day ")) // Prendi solo chiavi che iniziano con "Day "
+          .filter((key) => key.startsWith("Day ")) // Take only keys that begin with “Day ”
           .sort((a, b) => {
-            // Estrai i numeri dai nomi dei giorni (es. "Day 1" -> 1, "Day 10" -> 10)
+            // Extract the numbers from the names of the days (e.g., “Day 1” -> 1, “Day 10” -> 10)
             const numA = parseInt(a.replace("Day ", ""), 10);
             const numB = parseInt(b.replace("Day ", ""), 10);
-            return numA - numB; // Ordina numericamente
+            return numA - numB; // Sort numerically
           })
           .map((dayKey) => ({
-            id: `${id}-${dayKey}`, // ID univoco
-            name: dayKey, // Nome del giorno
-            exercises: data[dayKey], // Lista di esercizi
+            id: `${id}-${dayKey}`, // unique ID
+            name: dayKey, // Day name
+            exercises: data[dayKey], // Exercises list
           }))
       );
 
@@ -276,7 +276,7 @@ const FirestoreInterface = {
         completed: goal.completed || false,
       });
 
-      // Recupera tutti i goals aggiornati
+      // Retrieve all updated goals
       const snapshot = await getDocs(
         collection(Firestore, COLLECTIONS.USERS, userId, "goals")
       );
@@ -389,21 +389,22 @@ const FirestoreInterface = {
     }
   },
 
-  deleteUsers: async (
-    users: string[],
+  deleteCustomers: async (
+    customers: string[],
     personalTrainerId: string
   ): Promise<void> => {
     try {
       await Promise.all(
-        users.map(async (userId) => {
-          await deleteDoc(doc(Firestore, COLLECTIONS.USERS, userId));
+        customers.map(async (customerId) => {
+          await deleteDoc(doc(Firestore, COLLECTIONS.USERS, customerId));
           await deleteDoc(
             doc(
               Firestore,
               `${COLLECTIONS.USERS}/${personalTrainerId}/${COLLECTIONS.CUSTOMERS}`,
-              userId
+              customerId
             )
           );
+          await FirestoreInterface.removeTrainingPlansByCutomerId(customerId);
         })
       );
     } catch (error) {
@@ -502,21 +503,21 @@ const FirestoreInterface = {
 
   getPersonalTrainerId: async (customerId: string): Promise<string> => {
     try {
-      // Ottieni tutti gli utenti dalla collezione "users"
+      // Get all users from the “users” collection
       const usersRef = collection(Firestore, COLLECTIONS.USERS);
       const usersSnapshot = await getDocs(usersRef);
 
       for (const userDoc of usersSnapshot.docs) {
         const userId = userDoc.id;
 
-        // Verifica se la raccolta "customers" esiste sotto "users/{userId}"
+        // Check if the collection “customers” exists under “users/{userId}”
         const customersRef = collection(
           Firestore,
           `${COLLECTIONS.USERS}/${userId}/${COLLECTIONS.CUSTOMERS}`
         );
         const customersSnapshot = await getDocs(customersRef);
 
-        // Se la raccolta "customers" non contiene documenti, passa al prossimo utente
+        // If the “customers” collection contains no documents, move on to the next user
         if (customersSnapshot.empty) continue;
 
         const customerExists = customersSnapshot.docs.some(
@@ -528,12 +529,59 @@ const FirestoreInterface = {
         }
       }
 
-      return ""; // Nessun personal trainer trovato
+      return ""; // No personal trainers found
     } catch (error) {
       console.error("Error retrieving personal trainer:", error);
       return "";
     }
   },
+
+  removeTrainingPlans: async (
+    trainingPlans: string[]
+  ): Promise<void> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+  
+      // For each ID, get the doc ref. and delete it
+      const deletePromises = trainingPlans.map((id) => {
+        const docRef = doc(plansRef, id);
+        return deleteDoc(docRef);
+      });
+  
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error during removing plan", error);
+    }
+  },  
+
+  removeTrainingPlansByCutomerId: async (
+    customerId: string
+  ): Promise<void> => {
+    try {
+      const plansRef = collection(Firestore, COLLECTIONS.TRAINING_PLANS);
+      const querySnapshot = await getDocs(plansRef);
+
+      // Filters documents with IDs ending with `-{customerId}`
+      const filteredDocs = querySnapshot.docs
+        .filter((doc) => doc.id.endsWith(`-${customerId}`))
+        .map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
+
+      if (filteredDocs.length === 0) return;
+  
+      // For each ID, get the doc ref. and delete it
+      const deletePromises = filteredDocs.map((filteredDoc) => {
+        const docRef = doc(plansRef, filteredDoc.id);
+        return deleteDoc(docRef);
+      });
+  
+      await Promise.all(deletePromises);
+    } catch (error) {
+      console.error("Error during removing plan", error);
+    }
+  },  
 
   async resetPassword(email: string): Promise<string> {
     try {

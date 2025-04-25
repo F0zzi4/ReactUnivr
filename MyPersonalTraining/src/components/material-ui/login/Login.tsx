@@ -1,14 +1,17 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import FormLabel from "@mui/material/FormLabel";
-import FormControl from "@mui/material/FormControl";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import MuiCard from "@mui/material/Card";
+import {
+  Box,
+  Button,
+  CssBaseline,
+  Divider,
+  FormLabel,
+  FormControl,
+  TextField,
+  Typography,
+  Stack,
+  Card as MuiCard,
+  Alert,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
 import AppTheme from "../shared-theme/AppTheme";
 import AppIcon from "../../../assets/mypersonaltraining.webp";
@@ -19,10 +22,10 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
-import { Alert } from "@mui/material"; // Import Alert
-import { Link } from "react-router-dom"; // Import Link
+import { Link } from "react-router-dom";
 import "./Login.css";
 
+// Styled card component for the login form
 const Card = styled(MuiCard)(({ theme }) => ({
   position: "relative",
   display: "flex",
@@ -44,6 +47,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
+// Styled container for full-page login layout
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
   minHeight: "100%",
@@ -68,42 +72,45 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function Login() {
+  // State for form fields and validation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  // Automatically focus email input when component mounts
   useEffect(() => {
-    const inputElement = document.getElementById(
-      "EmailInput"
-    ) as HTMLInputElement;
+    const inputElement = document.getElementById("EmailInput") as HTMLInputElement;
     if (inputElement) {
       inputElement.focus();
     }
   }, []);
 
+  // Handles form submission and Firebase sign-in
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Validate the inputs
     if (!validateInputs()) return;
 
     try {
       await signInWithEmailAndPassword(Auth, email, password);
-      const user: FirebaseObject | null =
-        await FirestoreInterface.getUserByEmail(email);
 
-      // Setting session data
+      // Fetch user data after successful login
+      const user: FirebaseObject | null = await FirestoreInterface.getUserByEmail(email);
+
+      // Store user session in local storage
       if (user) {
         user.timestamp = Date.now();
         sessionStorage.setItem("user", JSON.stringify(user));
       }
-      // Go to training-plan
+
+      // Redirect user to inbox page
       navigate("/inbox");
     } catch (error: unknown) {
+      // Handle Firebase authentication error
       if (error instanceof FirebaseError) {
         setPasswordError(true);
         setPasswordErrorMessage("Error during login, try again.");
@@ -113,10 +120,9 @@ export default function Login() {
     }
   };
 
+  // Input validation logic for email and password
   const validateInputs = () => {
     let isValid = true;
-
-    // Reset all errors before validation
     setEmailError(false);
     setEmailErrorMessage("");
     setPasswordError(false);
@@ -142,36 +148,21 @@ export default function Login() {
       <AppTheme>
         <CssBaseline enableColorScheme />
         <SignInContainer direction="column" justifyContent="space-between">
-          <Card
-            variant="outlined"
-            sx={{ backgroundColor: "rgb(147, 229, 165)" }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1,
-              }}
-            >
-              <img
-                src={AppIcon}
-                alt="App Logo"
-                style={{ width: "210px", height: "210px" }}
-              />
-              <Typography
-                component="h1"
-                variant="h4"
-                sx={{
-                  fontSize: "clamp(2rem, 10vw, 2.15rem)",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                }}
-              >
+          {/* Login card */}
+          <Card variant="outlined" sx={{ backgroundColor: "rgb(147, 229, 165)" }}>
+            {/* Logo and title */}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+              <img src={AppIcon} alt="App Logo" style={{ width: "210px", height: "210px" }} />
+              <Typography component="h1" variant="h4" sx={{
+                fontSize: "clamp(2rem, 10vw, 2.15rem)",
+                fontWeight: "bold",
+                textAlign: "center",
+              }}>
                 Sign in
               </Typography>
             </Box>
 
+            {/* Login form */}
             <Box
               component="form"
               onSubmit={handleSubmit}
@@ -183,6 +174,7 @@ export default function Login() {
                 gap: 2,
               }}
             >
+              {/* Email input */}
               <FormControl>
                 <FormLabel htmlFor="email">Email</FormLabel>
                 <TextField
@@ -201,14 +193,12 @@ export default function Login() {
                 />
               </FormControl>
               {emailError && (
-                <Alert
-                  severity="error"
-                  sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}
-                >
+                <Alert severity="error" sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}>
                   {emailErrorMessage}
                 </Alert>
               )}
 
+              {/* Password input */}
               <FormControl>
                 <FormLabel htmlFor="password">Password</FormLabel>
                 <TextField
@@ -226,41 +216,41 @@ export default function Login() {
                 />
               </FormControl>
               {passwordError && (
-                <Alert
-                  severity="error"
-                  sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}
-                >
+                <Alert severity="error" sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}>
                   {passwordErrorMessage}
                 </Alert>
               )}
 
+              {/* Submit button */}
               <br />
               <Button type="submit" fullWidth variant="contained">
                 Sign in
               </Button>
             </Box>
 
+            {/* Divider and contact section */}
             <Divider>or</Divider>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <Typography sx={{ textAlign: "center" }}>
                 Don&apos;t have an account or having problems with access?<br />
                 Send an email to:<br />
-                <i>fozzatodavide@gmail.com</i>
-                <br></br>
+                <i>fozzatodavide@gmail.com</i><br />
                 <i>mattia.rebonato31@gmail.com</i>
               </Typography>
-              <Link
-                to="/reset-password"
-                style={{ textAlign: "center", marginTop: "10px" }}
-              >
-                <Button 
-                  variant="text" 
+
+              {/* Forgot password button */}
+              <Link to="/reset-password" style={{ textAlign: "center", marginTop: "10px" }}>
+                <Button
+                  variant="text"
                   color="primary"
                   sx={{
                     transition: "background-color 0.3s",
-                    "&:hover": { backgroundColor: "rgb(36, 201, 118)", color: "white" }
+                    "&:hover": {
+                      backgroundColor: "rgb(36, 201, 118)",
+                      color: "white",
+                    },
                   }}
-                  >
+                >
                   <b>Forgot Password?</b>
                 </Button>
               </Link>
