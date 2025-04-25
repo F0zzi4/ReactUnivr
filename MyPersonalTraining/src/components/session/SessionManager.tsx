@@ -16,11 +16,6 @@ const SessionManager = () => {
         navigate("/", { replace: true });
       }
 
-      /* If user is not set or timestamp
-      if (!user || !user.timestamp || !user.lastActive) {
-        return;   // RIMOZIONE PERCHè BLOCCA TUTTO IL PROCESSO, NON FUNZIONA!!
-      }*/
-
       const currentTime = Date.now();
 
       // Verify if the session is expired
@@ -31,7 +26,6 @@ const SessionManager = () => {
       }
 
       // Update the timestamp with the current one
-      user.lastActive = currentTime;
       sessionStorage.setItem("user", JSON.stringify(user));
     };
 

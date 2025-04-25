@@ -16,6 +16,7 @@
     "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.6",
     "@mui/styled-engine-sc": "^6.4.6",
+    "date-fns": "^4.1.0",
     "firebase": "^11.4.0",
     "formik": "^2.4.6",
     "js-cookie": "^3.0.5",

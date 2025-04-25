@@ -8,16 +8,22 @@ import {
   Navigate,
 } from "react-router-dom";
 import Login from "./components/material-ui/login/Login";
-import SideBar from "./components/sidebar/SideBar";
-import HomePage from "./components/homepage/HomePage";
+import SideBar from "./components/sideBar/SideBar";
 import { StrictMode, useState, useEffect } from "react";
 import SessionManager from "./components/session/SessionManager";
-import Me from "./components/costumer/me/Me";
-import Goals from "./components/costumer/goals/Goals";
-import TrainingPlan from "./components/costumer/trainingplan/TrainingPlan";
+import Me from "./components/customer/me/Me";
+import Goals from "./components/customer/goals/Goals";
+import CustomerTrainingPlan from "./components/customer/training-plan/TrainingPlan";
 import PlanManagement from "./components/personaltrainer/plan-management/PlanManagement";
 import Customers from "./components/personaltrainer/customers/Customers";
 import Exercises from "./components/personaltrainer/exercises/Exercises";
+import Inbox from "./components/inbox/Inbox";
+import Outbox from "./components/outbox/Outbox";
+import Customer from "./components/personaltrainer/customer/Customer";
+import Exercise from "./components/personaltrainer/exercise/Exercise";
+import TrainingPlan from "./components/personaltrainer/plan-management/TrainingPlan";
+import "./main.css";
+import ResetPassword from "./components/reset-password/ResetPassword";
 
 // Wrapper to manage conditional Sidebar
 const Layout = () => {
@@ -25,30 +31,49 @@ const Layout = () => {
   const [open, setOpen] = useState(true);
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
-  console.log(user);
+
   // If path is "/", do not show the sidebar
   const showSidebar = location.pathname !== "/";
 
-  return user ? ( // Check if user is logged
-    <div className="flex h-screen maincontent-backgroundcolor">
-      {/* Fixed sidebar */}
-      {showSidebar && <SideBar open={open} setOpen={setOpen} />}
-      <SessionManager />
-      {/* Main content */}
-      <main
-        className={`transition-all duration-300 ${
-          showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
-        } flex-1 overflow-auto`}
-      >
-        <Outlet />
-      </main>
-    </div>
-  ) : (
-    <Navigate to={"/"} />
+  return (
+    // If user is logged in, show the main content with Sidebar
+    user ? (
+      <div className="flex h-screen maincontent-backgroundcolor">
+        {/* Fixed sidebar */}
+        {showSidebar && <SideBar open={open} setOpen={setOpen} />}
+        <SessionManager />
+        {/* Main content */}
+        <main
+          className={`main-content transition-all duration-300 ${
+            showSidebar ? (open ? "ml-64" : "ml-20") : "ml-0"
+          }`}
+        >
+          {/* Fixed background images */}
+          <img
+            src="../gym1.png"
+            alt="Gym Center"
+            className="background-image fixed image-left object-cover"
+            style={{ left: showSidebar ? (open ? "1rem" : "3rem") : "0" }}
+          />
+          <img
+            src="../gym3.png"
+            alt="Gym Right"
+            className="background-image fixed image-right object-cover -z-10"
+          />
+
+          {/* Scrollable content */}
+          <div className="relative z-0 h-full overflow-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+    ) : (
+      <Navigate to="/" /> // If user is not logged, navigate to login page
+    )
   );
 };
 
-// Redirect logic inside login component
+// LoginWithRedirect for redirecting when user is already logged in
 const LoginWithRedirect = () => {
   const location = useLocation();
   const userData = sessionStorage.getItem("user");
@@ -56,7 +81,7 @@ const LoginWithRedirect = () => {
 
   useEffect(() => {
     if (user && location.pathname === "/") {
-      window.location.replace("/homepage");
+      window.location.replace("/inbox");
     }
   }, [user, location.pathname]);
 
@@ -74,23 +99,39 @@ root.render(
       <Routes>
         {/* Login with redirect logic */}
         <Route path="/" element={<LoginWithRedirect />} />
+        {/* Route for reset password without authentication */}
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         {/* Wrapper layout for sidebar */}
         <Route element={<Layout />}>
-          <Route path="/homepage" element={<HomePage />} />
-
           {/* Customer Routes */}
           <Route path="/customer/me" element={<Me />} />
           <Route path="/customer/goals" element={<Goals />} />
-          <Route path="/customer/trainingPlan" element={<TrainingPlan />} />
-
+          <Route
+            path="/customer/training-plan"
+            element={<CustomerTrainingPlan />}
+          />
+          <Route path="/inbox" element={<Inbox />} />
           {/* PersonalTrainer Routes */}
           <Route
-            path="/personalTrainer/planManagement"
+            path="/personal-trainer/plan-management"
             element={<PlanManagement />}
           />
-          <Route path="/personalTrainer/customers" element={<Customers />} />
-          <Route path="/personalTrainer/exercises" element={<Exercises />} />
+          <Route path="/personal-trainer/customers" element={<Customers />} />
+          <Route path="/personal-trainer/exercises" element={<Exercises />} />
+          <Route
+            path="/personal-trainer/customers/customer"
+            element={<Customer />}
+          />
+          <Route
+            path="/personal-trainer/exercises/exercise"
+            element={<Exercise />}
+          />
+          <Route
+            path="/personal-trainer/plan-management/training-plan"
+            element={<TrainingPlan />}
+          />
+          <Route path="/outbox" element={<Outbox />} />
         </Route>
       </Routes>
     </BrowserRouter>

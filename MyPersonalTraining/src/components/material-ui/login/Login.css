@@ -7,18 +7,18 @@
   }
 
 .login-background{
-  background-color: rgb(84, 196, 84);
+  background-color: rgb(84, 196, 140);
 }
 
 @keyframes gradientBackground {
   0% {
-    background-color: rgb(88, 196, 88);
+    background-color: rgb(88, 196, 133);
   }
   50% {
-    background-color: rgb(37, 160, 37);
+    background-color: rgb(37, 160, 98);
   }
   100% {
-    background-color: rgb(88, 192, 88);
+    background-color: rgb(88, 192, 123);
   }
 }
 

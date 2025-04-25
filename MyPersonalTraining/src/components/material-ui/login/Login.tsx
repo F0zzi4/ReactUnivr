@@ -1,30 +1,31 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import CssBaseline from "@mui/material/CssBaseline";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Divider from "@mui/material/Divider";
-import FormLabel from "@mui/material/FormLabel";
-import FormControl from "@mui/material/FormControl";
-import Link from "@mui/material/Link";
-import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
-import Stack from "@mui/material/Stack";
-import MuiCard from "@mui/material/Card";
+import {
+  Box,
+  Button,
+  CssBaseline,
+  Divider,
+  FormLabel,
+  FormControl,
+  TextField,
+  Typography,
+  Stack,
+  Card as MuiCard,
+  Alert,
+} from "@mui/material";
 import { styled } from "@mui/material/styles";
-import ForgotPassword from "./subcomponents/ForgotPassword";
 import AppTheme from "../shared-theme/AppTheme";
 import AppIcon from "../../../assets/mypersonaltraining.webp";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { Auth } from "../../firebase/authentication/firebase-appconfig";
 import FirestoreInterface from "../../firebase/firestore/firestore-interface";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FirebaseError } from "firebase/app";
 import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
+import { Link } from "react-router-dom";
 import "./Login.css";
 
+// Styled card component for the login form
 const Card = styled(MuiCard)(({ theme }) => ({
   position: "relative",
   display: "flex",
@@ -46,6 +47,7 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
+// Styled container for full-page login layout
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
   minHeight: "100%",
@@ -70,66 +72,72 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function Login() {
+  // State for form fields and validation
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
-  const [open, setOpen] = React.useState(false);
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
+  // Automatically focus email input when component mounts
+  useEffect(() => {
+    const inputElement = document.getElementById("EmailInput") as HTMLInputElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, []);
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-
+  // Handles form submission and Firebase sign-in
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!validateInputs()) return;
+
     try {
       await signInWithEmailAndPassword(Auth, email, password);
-      const user: FirebaseObject | null = await FirestoreInterface.findUserByEmail(email);
-    
-      // Setting session data
+
+      // Fetch user data after successful login
+      const user: FirebaseObject | null = await FirestoreInterface.getUserByEmail(email);
+
+      // Store user session in local storage
       if (user) {
         user.timestamp = Date.now();
         sessionStorage.setItem("user", JSON.stringify(user));
       }
-      // Go to homepage
-      navigate("/homepage");
+
+      // Redirect user to inbox page
+      navigate("/inbox");
     } catch (error: unknown) {
+      // Handle Firebase authentication error
       if (error instanceof FirebaseError) {
         setPasswordError(true);
-        setPasswordErrorMessage("Error during login, try again");
+        setPasswordErrorMessage("Error during login, try again.");
       } else {
         console.error("Unknown error:", error);
       }
     }
   };
 
+  // Input validation logic for email and password
   const validateInputs = () => {
     let isValid = true;
+    setEmailError(false);
+    setEmailErrorMessage("");
+    setPasswordError(false);
+    setPasswordErrorMessage("");
 
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setEmailError(true);
       setEmailErrorMessage("Please enter a valid email address.");
       isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage("");
     }
 
     if (!password || password.length < 6) {
       setPasswordError(true);
       setPasswordErrorMessage("Password must be at least 6 characters long.");
       isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
     }
 
     return isValid;
@@ -137,116 +145,119 @@ export default function Login() {
 
   return (
     <div className="login-background">
-    <AppTheme>
-      <CssBaseline enableColorScheme />
-      <SignInContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <img
-              src={AppIcon}
-              alt="App Logo"
-              style={{ width: "210px", height: "210px" }}
-            />
-            <Typography
-              component="h1"
-              variant="h4"
-              sx={{
+      <AppTheme>
+        <CssBaseline enableColorScheme />
+        <SignInContainer direction="column" justifyContent="space-between">
+          {/* Login card */}
+          <Card variant="outlined" sx={{ backgroundColor: "rgb(147, 229, 165)" }}>
+            {/* Logo and title */}
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+              <img src={AppIcon} alt="App Logo" style={{ width: "210px", height: "210px" }} />
+              <Typography component="h1" variant="h4" sx={{
                 fontSize: "clamp(2rem, 10vw, 2.15rem)",
                 fontWeight: "bold",
                 textAlign: "center",
+              }}>
+                Sign in
+              </Typography>
+            </Box>
+
+            {/* Login form */}
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "100%",
+                gap: 2,
               }}
             >
-              Sign in
-            </Typography>
-          </Box>
+              {/* Email input */}
+              <FormControl>
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <TextField
+                  id="EmailInput"
+                  error={emailError}
+                  type="email"
+                  name="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  autoComplete="email"
+                  autoFocus
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              {emailError && (
+                <Alert severity="error" sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}>
+                  {emailErrorMessage}
+                </Alert>
+              )}
 
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "100%",
-              gap: 2,
-            }}
-          >
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                error={emailError}
-                helperText={emailErrorMessage}
-                type="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                autoComplete="email"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={emailError ? "error" : "primary"}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••"
-                type="password"
-                autoComplete="current-password"
-                autoFocus
-                required
-                fullWidth
-                variant="outlined"
-                color={passwordError ? "error" : "primary"}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <ForgotPassword open={open} handleClose={handleClose} />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
-              Sign in
-            </Button>
-            <Link
-              component="button"
-              type="button"
-              onClick={handleClickOpen}
-              variant="body2"
-              sx={{ alignSelf: "center" }}
-            >
-              Forgot your password?
-            </Link>
-          </Box>
-          <Divider>or</Divider>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Typography sx={{ textAlign: "center" }}>
-              Don&apos;t have an account? send email via:
-              fozzatodavide@gmail.com
-            </Typography>
-          </Box>
-        </Card>
-      </SignInContainer>
-    </AppTheme>
+              {/* Password input */}
+              <FormControl>
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <TextField
+                  id="PasswordInput"
+                  error={passwordError}
+                  name="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  fullWidth
+                  variant="outlined"
+                />
+              </FormControl>
+              {passwordError && (
+                <Alert severity="error" sx={{ mt: 1, borderRadius: 2, boxShadow: 1 }}>
+                  {passwordErrorMessage}
+                </Alert>
+              )}
+
+              {/* Submit button */}
+              <br />
+              <Button type="submit" fullWidth variant="contained">
+                Sign in
+              </Button>
+            </Box>
+
+            {/* Divider and contact section */}
+            <Divider>or</Divider>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <Typography sx={{ textAlign: "center" }}>
+                Don&apos;t have an account or having problems with access?<br />
+                Send an email to:<br />
+                <i>fozzatodavide@gmail.com</i><br />
+                <i>mattia.rebonato31@gmail.com</i>
+              </Typography>
+
+              {/* Forgot password button */}
+              <Link to="/reset-password" style={{ textAlign: "center", marginTop: "10px" }}>
+                <Button
+                  variant="text"
+                  color="primary"
+                  sx={{
+                    transition: "background-color 0.3s",
+                    "&:hover": {
+                      backgroundColor: "rgb(36, 201, 118)",
+                      color: "white",
+                    },
+                  }}
+                >
+                  <b>Forgot Password?</b>
+                </Button>
+              </Link>
+            </Box>
+          </Card>
+        </SignInContainer>
+      </AppTheme>
     </div>
   );
 }
