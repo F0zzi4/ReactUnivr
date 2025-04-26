@@ -1,6 +1,10 @@
 # My Personal Training
 
-React project to manage personal coaching for patients
+React project to manage personal coaching for customers
+
+# Analysis
+* See Project Report for more information
+* See Figma Structure for more comprehension of the app structure
 
 # Version
 
@@ -18,3 +22,6 @@ React project to manage personal coaching for patients
 * react-icons
 * uuid
 * formik
+
+# Setup
+* to try in local environment, remember to install all the dependencies with cmd "npm install"
