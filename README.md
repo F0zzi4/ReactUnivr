@@ -10,7 +10,7 @@ React project to manage personal coaching for customers
 
 - **node**: ^22.12.0
 
-# Dependences
+# Dependencies
 * react-router
 * react-router-dom
 * @mui/material @mui/styled-engine-sc styled-components
