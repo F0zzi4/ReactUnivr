@@ -4,7 +4,7 @@ React project to manage personal coaching for customers
 
 # Analysis
 * See Project Report for more information
-* See Figma Structure for more comprehension of the app structure
+* See Mockup for more comprehension of the app structure
 
 # Version
 
