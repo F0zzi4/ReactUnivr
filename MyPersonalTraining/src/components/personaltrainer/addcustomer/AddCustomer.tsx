@@ -115,7 +115,7 @@ export default function AddCustomer({
         <form className="space-y-4">
           {/* Nickname */}
           <div>
-            <label className="block font-semibold text-lg">Nickname (ID)</label>
+            <label className="block font-semibold text-lg">Nickname</label>
             <input
               className="w-full bg-gray-100 border border-gray-300 rounded-md p-3 shadow-md focus:outline-none focus:ring-2 focus:ring-green-500"
               type="text"

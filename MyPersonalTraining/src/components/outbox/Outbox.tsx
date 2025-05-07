@@ -101,9 +101,7 @@ export default function Outbox() {
                 <div className="flex flex-col">
                   {/* Display recipient full name or fallback to 'Unknown' */}
                   <div className="font-bold text-lg">
-                    {recipients.find((rec) => rec.id === msg.recipient)?.Name +
-                      " " +
-                      recipients.find((rec) => rec.id === msg.recipient)?.Surname || "Unknown"}
+                    {msg.recipient}
                   </div>
 
                   {/* Message subject and preview */}
@@ -133,9 +131,7 @@ export default function Outbox() {
             {/* Display recipient info */}
             <p className="text-sm text-gray-700 font-semibold">
               To:{" "}
-              {recipients.find((rec) => rec.id === selectedMessage.recipient)?.Name +
-                " " +
-                recipients.find((rec) => rec.id === selectedMessage.recipient)?.Surname || "Unknown"}
+              {selectedMessage.recipient}
             </p>
 
             {/* Date of the message */}
