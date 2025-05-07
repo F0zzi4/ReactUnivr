@@ -159,12 +159,7 @@ export default function Inbox() {
                 <div className="flex flex-col">
                   <div className="flex justify-between items-center">
                     <div className="font-bold text-lg">
-                      {
-                        senders.find((sender) => sender.id === msg.sender)
-                          ?.Name +
-                          " " +
-                          senders.find((rec) => rec.id === msg.sender)?.Surname || "Unknown"
-                      }
+                      {msg.sender}
                     </div>
                   </div>
 
