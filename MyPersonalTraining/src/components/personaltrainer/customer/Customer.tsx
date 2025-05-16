@@ -19,10 +19,11 @@ interface FormData {
 export default function Customer() {
   const navigate = useNavigate();
   const location = useLocation();
-  const customer = location.state?.customer;
+  const customer = location.state?.customer; // Retrieve customer from the navigation state
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
 
+  // Form state initialization
   const [formData, setFormData] = useState<FormData>({
     id: customer?.id || "",
     Email: customer?.Email || "",
@@ -36,15 +37,17 @@ export default function Customer() {
     GymLevel: customer?.GymLevel || "",
   });
 
+  // State for editing mode and error/success messages
   const [isEditable, setIsEditable] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // Error message state
-  const [successMessage, setSuccessMessage] = useState(""); // Success message state
+  const [errorMessage, setErrorMessage] = useState(""); 
+  const [successMessage, setSuccessMessage] = useState(""); 
   const [fieldErrors, setFieldErrors] = useState(new Set<string>());
 
   if (!customer) {
-    return <p>No customer selected.</p>;
+    return <p>No customer selected.</p>; // Error handling if no customer is provided
   }
 
+  // Handle input changes and update form data
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -57,18 +60,20 @@ export default function Customer() {
         name === "Height" || name === "Weight"
           ? value === ""
             ? ""
-            : Number(value)
+            : Number(value) // Handle number conversion for height and weight
           : value,
     }));
   };
 
+  // Handle navigation to training plan management
   const handleManagePlan = async () => {
-    await FirestoreInterface.createTrainingPlan(user.id, formData.id);
-    navigate("/personalTrainer/plan-management/training-plan", {
-      state: formData,
+    await FirestoreInterface.createTrainingPlan(user.id, formData.id); // Create training plan in Firestore
+    navigate("/personal-trainer/plan-management/training-plan", {
+      state: formData, // Pass the form data to the next page
     });
   };
 
+  // Validate the form fields
   const validateForm = () => {
     const fieldsWithErrors = new Set<string>();
 
@@ -82,10 +87,11 @@ export default function Customer() {
       fieldsWithErrors.add("Weight");
     if (!formData.GymLevel) fieldsWithErrors.add("GymLevel");
 
-    setFieldErrors(fieldsWithErrors);
+    setFieldErrors(fieldsWithErrors); // Set field errors for UI feedback
     return fieldsWithErrors.size === 0; // Return true if no errors
   };
 
+  // Toggle edit mode and save changes
   const toggleEdit = async () => {
     if (isEditable) {
       // Validate fields before saving
@@ -95,25 +101,25 @@ export default function Customer() {
       }
 
       try {
-        await FirestoreInterface.updateUser(formData);
+        await FirestoreInterface.updateUser(formData); // Update user info in Firestore
         setSuccessMessage("Changes saved successfully!");
-        setTimeout(() => setSuccessMessage(""), 3000);
+        setTimeout(() => setSuccessMessage(""), 3000); // Reset success message after a delay
       } catch (error) {
         console.error("Update error:", error);
         setErrorMessage("Error saving changes. Please try again.");
       }
     }
 
-    setIsEditable(!isEditable);
+    setIsEditable(!isEditable); // Toggle edit mode
     setErrorMessage(""); // Reset error messages
   };
 
   return (
-    <div className="h-screen w-full flex items-center justify-center">
+    <div className="h-screen w-full flex items-center justify-center mt-10">
       <div className="w-11/12 max-w-2xl bg-white p-10 shadow-xl rounded-xl">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate(-1)} // Navigate back to previous page
           className="flex items-center text-gray-700 hover:text-green-600 hover:bg-green-100 mb-6 transition-colors duration-200 py-1 px-1 rounded-md"
         >
           <FaArrowLeft className="mr-2 hover:text-green-600 transition-colors duration-200" />
@@ -162,7 +168,7 @@ export default function Customer() {
                 name="Name"
                 value={formData.Name}
                 onChange={handleChange}
-                readOnly={!isEditable}
+                readOnly={!isEditable} // Enable editing based on isEditable state
               />
             </div>
             <div className="w-full md:w-1/2 px-3">
@@ -215,7 +221,7 @@ export default function Customer() {
                   ? "border-red-500"
                   : "border-gray-300"
               } rounded py-4 px-5 leading-tight focus:outline-none`}
-              disabled={!isEditable}
+              disabled={!isEditable} // Disable select field when not in edit mode
             >
               <option value="">Select Gym Level</option>
               <option value="Beginner">Beginner</option>

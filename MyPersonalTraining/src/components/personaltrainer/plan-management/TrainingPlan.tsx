@@ -21,33 +21,40 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Add, Delete, FilterList } from "@mui/icons-material";
 
 export default function TrainingPlan() {
-  const [selectedElementsToAdd, setSelectedElementsToAdd] = useState<string[]>(
-    []
-  );
-  const [selectedElementsToRemove, setSelectedElementsToRemove] = useState<
-    string[]
-  >([]);
+  // States for managing selected items to add/remove and exercises
+  const [selectedElementsToAdd, setSelectedElementsToAdd] = useState<string[]>([]);
+  const [selectedElementsToRemove, setSelectedElementsToRemove] = useState<string[]>([]);
   const [exercises, setExercises] = useState<FirebaseObject[]>([]);
   const [addedExercises, setAddedExercises] = useState<FirebaseObject[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterTarget, setFilterTarget] = useState<string | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedDay, setSelectedDay] = useState<string>("Day 1");
+
+  // React Router hooks for location and navigation
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Customer data from previous page navigation
   const customer = location.state;
 
+  // Redirect if no customer is found
   if (!customer) {
-    navigate("/personalTrainer/plan-management");
+    navigate("/personal-trainer/plan-management");
   }
 
+  // Material UI theme and breakpoint handling for responsive layout
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Fetch user data from sessionStorage
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
+  
+  // Plan ID for Firestore queries
   const planId = user.id + "-" + customer.id;
 
+  // Fetch exercises from Firestore on component mount or user change
   useEffect(() => {
     const fetchData = async () => {
       if (user?.id) {
@@ -59,6 +66,7 @@ export default function TrainingPlan() {
     fetchData();
   }, [user]);
 
+  // Fetch exercises for the selected day of the training plan
   useEffect(() => {
     const updateExercisesForDay = async () => {
       const newExercises = await FirestoreInterface.getExercisesPlanByDayNo(
@@ -71,10 +79,12 @@ export default function TrainingPlan() {
     updateExercisesForDay();
   }, [selectedDay]);
 
+  // Filter click to open the filter menu
   const handleFilterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
+  // Filter exercises based on search term and target
   const filteredExercises = exercises?.filter((exercise) => {
     const matchesSearchTerm = `${exercise.Name}`
       .toLowerCase()
@@ -85,17 +95,20 @@ export default function TrainingPlan() {
     return matchesSearchTerm && matchesTarget;
   });
 
+  // Handle adding selected exercises to the plan
   const handleAddSelected = async () => {
     const newAddedExercises = exercises?.filter((exercise) =>
       selectedElementsToAdd.includes(exercise.id)
     );
 
+    // Set default reps and series for the new exercises
     const exercisesWithDefaults = newAddedExercises.map((exercise) => ({
       ...exercise,
       Reps: 10, // Default reps
       Series: 4, // Default series
     }));
 
+    // Update the added exercises state and Firestore plan
     setAddedExercises((prev) => {
       const updatedExercises = [
         ...prev,
@@ -112,22 +125,18 @@ export default function TrainingPlan() {
     setSelectedElementsToAdd([]);
   };
 
+  // Handle saving exercise updates like reps and series
   const handleSave = async (itemId: string, updatedItem: any) => {
-    // Aggiorna l'elemento nella lista degli esercizi aggiunti
     setAddedExercises((prev) =>
       prev.map((exercise) =>
         exercise.id === itemId ? { ...exercise, ...updatedItem } : exercise
       )
     );
 
-    // Salva le modifiche nel database
-    await FirestoreInterface.updatePlanById(
-      planId,
-      selectedDay,
-      addedExercises
-    );
+    await FirestoreInterface.updatePlanById(planId, selectedDay, addedExercises);
   };
 
+  // Handle removing selected exercises from the plan
   const handleRemoveSelected = () => {
     setAddedExercises((prev) => {
       const updatedExercises = prev.filter(
@@ -142,6 +151,7 @@ export default function TrainingPlan() {
     setSelectedElementsToRemove([]);
   };
 
+  // Toggle the add/remove selection for an exercise
   const handleToggleAdd = (exercise: FirebaseObject) => {
     setSelectedElementsToAdd((prev) =>
       prev.includes(exercise.id)
@@ -158,15 +168,17 @@ export default function TrainingPlan() {
     );
   };
 
+  // Handle filter target selection
   const handleFilterSelect = (target: string | null) => {
     setFilterTarget(target);
     setAnchorEl(null);
   };
 
+  // Generate unique list of targets from exercises
   const availableTargets = [
     ...new Set(exercises?.map((exercise) => exercise.Target)),
   ];
-
+  
   return (
     <Box
       sx={{
@@ -305,7 +317,7 @@ export default function TrainingPlan() {
               `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
             }
             onItemClick={(exercise) => {
-              navigate("/personalTrainer/exercises/exercise", {
+              navigate("/personal-trainer/exercises/exercise", {
                 state: { exercise },
               });
             }}
@@ -326,7 +338,7 @@ export default function TrainingPlan() {
               `Difficulty: ${exercise.Difficulty} | Target: ${exercise.Target}`
             }
             onItemClick={(exercise) => {
-              navigate("/personalTrainer/exercises/exercise", {
+              navigate("/personal-trainer/exercises/exercise", {
                 state: { exercise },
               });
             }}

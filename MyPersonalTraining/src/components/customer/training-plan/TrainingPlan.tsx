@@ -13,31 +13,33 @@ import FirebaseObject from "../../firebase/firestore/data-model/FirebaseObject";
 import BasicTable from "../../material-ui/basic-table/BasicTable";
 
 export default function CustomerTrainingPlan() {
+  // Retrieve user information from session storage
   const userData = sessionStorage.getItem("user");
   const user = userData ? JSON.parse(userData) : null;
+
+  // State to store fetched training days and exercises
   const [days, setDays] = useState<FirebaseObject[]>([]);
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [exercises, setExercises] = useState<any[]>([]);
 
+  // Fetch training plan days when component mounts or user changes
   useEffect(() => {
     const fetchDays = async () => {
       if (user?.id) {
-        const fetchedDays = await FirestoreInterface.getPlanByCustomerId(
-          user.id
-        );
+        const fetchedDays = await FirestoreInterface.getDaysPlanByCustomerId(user.id);
         setDays(fetchedDays || []);
       }
     };
     fetchDays();
   }, [user?.id]);
 
+  // Update exercises whenever a new day is selected
   useEffect(() => {
     if (
       days.length > 0 &&
       selectedDayIndex >= 0 &&
       selectedDayIndex < days.length
     ) {
-      // Prendi il giorno selezionato direttamente tramite l'indice
       const selectedDay = days[selectedDayIndex];
 
       if (selectedDay) {
@@ -49,6 +51,7 @@ export default function CustomerTrainingPlan() {
     }
   }, [selectedDayIndex, days]);
 
+  // Navigation handlers for switching days
   const handlePrev = () => {
     if (selectedDayIndex > 0) {
       setSelectedDayIndex(selectedDayIndex - 1);
@@ -72,6 +75,7 @@ export default function CustomerTrainingPlan() {
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
         }}
       >
+        {/* Title */}
         <Typography
           variant="h4"
           sx={{
@@ -79,8 +83,7 @@ export default function CustomerTrainingPlan() {
             mb: 3,
             textAlign: "center",
             textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
-            background:
-              "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
+            background: "linear-gradient(to right,rgb(50, 197, 112),rgb(30, 129, 71))",
             WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent",
           }}
@@ -88,6 +91,7 @@ export default function CustomerTrainingPlan() {
           Training Plan
         </Typography>
 
+        {/* If no days are available */}
         {days.length === 0 ? (
           <Box
             sx={{
@@ -99,16 +103,14 @@ export default function CustomerTrainingPlan() {
           >
             <Typography
               variant="h5"
-              sx={{
-                color: "text.secondary",
-                fontStyle: "italic",
-              }}
+              sx={{ color: "text.secondary", fontStyle: "italic" }}
             >
               No training plan currently available
             </Typography>
           </Box>
         ) : (
           <>
+            {/* Navigation buttons and day selection */}
             <Box
               sx={{
                 display: "flex",
@@ -118,13 +120,12 @@ export default function CustomerTrainingPlan() {
                 mb: 3,
               }}
             >
-              <IconButton
-                onClick={handlePrev}
-                disabled={selectedDayIndex === 0}
-              >
+              {/* Previous Day Button */}
+              <IconButton onClick={handlePrev} disabled={selectedDayIndex === 0}>
                 <ChevronLeft />
               </IconButton>
 
+              {/* Day buttons */}
               {days.map((day, index) => (
                 <Button
                   key={day.id}
@@ -151,9 +152,7 @@ export default function CustomerTrainingPlan() {
                         ? "linear-gradient(145deg,rgb(114, 214, 155),rgb(37, 190, 101))"
                         : "linear-gradient(145deg,rgb(199, 235, 183),rgb(132, 230, 145))",
                     color:
-                      index === selectedDayIndex
-                        ? "white"
-                        : "rgb(255, 255, 255)",
+                      index === selectedDayIndex ? "white" : "rgb(255, 255, 255)",
                     "&:hover": {
                       transform: "scale(1.10)",
                       boxShadow: "0px 6px 20px rgba(94, 155, 92, 0.4)",
@@ -166,6 +165,7 @@ export default function CustomerTrainingPlan() {
                 </Button>
               ))}
 
+              {/* Next Day Button */}
               <IconButton
                 onClick={handleNext}
                 disabled={selectedDayIndex === days.length - 1}
@@ -174,7 +174,7 @@ export default function CustomerTrainingPlan() {
               </IconButton>
             </Box>
 
-            {/* Exercises list */}
+            {/* Display exercises of selected day */}
             <Box
               sx={{
                 mt: 3,
@@ -199,6 +199,7 @@ export default function CustomerTrainingPlan() {
                 {days[selectedDayIndex]?.name || `Day ${selectedDayIndex + 1}`})
               </Typography>
 
+              {/* Table component to render exercise list */}
               <BasicTable data={exercises} />
             </Box>
           </>

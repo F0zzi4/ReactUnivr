@@ -26,7 +26,6 @@ const SessionManager = () => {
       }
 
       // Update the timestamp with the current one
-      user.lastActive = currentTime;
       sessionStorage.setItem("user", JSON.stringify(user));
     };
 

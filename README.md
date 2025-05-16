@@ -5,8 +5,6 @@
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Last Commit](https://img.shields.io/github/last-commit/F0zzi4/ReactUnivr?color=red)
 
-
-
 # 🏋️‍♂️ My Personal Training
 
 React project to manage personal coaching for customers — schedule, track progress, and manage training plans.

@@ -12,10 +12,11 @@ interface dataForm {
 }
 
 interface AddExerciseProps {
-  onClose: () => void; // function used on closing window
+  onClose: () => void; // function passed to close the modal
 }
 
 export default function AddExercises({ onClose }: AddExerciseProps) {
+  // State to manage form data
   const [formData, setFormData] = useState<dataForm>({
     id: "",
     Description: "",
@@ -24,15 +25,15 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
     Target: "",
   });
 
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>(""); // State to manage error messages
 
+  // Handle input changes and update form data
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
 
+    // Special handling for "id" field, also updates "Name" to match "id"
     if (name === "id") {
       setFormData((prev) => ({
         ...prev,
@@ -42,11 +43,12 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
     } else {
       setFormData((prev) => ({
         ...prev,
-        [name]: name === "Difficulty" ? Number(value) : value,
+        [name]: name === "Difficulty" ? Number(value) : value, // Convert Difficulty to number
       }));
     }
   };
 
+  // Handle difficulty level selection
   const handleDifficultyChange = (difficulty: number) => {
     setFormData((prev) => ({
       ...prev,
@@ -54,7 +56,9 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
     }));
   };
 
+  // Function to handle form submission and validate data
   const createExercise = () => {
+    // Basic validation checks
     if (!formData.Name || !formData.Description || !formData.Target) {
       setError("Please fill all required fields.");
       return;
@@ -70,10 +74,12 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
       return;
     }
 
-    setError("");
+    setError(""); // Clear any existing errors
+
+    // Call Firestore API to create the exercise
     FirestoreInterface.createExercise(formData)
-      .then(() => window.location.reload())
-      .catch(() => setError("This exercise already exists"));
+      .then(() => window.location.reload()) // Reload page after successful creation
+      .catch(() => setError("This exercise already exists")); // Handle errors
   };
 
   return (
@@ -81,20 +87,18 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
       <div className="relative w-full max-w-2xl bg-white p-6 rounded-lg shadow-xl overflow-y-auto max-h-[90vh]">
         {/* Title & close button */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-center flex-1 pl-10">
-            Create Exercise
-          </h2>
-          <IconButton 
-            onClick={onClose} 
-            sx={{ 
-              color: "rgb(252, 252, 252)", 
-              backgroundColor: "rgb(190, 34, 34)", 
+          <h2 className="text-2xl font-bold text-center flex-1 pl-10">Create Exercise</h2>
+          <IconButton
+            onClick={onClose}
+            sx={{
+              color: "rgb(252, 252, 252)",
+              backgroundColor: "rgb(190, 34, 34)",
               p: 0.5, // Resize the button outline
-              width: 32, 
+              width: 32,
               height: 32,
               "&:hover": {
-                backgroundColor: "rgb(224, 60, 60)",
-              }
+                backgroundColor: "rgb(224, 60, 60)", // Hover effect
+              },
             }}
           >
             <Close sx={{ fontSize: 18 }} /> {/* Resize icon */}
@@ -103,7 +107,7 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
 
         {/* Form */}
         <form className="space-y-4">
-          {/* Name of exercise */}
+          {/* Exercise Name */}
           <div>
             <label className="block font-semibold">Exercise Name</label>
             <input
@@ -131,21 +135,20 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
             </p>
           </div>
 
-          {/* Difficulty */}
+          {/* Difficulty Level */}
           <div>
-            <label className="block font-semibold text-center">
-              Difficulty
-            </label>
+            <label className="block font-semibold text-center">Difficulty</label>
             <div className="flex justify-center space-x-2">
+              {/* Difficulty selection buttons */}
               {[1, 2, 3, 4, 5].map((level) => (
                 <button
                   key={level}
                   type="button"
-                  onClick={() => handleDifficultyChange(level)}
+                  onClick={() => handleDifficultyChange(level)} // Update difficulty on click
                   className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                     formData.Difficulty >= level
-                      ? "bg-green-500"
-                      : "bg-gray-200 hover:bg-green-300"
+                      ? "bg-green-500" // Green color for selected difficulty
+                      : "bg-gray-200 hover:bg-green-300" // Gray color for unselected levels
                   }`}
                 >
                   <span className="text-white font-bold">{level}</span>
@@ -154,8 +157,8 @@ export default function AddExercises({ onClose }: AddExerciseProps) {
             </div>
           </div>
 
-          {/* Target */}
-          <div className="">
+          {/* Target muscles */}
+          <div>
             <label className="block font-semibold">Target</label>
             <select
               className="w-full bg-gray-100 border border-gray-300 rounded-md p-3"

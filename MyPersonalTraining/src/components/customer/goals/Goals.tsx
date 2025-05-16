@@ -386,7 +386,7 @@ export default function GymGoals() {
             }}
           >
             <TextField
-              label="Exercise Name"
+              label="Target Name"
               variant="outlined"
               fullWidth
               size="small"

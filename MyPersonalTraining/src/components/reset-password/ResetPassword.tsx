@@ -13,9 +13,10 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import FirestoreInterface from "../firebase/firestore/firestore-interface";
-import "./ResetPassword.css";
+import "../material-ui/login/Login.css";
 
 const ResetPassword = () => {
+  // State variables for form input and UI feedback
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
@@ -24,19 +25,22 @@ const ResetPassword = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
+  // Email validation function using regex
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   };
 
+  // Handles form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Form submitted!"); // Aggiungi questo per verificare
+    event.preventDefault(); // Prevents default form behavior (like page reload)
+    // Clear previous messages and errors
     setErrorMessage("");
     setSuccessMessage("");
     setEmailError(false);
     setEmailErrorMessage("");
 
+    // Basic validation checks
     if (!email) {
       setEmailError(true);
       setEmailErrorMessage("Email is required");
@@ -49,33 +53,45 @@ const ResetPassword = () => {
       return;
     }
 
-    setIsSubmitting(true);
+    setIsSubmitting(true); // Disable UI during async operation
 
     try {
+      // Attempt to send reset email via Firebase
       const message = await FirestoreInterface.resetPassword(email);
       setSuccessMessage(message || "Password reset link sent successfully!");
+      // Navigate back to login after short delay
       setTimeout(() => navigate("/"), 5000);
     } catch (error: any) {
       console.error("Password reset error:", error);
+      // Show generic or specific error message
       setErrorMessage(
         error.message || "Failed to send reset link. Please try again."
       );
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false); // Re-enable form
     }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mb: 4 }}>
+    <Container
+      maxWidth={false}
+      sx={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+      className="login-background"
+    >
       <Paper
         elevation={6}
         sx={{
           p: 4,
-          mt: 4,
+          width: "100%",
+          maxWidth: "600px",
           borderRadius: 5,
           backgroundColor: "white",
           boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
-          position: "relative",
           border: "1px solid rgba(0, 0, 0, 0.1)",
         }}
       >
@@ -115,7 +131,9 @@ const ResetPassword = () => {
           </Typography>
         </Box>
 
+        {/* Form section */}
         <form onSubmit={handleSubmit}>
+          {/* Email input field */}
           <TextField
             fullWidth
             label="Email"
@@ -139,6 +157,7 @@ const ResetPassword = () => {
             }}
           />
 
+          {/* Display success or error messages */}
           {successMessage && (
             <Alert
               severity="success"
@@ -157,6 +176,7 @@ const ResetPassword = () => {
             </Alert>
           )}
 
+          {/* Submit button */}
           <Button
             fullWidth
             variant="contained"
@@ -179,8 +199,10 @@ const ResetPassword = () => {
           </Button>
         </form>
 
+        {/* Divider with alternative action */}
         <Divider sx={{ my: 3, color: "text.secondary" }}>or</Divider>
 
+        {/* Link to go back to Sign In */}
         <Box sx={{ textAlign: "center", mt: 2 }}>
           <Chip
             component={Link}
